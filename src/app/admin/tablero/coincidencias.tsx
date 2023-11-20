@@ -35,7 +35,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead>Zona</TableHead>
                         <TableHead>Inmobiliaria</TableHead>
-                        <TableHead>Dist.</TableHead>
+                        <TableHead>Score</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -69,11 +69,11 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                     <TableCell className="flex items-center">
                                         <p className={
                                             cn("border-[3px] h-8 w-8 rounded-full flex items-center justify-center font-bold", 
-                                            score < 60 && "border-red-500",
-                                            60 <= score && score < 70 && "border-yellow-500",
-                                            70 <= score && "border-green-500",
+                                            score < 50 && "border-red-500",
+                                            50 <= score && score < 60 && "border-yellow-500",
+                                            60 <= score && "border-green-500",
                                             )}>{score}</p>
-                                        <p>{distance}{distance < 0.5 && <CheckCircle2 className="text-green-500"/>}</p>
+                                        <p>{distance}</p>
                                         <Link href={coincidencia.property.url} target="_blank">
                                             <Button size="sm" variant="link"><ExternalLink /></Button>
                                         </Link>

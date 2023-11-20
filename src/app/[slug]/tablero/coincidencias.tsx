@@ -35,7 +35,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead>Zona</TableHead>
                         <TableHead className="text-center">#</TableHead>
-                        <TableHead className="text-center">Dist.</TableHead>
+                        <TableHead className="text-center">Score</TableHead>
                         <TableHead className="text-center">URL</TableHead>
                     </TableRow>
                     </TableHeader>
@@ -47,6 +47,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                 const precio= precioVenta || precioAlquiler
 
                                 const distance= coincidencia.distance
+                                const score= distanceToPercentage(distance)
                                 return (
                                 <TableRow key={coincidencia.id}>
                                     <TableCell>{coincidencia.property.idPropiedad}</TableCell>
@@ -61,8 +62,16 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                     <TableCell className="text-center">
                                         #{coincidencia.number} 
                                     </TableCell>
-                                    <TableCell className="text-center">
-                                        <p>{distance}-{distanceToPercentage(distance)}</p>
+                                    <TableCell className="flex items-center gap-1">
+                                        <p className={
+                                            cn("border-[3px] h-8 w-8 rounded-full flex items-center justify-center font-bold", 
+                                            score < 50 && "border-red-500",
+                                            50 <= score && score < 60 && "border-yellow-500",
+                                            60 <= score && "border-green-500",
+                                            )}>
+                                                {score}
+                                        </p>
+                                        <p>{distance}</p>
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <Link href={coincidencia.property.url} target="_blank">
