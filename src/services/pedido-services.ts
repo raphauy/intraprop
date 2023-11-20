@@ -12,7 +12,7 @@ export type PedidoDAO = {
   id:  string
   number:  number
 	text:  string
-  phone:  string
+  phone?:  string
 	contacto?:  string
 	operacion?:  string
 	tipo?:  string
