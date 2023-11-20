@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Loader } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
 
 type Props = {
   id?: string;
@@ -39,13 +40,18 @@ export function InmobiliariaForm({ id, closeDialog }: Props) {
     mode: "onChange",
   });
   const [loading, setLoading] = useState(false);
+  const router= useRouter()
 
   const onSubmit = async (data: InmobiliariaFormValues) => {
     setLoading(true);
     try {
       await createOrUpdateInmobiliariaAction(id ? id : null, data);
       toast({ title: id ? "Inmobiliaria updated" : "Inmobiliaria created" });
-      closeDialog && closeDialog();
+      if (closeDialog) {
+        closeDialog()
+      } else {
+        router.push("/admin/inmobiliarias")
+      }
     } catch (error: any) {
       toast({
         title: "Error",
