@@ -2,7 +2,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import MenuAdmin from "./menu-admin";
 import { InmoSelector, SelectorData } from "./inmo-selector";
-import { getInmobiliariasDAO } from "@/services/inmobiliaria-services";
+import { getInmobiliariaDAO, getInmobiliariasDAO } from "@/services/inmobiliaria-services";
 import { Separator } from "../ui/separator";
 import MenuInmobiliarias from "./menu-inmobiliaria";
 
@@ -26,11 +26,14 @@ export default async function Menu() {
             </div>
         )
 
+    const inmobiliariaId= user.inmobiliariaId
+    const inmo= await getInmobiliariaDAO(inmobiliariaId)
+
     return (
         <div className="flex items-center gap-3">
             <p className="text-2xl hidden sm:block">/</p>
             <p className="justify-between mr-2 font-bold text-lg whitespace-nowrap bg-intraprop-color ">
-                Punta Real Estate
+                {inmo.name}
             </p>
             <MenuInmobiliarias />
         </div>

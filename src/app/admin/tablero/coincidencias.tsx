@@ -4,7 +4,7 @@ import { BedSingle, CheckCircle2, ExternalLink, Eye } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
-import { cn, formatNumberWithDots } from "@/lib/utils"
+import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
@@ -46,6 +46,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                 const precio= precioVenta || precioAlquiler
 
                                 const distance= coincidencia.distance
+                                const score= distanceToPercentage(distance)
                                 return (
                                 <TableRow key={coincidencia.id}>
                                     <TableCell>{coincidencia.property.idPropiedad}</TableCell>
@@ -66,6 +67,12 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                         </Link>
                                     </TableCell>
                                     <TableCell className="flex items-center">
+                                        <p className={
+                                            cn("border-[3px] h-8 w-8 rounded-full flex items-center justify-center font-bold", 
+                                            score < 60 && "border-red-500",
+                                            60 <= score && score < 70 && "border-yellow-500",
+                                            70 <= score && "border-green-500",
+                                            )}>{score}</p>
                                         <p>{distance}{distance < 0.5 && <CheckCircle2 className="text-green-500"/>}</p>
                                         <Link href={coincidencia.property.url} target="_blank">
                                             <Button size="sm" variant="link"><ExternalLink /></Button>

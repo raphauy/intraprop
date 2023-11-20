@@ -20,3 +20,15 @@ export function slugify(name: string): string {
     .trim() // Eliminar espacios al inicio y al final
     .replace(/\s+/g, '-'); // Reemplazar espacios con guiones
 }
+
+// this function receives a distance which is a number between 0 and 0.8 (embedding factor)
+// and returns a number between 0 and 100 as a percentage
+// example 0.8 -> 100
+// example 0.4 -> 50
+// example 0.0 -> 0
+// distance is between 0 and 0.8
+export function distanceToPercentage(distance: number): number {
+  if (distance < 0.1) return 100
+  
+  return Math.round((1.1 - distance) * 100);
+}

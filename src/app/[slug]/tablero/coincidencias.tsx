@@ -4,7 +4,7 @@ import { BedSingle, CheckCircle2, ExternalLink, Eye } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
-import { cn, formatNumberWithDots } from "@/lib/utils"
+import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
@@ -62,7 +62,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                         #{coincidencia.number} 
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        <p>{distance}</p>
+                                        <p>{distance}-{distanceToPercentage(distance)}</p>
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <Link href={coincidencia.property.url} target="_blank">
