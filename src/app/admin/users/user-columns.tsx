@@ -5,6 +5,8 @@ import { UserDAO } from "@/services/user-services";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { DeleteUserDialog, UserDialog } from "./user-dialogs";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export const columns: ColumnDef<UserDAO>[] = [
   {
@@ -71,6 +73,24 @@ export const columns: ColumnDef<UserDAO>[] = [
           <ArrowUpDown className="w-4 h-4 ml-1" />
         </Button>
       );
+    },
+  },
+
+  {
+    accessorKey: "emailVerified",
+    header: ({ column }) => {
+      return (
+        <Button variant="ghost" className="pl-0 dark:text-white"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Verificado
+          <ArrowUpDown className="w-4 h-4 ml-1" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const data = row.original
+      if (!data.emailVerified) return <div></div> 
+      return (<p>{data.emailVerified && format(data.emailVerified, "MMMM dd, yyyy", { locale: es})}</p>)
     },
   },
 

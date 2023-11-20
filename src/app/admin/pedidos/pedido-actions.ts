@@ -17,6 +17,9 @@ export async function createOrUpdatePedidoAction(id: string | null, data: Pedido
 
   if (!updated) throw new Error("Error al crear el pedido")
   
+  //sleep 2 seconds
+  await new Promise(resolve => setTimeout(resolve, 2000))
+  
   await createCoincidencesProperties(updated.id)
 
   revalidatePath("/admin/pedidos")
