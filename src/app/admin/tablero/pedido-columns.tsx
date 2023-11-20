@@ -51,7 +51,7 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const data = row.original
 
       return (
-        <Link href={`/admin/tablero?id=${data.id}`} prefetch={false}>
+        <Link href={`tablero?id=${data.id}`} prefetch={false}>
           <Button size="sm" variant="link" className="p-0 text-left text-muted-foreground">
             <div className="w-[110px]">
               <p className="">{data.operacion}</p>
