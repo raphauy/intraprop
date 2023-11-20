@@ -1,5 +1,7 @@
 # Agregado por RC
 .env
+.env.postgres.docker
+bun.lockb
 
 # dependencies
 /node_modules
