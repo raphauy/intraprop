@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { getInmobiliariaDAOByslug } from "@/services/inmobiliaria-services"
+import { getInmobiliariaDAOByslug, getTotalProperiesByInmobiliaria } from "@/services/inmobiliaria-services"
 
 type Props = {
     params: {
@@ -14,6 +14,7 @@ export default async function InmobiliariaPage({ params }: Props) {
     
     const inmo= await getInmobiliariaDAOByslug(slug)
     if (!inmo) return <div></div>
+
 
     const celulares: string[]= inmo.celulares ? inmo.celulares.split(",") : []
 

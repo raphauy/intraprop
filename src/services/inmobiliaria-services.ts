@@ -29,6 +29,21 @@ export async function getInmobiliariasDAO() {
   })
   return found as InmobiliariaDAO[]
 }
+
+// get total amout of properties on the database
+export async function getTotalProperies() {
+  const found = await prisma.property.count()
+  return found  
+}
+
+export async function getTotalProperiesByInmobiliaria(inmobiliariaId: string) {
+  const found = await prisma.property.count({
+    where: {
+      inmobiliariaId
+    }
+  })
+  return found  
+}
   
 export async function getInmobiliariaDAO(id: string) {
   const found = await prisma.inmobiliaria.findUnique({

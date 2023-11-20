@@ -22,7 +22,7 @@ export default async function TableroLayout({ children }: Props) {
   const data = await getPedidosDAO("ALL");
  
   return (
-    <div className="flex flex-col w-full gap-2 lg:items-start xl:gap-4 lg:flex-row sm:items-center">
+    <div className="mx-1 flex flex-col w-full gap-2 lg:items-start xl:gap-4 lg:flex-row sm:items-center">
       <div className="sm:w-full lg:w-[450px] mt-3">
         <DataTable columns={columns} data={data} subject="Pedido" columnsOff={["tipo"]} />
       </div>

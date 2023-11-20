@@ -121,6 +121,17 @@ export async function getCoincidencesDAO(pedidoId: string) {
   return res as CoincidenceDAO[]
 }
 
+export async function getTotalCoincidencesByInmo(inmobiliariaId: string) {
+  const found = await prisma.coincidence.count({
+    where: {
+      property: {
+        inmobiliariaId
+      }
+    }
+  })
+  return found  
+}
+
 export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId: string) {
   const found = await prisma.coincidence.findMany({
     orderBy: {

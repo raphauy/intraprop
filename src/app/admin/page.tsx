@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getInmobiliariasDAO } from "@/services/inmobiliaria-services";
+import { getInmobiliariasDAO, getTotalProperies } from "@/services/inmobiliaria-services";
 import { getUsersDAO } from "@/services/user-services";
 import { Briefcase, User } from "lucide-react";
 import Link from "next/link";
@@ -8,6 +8,7 @@ export default async function AdminPage() {
 
   const users= await getUsersDAO()
   const inmobiliarias= await getInmobiliariasDAO()
+  const totalProperties= await getTotalProperies()
 
   return (
     <div className="flex flex-col">
@@ -37,7 +38,7 @@ export default async function AdminPage() {
           </Link>
         </div>
         <div className="flex flex-col items-center">
-          <Link href="/admin/clients">
+          <Link href="/admin/inmobiliarias">
             <Card className="w-64">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium">Inmobiliarias</CardTitle>
@@ -47,7 +48,7 @@ export default async function AdminPage() {
                 <div className="text-2xl font-bold">{inmobiliarias.length}</div>
                 <div className="flex justify-between">
                   <p className="text-xs text-muted-foreground">
-                    xxx propiedades
+                    {totalProperties} propiedades
                   </p>                  
                 </div>
               </CardContent>
