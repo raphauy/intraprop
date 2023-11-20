@@ -11,10 +11,12 @@ export default function MenuAdmin() {
     const path= usePathname()
     if (path === "/admin") return null
 
-    const slug= params.slug || ""
+    let slug= params.slug || ""
 
     const isAdmin= path.startsWith("/admin")
 
+    if (isAdmin) slug= "admin"
+    
     return (
         <nav>
             <ul className="flex items-center">
