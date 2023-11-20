@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTotalCoincidencesByInmo } from "@/services/coincidence-services";
 import { getInmobiliariaDAOByslug, getTotalProperiesByInmobiliaria } from "@/services/inmobiliaria-services";
 import { getPedidosDAO } from "@/services/pedido-services";
+import { getPropertiesOfInmobiliaria } from "@/services/property-services";
 import { getUsersDAOBySlug } from "@/services/user-services";
 import { Home, PackageOpen, User } from "lucide-react";
 import Link from "next/link";
@@ -19,8 +20,11 @@ export default async function AdminPage({ params }: Props) {
   const pedidos= await getPedidosDAO("ALL")
   const totalCoincidences= await getTotalCoincidencesByInmo(inmo.id)
   const users= await getUsersDAOBySlug(slug)
-
-  const totalProperties= await getTotalProperiesByInmobiliaria(inmo.id)
+  
+  const properties= await getPropertiesOfInmobiliaria(inmo.id)
+  const totalProperties= properties.length
+  const totalCasas= properties.filter((property) => property.tipo === "Casa").length
+  const totalApartamentos= properties.filter((property) => property.tipo === "Apartamento").length
 
   return (
     <div className="flex flex-col">
@@ -37,10 +41,10 @@ export default async function AdminPage({ params }: Props) {
                 <div className="text-2xl font-bold">{totalProperties}</div>
                 <div className="flex justify-between">
                     <p className="text-xs text-muted-foreground">
-                      casas (245)
+                      casas ({totalCasas})
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      apartamentos (54)
+                      apartamentos ({totalApartamentos})
                     </p>
                 </div>
                 <div className="flex justify-between">
