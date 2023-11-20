@@ -35,7 +35,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead>Zona</TableHead>
                         <TableHead className="text-center">#</TableHead>
-                        <TableHead className="text-center">Score</TableHead>
+                        <TableHead>Score</TableHead>
                         <TableHead className="text-center">URL</TableHead>
                     </TableRow>
                     </TableHeader>
