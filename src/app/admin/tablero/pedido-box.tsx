@@ -45,7 +45,7 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
                         <p>Presupuesto: </p>
                         <p className="font-bold">{pedido.presupuesto}</p>
                     </div>
-                    <p className="max-w-xs">Contacto: {pedido.contacto}</p>                    
+                    <p className="max-w-xs">Contacto: {getContacto(pedido)}</p>                    
                 </div>
                 <div className="flex flex-col justify-between flex-1 pl-2 border-l gap-7">
                     <div>
@@ -61,4 +61,12 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
         </Card>
 
   )
+}
+
+
+function getContacto(pedido: PedidoDAO) {
+    if (!pedido.contacto || pedido.contacto === "N/D")
+        return " (+" + pedido.phone + ")"
+
+    return pedido.contacto + " (" + pedido.phone + ")"
 }
