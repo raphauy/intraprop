@@ -26,7 +26,7 @@ export default async function TableroPage({ searchParams, params }: Props) {
     if (last) {
       redirect(`/${slug}/tablero?id=${last.id}`)
     } else {
-      return <div className="flex items-center gap-1 bg-w-full h-screen">No hay pedidos para en la base de datos</div>
+      return <div className="mt-6">No hay pedidos en la base de datos</div>
     }
   }
   const pedido= await getPedidoDAO(id)
