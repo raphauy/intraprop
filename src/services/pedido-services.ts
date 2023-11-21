@@ -146,6 +146,7 @@ export async function createPedido(data: PedidoFormValues) {
   return created
 }
 
+
 export async function updatePedido(id: string, data: PedidoFormValues) {
   const updated = await prisma.pedido.update({
     where: {
@@ -229,7 +230,10 @@ export async function runThread(pedidoId: string) {
       let jsonObject
       
       try {
-        jsonObject = JSON.parse(openaiJson)
+        console.log("openaiJson:", openaiJson)
+
+        const escapedJson = cleanJsonString(openaiJson)
+        jsonObject = JSON.parse(escapedJson)
       } catch (error) {
         console.error("Error parsing json:", error)
         return null
@@ -271,8 +275,12 @@ export async function runThread(pedidoId: string) {
   console.log("All updates completed:", successfulUpdates)
   return successfulUpdates.length > 0
 }
-   
-  
+
+function cleanJsonString(jsonString: string) {
+    // Elimina backticks al principio y al final de la cadena
+    return jsonString.replace(/^```json\n|\n```$/g, '');
+}
+
 export async function createCoincidencesProperties(pedidoId: string) {
   const pedido= await getPedidoDAO(pedidoId)
   console.log("pedido (createCoincidencesProperties):")  
