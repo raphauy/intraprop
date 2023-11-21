@@ -2,6 +2,7 @@
 .env
 .env.postgres.docker
 bun.lockb
+/scripts
 
 # dependencies
 /node_modules
