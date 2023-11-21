@@ -67,21 +67,24 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                             </Button>
                                         </Link>
                                     </TableCell>
-                                    <TableCell className="flex items-center gap-1">
-                                        <p className={
-                                            cn("border-[3px] h-8 w-8 rounded-full flex items-center justify-center font-bold", 
-                                            coincidencia.state === "checked" && score < 50 && "border-red-500",
-                                            coincidencia.state === "checked" && 50 <= score && score < 60 && "border-yellow-500",
-                                            coincidencia.state === "checked" && 60 <= score && "border-green-500",
-                                            )}>{score}</p>
-                                        <div>{
-                                            coincidencia.state === "checked" ? "" : 
-                                            coincidencia.state === "zone_banned" ? <p className="flex items-center"><Ban /> Z</p>: 
-                                            coincidencia.state === "budget_banned" ? <p className="flex items-center"><Ban /> $</p>: 
-                                            "pending"
-                                            }
+                                    <TableCell className="flex items-center gap-1 justify-between">
+                                        <div className="flex items-center gap-1">
+                                            <p className={
+                                                cn("border-[3px] h-8 w-8 rounded-full flex items-center justify-center font-bold", 
+                                                coincidencia.state === "checked" && score < 50 && "border-red-500",
+                                                coincidencia.state === "checked" && 50 <= score && score < 60 && "border-yellow-500",
+                                                coincidencia.state === "checked" && 60 <= score && "border-green-500",
+                                                )}>{score}
+                                            </p>
+                                            <div className="w-fit">{
+                                                coincidencia.state === "checked" ? "" : 
+                                                coincidencia.state === "zone_banned" ? <p className="flex items-center"><Ban /> Z</p>: 
+                                                coincidencia.state === "budget_banned" ? <p className="flex items-center"><Ban /> $</p>: 
+                                                "pending"
+                                                }
+                                            </div>
                                         </div>
-                                        <Link href={coincidencia.property.url} target="_blank">
+                                        <Link href={coincidencia.property.url} target="_blank" className="">
                                             <Button size="sm" variant="link"><ExternalLink /></Button>
                                         </Link>
                                     </TableCell>
