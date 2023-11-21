@@ -3,6 +3,8 @@ import { CoincidenceDAO, getCoincidenceDAO, getPendingCoincidences } from "./coi
 import { getPedidoDAO, updateCoincidencesNumbers } from "./pedido-services";
 import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
 import { prisma } from "@/lib/db";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 
 export async function checkZone(coincidenceId: string) {
@@ -239,9 +241,8 @@ export async function checkCoincidences() {
 
 export async function checkZoneLoop() {
 
-    console.log("starting zone checker")
     const coincidences= await getPendingCoincidences("pending")
-    console.log("coincidences to check:", coincidences.length)
+    console.log("zone coincidences to check:", coincidences.length)
     if (coincidences.length === 0) {
         return
     }
@@ -254,9 +255,8 @@ export async function checkZoneLoop() {
 
 export async function checkBudgetLoop() {
 
-    console.log("starting budget checker")
     const coincidences= await getPendingCoincidences("zone_ok")
-    console.log("coincidences to check:", coincidences.length)
+    console.log("budget coincidences to check:", coincidences.length)
     if (coincidences.length === 0) {
         return
     }
@@ -271,6 +271,10 @@ export async function checkBudgetLoop() {
 
 // check both zone and budget in parallel
 export async function checkCoincidencesLoop() {
+    const timezone= "America/Montevideo"
+    const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
+    console.log(nowMontevideo)    
+
     await checkZoneLoop()
     await checkBudgetLoop()
 }
