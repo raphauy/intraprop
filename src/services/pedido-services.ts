@@ -364,7 +364,8 @@ export async function updateCoincidencesNumbers(pedidoId: string) {
     const coincidencesForClient = coincidencesByClient[inmobiliariaId]
     coincidencesForClient.sort((a, b) => a.distance - b.distance)
     
-    const limit = Math.min(3, coincidencesForClient.length)
+    //const limit = Math.min(3, coincidencesForClient.length)
+    const limit= coincidencesForClient.length
 
     for (let index = 0; index < limit; index++) {
       const coincidence = coincidencesForClient[index]

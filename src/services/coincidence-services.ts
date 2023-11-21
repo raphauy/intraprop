@@ -155,8 +155,9 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
     where: {
       pedidoId,
       property: {
-        inmobiliariaId
-      }
+        inmobiliariaId,
+      },
+      state: "checked"
     },
     include: {
       property: {
