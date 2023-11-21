@@ -8,6 +8,7 @@ export type CoincidenceDAO = {
 	pedidoId:  string
 	propertyId:  string
 	createdAt:  Date
+  state: string
   property: {
     id: string
     idPropiedad: string
@@ -19,6 +20,9 @@ export type CoincidenceDAO = {
     monedaAlquiler: string
     dormitorios: string
     zona: string
+    ciudad: string
+    departamento: string
+    pais: string
     precioVenta: string
     precioAlquiler: string
     url: string
@@ -54,6 +58,9 @@ export async function getAllCoincidencesDAO() {
           monedaAlquiler: true,
           dormitorios: true,
           zona: true,
+          ciudad: true,
+          departamento: true,
+          pais: true,
           precioVenta: true,
           precioAlquiler: true,
           url: true,
@@ -77,13 +84,14 @@ export async function getAllCoincidencesDAO() {
   return res as CoincidenceDAO[]
 }
 
-export async function getCoincidencesDAO(pedidoId: string) {
+export async function getCoincidencesDAO(pedidoId: string, state?: string) {
   const found = await prisma.coincidence.findMany({
     orderBy: {
       id: 'asc'
     },
     where: {
-      pedidoId
+      pedidoId,
+      ...(state ? { state } : {}),
     },
     include: {
       property: {
@@ -98,6 +106,9 @@ export async function getCoincidencesDAO(pedidoId: string) {
           monedaAlquiler: true,
           dormitorios: true,
           zona: true,
+          ciudad: true,
+          departamento: true,
+          pais: true,
           precioVenta: true,
           precioAlquiler: true,
           url: true,
@@ -156,6 +167,9 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
           monedaAlquiler: true,
           dormitorios: true,
           zona: true,
+          ciudad: true,
+          departamento: true,
+          pais: true,
           precioVenta: true,
           precioAlquiler: true,
           url: true,
@@ -184,8 +198,45 @@ export async function getCoincidenceDAO(id: string) {
     where: {
       id
     },
+    include: {
+      property: {
+        select: {
+          id: true,
+          idPropiedad: true,
+          titulo: true,
+          tipo: true,
+          enAlquiler: true,
+          enVenta: true,
+          monedaVenta: true,
+          monedaAlquiler: true,
+          dormitorios: true,
+          zona: true,
+          ciudad: true,
+          departamento: true,
+          pais: true,
+          precioVenta: true,
+          precioAlquiler: true,
+          url: true,
+          inmobiliaria: true
+        },
+      }
+    }
   })
-  return found as CoincidenceDAO
+  if (!found) {
+    return null
+  }
+
+  const res= {
+    ...found,
+    property: {
+      ...found.property,
+      inmobiliariaId: found.property.inmobiliaria?.id,
+      inmobiliariaName: found.property.inmobiliaria?.name,
+      inmobiliariaSlug: found.property.inmobiliaria?.slug
+    },
+  }
+
+  return res as CoincidenceDAO
 }
 
 export async function createCoincidence(data: CoincidenceFormValues) {
@@ -214,3 +265,51 @@ export async function deleteCoincidence(id: string) {
   return deleted
 }
     
+
+export async function getPendingCoincidences(state: string) {
+  const found = await prisma.coincidence.findMany({
+    where: {
+      state
+    },
+    orderBy: {
+      createdAt: 'asc'
+    },
+    include: {
+      property: {
+        select: {
+          id: true,
+          idPropiedad: true,
+          titulo: true,
+          tipo: true,
+          enAlquiler: true,
+          enVenta: true,
+          monedaVenta: true,
+          monedaAlquiler: true,
+          dormitorios: true,
+          zona: true,
+          ciudad: true,
+          departamento: true,
+          pais: true,
+          precioVenta: true,
+          precioAlquiler: true,
+          url: true,
+          inmobiliaria: true
+        },
+      }
+    }
+  })
+
+  const res= found.map((coincidence) => {
+    return {
+      ...coincidence,
+      property: {
+        ...coincidence.property,
+        inmobiliariaId: coincidence.property.inmobiliaria?.id,
+        inmobiliariaName: coincidence.property.inmobiliaria?.name,
+        inmobiliariaSlug: coincidence.property.inmobiliaria?.slug
+      },
+    }
+  })
+
+  return res as CoincidenceDAO[]
+}

@@ -170,9 +170,9 @@ export async function deletePedido(id: string) {
 export async function runThread(pedidoId: string) {
   console.log("running thread for pedido:", pedidoId)
   
-  const OPENAI_ASSISTANT_ID= process.env.OPENAI_ASSISTANT_ID
+  const OPENAI_ASSISTANT_ID= process.env.OPENAI_JSON_ASSISTANT_ID
   if (!OPENAI_ASSISTANT_ID) {
-    throw new Error("OPENAI_ASSISTANT_ID is not defined")
+    throw new Error("OPENAI_JSON_ASSISTANT_ID is not defined")
   }
 
   const pedidoDAO= await getPedidoDAO(pedidoId)
@@ -301,7 +301,7 @@ export async function createCoincidencesProperties(pedidoId: string) {
   const coincidences: CoincidenceFormValues[]= []
   similarityResult.forEach((item) => {
     const coincidence: CoincidenceFormValues= {
-      number: 1,
+      number: 0,
       // round distance to 2 decimals
       distance: Math.round(item.distance * 100) / 100,
       pedidoId: pedido.id,
@@ -313,7 +313,7 @@ export async function createCoincidencesProperties(pedidoId: string) {
     data: coincidences
   })
 
-  await updateCoincidencesNumbers(pedidoId)
+//  await updateCoincidencesNumbers(pedidoId)
 
   return createdCoincidences  
 }
@@ -337,32 +337,35 @@ async function removeCoincidences(pedidoId: string) {
 }
 
 export async function updateCoincidencesNumbers(pedidoId: string) {
-  const coincidences = await getCoincidencesDAO(pedidoId);
-  console.log("cant coincidences:", coincidences.length);
+  const coincidences = await getCoincidencesDAO(pedidoId, "checked")
+  console.log("cant coincidences:", coincidences.length)
   
-  const coincidencesByClient: {[key: string]: CoincidenceDAO[]} = {};
+  const coincidencesByClient: {[key: string]: CoincidenceDAO[]} = {}
   coincidences.forEach((coincidence) => {
     const inmobiliariaId = coincidence.property.inmobiliariaId
     if (!coincidencesByClient[inmobiliariaId]) {
-      coincidencesByClient[inmobiliariaId] = [];
+      coincidencesByClient[inmobiliariaId] = []
     }
-    coincidencesByClient[inmobiliariaId].push(coincidence);
+    coincidencesByClient[inmobiliariaId].push(coincidence)
   });
-  console.log("coincidencesByClient:", coincidencesByClient);
+  console.log("coincidencesByClient:", coincidencesByClient)
   
   for (const inmobiliariaId of Object.keys(coincidencesByClient)) {
-    const coincidencesForClient = coincidencesByClient[inmobiliariaId];
-    coincidencesForClient.sort((a, b) => a.distance - b.distance);
+    const coincidencesForClient = coincidencesByClient[inmobiliariaId]
+    coincidencesForClient.sort((a, b) => a.distance - b.distance)
     
-    for (let index = 0; index < coincidencesForClient.length; index++) {
-      const coincidence = coincidencesForClient[index];
-      const number = index + 1;
-      console.log("updating coincidence:", coincidence.id, "with number:", number);
+    const limit = Math.min(3, coincidencesForClient.length)
+
+    for (let index = 0; index < limit; index++) {
+      const coincidence = coincidencesForClient[index]
+      const number = index + 1
+      console.log("updating coincidence:", coincidence.id, "with number:", number)
       
       try {
         await prisma.coincidence.update({
           where: {
-            id: coincidence.id
+            id: coincidence.id,
+            state: "checked"
           },
           data: {
             number

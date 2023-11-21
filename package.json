@@ -10,7 +10,8 @@
     "seed": "tsx prisma/seed.ts",
     "generator": "tsx src/generator/ts-generator.ts",
     "generate-services": "tsx src/generator/generate-services.ts",
-    "generate-form": "tsx src/generator/generate-form.ts"
+    "generate-form": "tsx src/generator/generate-form.ts",
+    "check": "tsx src/services/checker-service.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",

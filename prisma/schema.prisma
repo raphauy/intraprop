@@ -148,4 +148,5 @@ model Coincidence {
   property        Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId      String
   createdAt       DateTime    @default(now())
+  state           String      @default("pending")
 }

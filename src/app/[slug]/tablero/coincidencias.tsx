@@ -71,7 +71,6 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                             )}>
                                                 {score}
                                         </p>
-                                        <p>{distance}</p>
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <Link href={coincidencia.property.url} target="_blank">

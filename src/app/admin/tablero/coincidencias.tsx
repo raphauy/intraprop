@@ -1,10 +1,11 @@
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { BedSingle, CheckCircle2, ExternalLink, Eye } from "lucide-react"
+import { Ban, BedSingle, CheckCircle2, ExternalLink, Eye } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
 import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
+import { number } from "zod"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
@@ -35,7 +36,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead>Zona</TableHead>
                         <TableHead>Inmobiliaria</TableHead>
-                        <TableHead>Score</TableHead>
+                        <TableHead>Score/Estado</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -62,18 +63,24 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                         <Link href={`/${coincidencia.property.inmobiliariaSlug}/tablero?id=${coincidencia.pedidoId}`} target="_blank">
                                             <Button size="sm" variant="link" className="flex flex-col items-start px-0">
                                                 <p className="whitespace-nowrap">{coincidencia.property.inmobiliariaName}</p>
-                                                <p>#{coincidencia.number} </p>
+                                                { coincidencia.number !== 0 && <p>#{coincidencia.number} </p> }
                                             </Button>
                                         </Link>
                                     </TableCell>
-                                    <TableCell className="flex items-center">
+                                    <TableCell className="flex items-center gap-1">
                                         <p className={
                                             cn("border-[3px] h-8 w-8 rounded-full flex items-center justify-center font-bold", 
-                                            score < 50 && "border-red-500",
-                                            50 <= score && score < 60 && "border-yellow-500",
-                                            60 <= score && "border-green-500",
+                                            coincidencia.state === "checked" && score < 50 && "border-red-500",
+                                            coincidencia.state === "checked" && 50 <= score && score < 60 && "border-yellow-500",
+                                            coincidencia.state === "checked" && 60 <= score && "border-green-500",
                                             )}>{score}</p>
-                                        <p>{distance}</p>
+                                        <div>{
+                                            coincidencia.state === "checked" ? <CheckCircle2 /> : 
+                                            coincidencia.state === "zone_banned" ? <p className="flex items-center"><Ban /> Z</p>: 
+                                            coincidencia.state === "budget_banned" ? <p className="flex items-center"><Ban /> $</p>: 
+                                            "pending"
+                                            }
+                                        </div>
                                         <Link href={coincidencia.property.url} target="_blank">
                                             <Button size="sm" variant="link"><ExternalLink /></Button>
                                         </Link>

@@ -67,6 +67,7 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
 function getContacto(pedido: PedidoDAO) {
     if (!pedido.phone)
         return pedido.contacto
+    
     if (!pedido.contacto || pedido.contacto === "N/D")
         return " (+" + pedido.phone + ")"
 
