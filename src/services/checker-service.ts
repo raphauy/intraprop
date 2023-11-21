@@ -240,7 +240,7 @@ export async function checkCoincidencesLoop() {
     setInterval(async () => {
         console.log("checking coincidences...");
         await checkCoincidences()        
-    }, 1000 * 60)
+    }, 1000 * 10)
 }
 
 checkCoincidencesLoop()
