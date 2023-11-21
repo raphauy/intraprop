@@ -65,10 +65,11 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
   const res: PedidoDAO[] = []
   found.forEach((item) => {
     const pedido: PedidoDAO = item as PedidoDAO
-    pedido.cantCoincidencias = item.coincidences.length
+    const cantCoincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
+    pedido.cantCoincidencias = cantCoincidenciasChecked.length
     if (inmobiliariaId) {
       const coincidences = item.coincidences.filter((coincidence) => {
-        return coincidence.property.inmobiliariaId === inmobiliariaId
+        return coincidence.property.inmobiliariaId === inmobiliariaId && coincidence.state === "checked"
       })
       pedido.cantCoincidencias = coincidences.length
     }
@@ -434,3 +435,5 @@ export type SimilaritySearchResult = {
   clientId: string
   distance: number
 }
+
+

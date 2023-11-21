@@ -323,6 +323,7 @@ export async function checkCoincidences() {
 
     const pedido= await getPedidoDAO(firstZoneOk.pedidoId)
     await updateCoincidencesNumbers(pedido.id)
+    // update cantCoincidences
 
 }
 
@@ -330,7 +331,7 @@ export async function checkCoincidencesLoop() {
     setInterval(async () => {
         console.log("checking coincidences...");
         await checkCoincidences()        
-    }, 1000 * 5)
+    }, 1000 * 20)
 }
 
 checkCoincidencesLoop()

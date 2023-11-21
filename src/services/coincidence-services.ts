@@ -117,7 +117,7 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
       }
     }
   })
-  const res= found.map((coincidence) => {
+  const all= found.map((coincidence) => {
     return {
       ...coincidence,
       property: {
@@ -128,8 +128,12 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
       },
     }
   })
+  // // filter only coincidences with state "checked"
+  // const res= all.filter((coincidence) => {
+  //   return coincidence.state === "checked"
+  // })
 
-  return res as CoincidenceDAO[]
+  return all as CoincidenceDAO[]
 }
 
 export async function getTotalCoincidencesByInmo(inmobiliariaId: string) {

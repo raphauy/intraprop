@@ -75,7 +75,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                             coincidencia.state === "checked" && 60 <= score && "border-green-500",
                                             )}>{score}</p>
                                         <div>{
-                                            coincidencia.state === "checked" ? <CheckCircle2 /> : 
+                                            coincidencia.state === "checked" ? "" : 
                                             coincidencia.state === "zone_banned" ? <p className="flex items-center"><Ban /> Z</p>: 
                                             coincidencia.state === "budget_banned" ? <p className="flex items-center"><Ban /> $</p>: 
                                             "pending"
