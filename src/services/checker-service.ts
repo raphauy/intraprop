@@ -239,42 +239,34 @@ export async function checkCoincidences() {
 
 export async function checkZoneLoop() {
 
-    setInterval(async () => {
-
-        console.log("starting zone checker")
-        const coincidences= await getPendingCoincidences("pending")
-        console.log("coincidences to check:", coincidences.length)
-        if (coincidences.length === 0) {
-            return
-        }
-        // iterate over pending coincidences and check zone
-        for (const coincidence of coincidences) {
-            const checked= await checkZone(coincidence.id)
-            console.log("checked:", checked)
-        }
-    
-    }, 1000 * 30)
+    console.log("starting zone checker")
+    const coincidences= await getPendingCoincidences("pending")
+    console.log("coincidences to check:", coincidences.length)
+    if (coincidences.length === 0) {
+        return
+    }
+    // iterate over pending coincidences and check zone
+    for (const coincidence of coincidences) {
+        const checked= await checkZone(coincidence.id)
+        console.log("checked:", checked)
+    }
 }
 
 export async function checkBudgetLoop() {
 
-    setInterval(async () => {
-
-        console.log("starting budget checker")
-        const coincidences= await getPendingCoincidences("zone_ok")
-        console.log("coincidences to check:", coincidences.length)
-        if (coincidences.length === 0) {
-            return
-        }
-        // iterate over pending coincidences and check budget        
-        for (const coincidence of coincidences) {
-            const checked= await checkBudget(coincidence.id)
-            console.log("checked:", checked)
-            const pedido= await getPedidoDAO(coincidence.pedidoId)
-            await updateCoincidencesNumbers(pedido.id)    
-        }
-    
-    }, 1000 * 30)
+    console.log("starting budget checker")
+    const coincidences= await getPendingCoincidences("zone_ok")
+    console.log("coincidences to check:", coincidences.length)
+    if (coincidences.length === 0) {
+        return
+    }
+    // iterate over pending coincidences and check budget        
+    for (const coincidence of coincidences) {
+        const checked= await checkBudget(coincidence.id)
+        console.log("checked:", checked)
+        const pedido= await getPedidoDAO(coincidence.pedidoId)
+        await updateCoincidencesNumbers(pedido.id)    
+    }
 }
 
 // check both zone and budget in parallel
