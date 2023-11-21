@@ -395,7 +395,7 @@ export async function similaritySearch(tipo: string, operacion: string, caracter
   let result: SimilaritySearchResult[]= []
   if (operacion === "VENTA" || operacion === "VENDER" || operacion === "COMPRA" || operacion === "COMPRAR") {
     result = await prisma.$queryRaw`
-      SELECT id, titulo, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
       WHERE "tipo" = ${tipoConMayuscula} AND "enVenta" = 'si' 
       ORDER BY distance 
@@ -403,7 +403,7 @@ export async function similaritySearch(tipo: string, operacion: string, caracter
   }
   else if (operacion === "ALQUILER" || operacion === "ALQUILAR" || operacion === "RENTA" || operacion === "RENTAR") {
     result = await prisma.$queryRaw`
-      SELECT id, titulo, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
       WHERE "tipo" = ${tipoConMayuscula} AND "enAlquiler" = 'si' 
       ORDER BY distance 
@@ -413,7 +413,7 @@ export async function similaritySearch(tipo: string, operacion: string, caracter
   
 
   result.map((item) => {
-    console.log(`${item.titulo}: ${item.distance}`)    
+    console.log(`${item.inmobiliariaId}: ${item.distance}`)    
   })
 
   return result
@@ -421,7 +421,6 @@ export async function similaritySearch(tipo: string, operacion: string, caracter
 
 export type SimilaritySearchResult = {
   id: string
-  titulo: string
   tipo: string
   enAlquiler: string
   enVenta: string
@@ -432,7 +431,7 @@ export type SimilaritySearchResult = {
   precioVenta: string
   precioAlquiler: string
   url: string
-  clientId: string
+  inmobiliariaId: string
   distance: number
 }
 

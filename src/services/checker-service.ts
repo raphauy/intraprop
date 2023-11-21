@@ -10,12 +10,14 @@ export async function checkZone(coincidenceId: string) {
     
     const OPENAI_ASSISTANT_ID= process.env.OPENAI_ZONE_ASSISTANT_ID
     if (!OPENAI_ASSISTANT_ID) {
-      throw new Error("OPENAI_CHECK_ASSISTANT_ID is not defined")
+        console.log("OPENAI_ZONE_ASSISTANT_ID is not defined")
+        return
     }
   
     const coincidence= await getCoincidenceDAO(coincidenceId)
     if (!coincidence) {
-      throw new Error(`coincidence ${coincidenceId} not found`)
+        console.log(`coincidence ${coincidenceId} not found`)
+        return
     }
 
     const pedido= await getPedidoDAO(coincidence.pedidoId)
@@ -68,7 +70,8 @@ export async function checkZone(coincidenceId: string) {
     }
   
     if (status === "failed" || status === "cancelled" || status === "expired") {
-      throw new Error("run is not 'completed'")
+        console.log("run is not 'completed'")
+        return
     }
   
     const threadMessages = await openai.beta.threads.messages.list(run.thread_id)
@@ -118,108 +121,7 @@ function getZonaInmueble(coincidence: CoincidenceDAO) {
     return zonaInmueble
 }
 
-export async function checkBudget(coincidenceId: string) {
-    console.log("checking coincidence", coincidenceId)
 
-    const OPENAI_ASSISTANT_ID= process.env.OPENAI_BUDGET_ASSISTANT_ID
-    if (!OPENAI_ASSISTANT_ID) {
-      throw new Error("OPENAI_CHECK_ASSISTANT_ID is not defined")
-    }
-
-    const coincidence= await getCoincidenceDAO(coincidenceId)
-    if (!coincidence) {
-      throw new Error(`coincidence ${coincidenceId} not found`)
-    }
-
-    const pedido= await getPedidoDAO(coincidence.pedidoId)
-    if (!pedido.operacion) {
-        throw new Error(`pedido ${pedido.id} does not have operacion`)
-    }
-    const presupuesto= pedido.presupuesto
-    const valorInmueble= getValorInmueble(coincidence, pedido.operacion)
-    
-    const text= `
-    presupuesto del pedido: ${presupuesto}
-    valor del inmueble: ${valorInmueble}
-    `
-    console.log("consulta: ", text)
-
-    const openai = new OpenAI();
-
-    console.log("creating thread for check presupuesto assistant")
-
-    const createdThread = await openai.beta.threads.create({
-      messages: [
-        {
-          "role": "user",
-          "content": text,
-        }
-      ]
-    })
-
-    console.log("creating run for check presupuesto")
-
-    let run = await openai.beta.threads.runs.create(
-      createdThread.id, 
-      { 
-        assistant_id: OPENAI_ASSISTANT_ID,
-        model: "gpt-4-1106-preview",
-      }
-    )
-
-    const runId= run.id
-    let status= run.status
-    console.log("run.status", status)    
-    while (true) {
-      run = await openai.beta.threads.runs.retrieve(
-        createdThread.id,
-        runId
-      )
-      status= run.status
-      console.log("run.status", status)    
-      if (status === "completed" || status === "failed" || status === "cancelled" || status === "expired") {
-        break
-      }
-      const timeToSleep= 1
-      console.log("sleeping...")
-      await new Promise(resolve => setTimeout(resolve, timeToSleep * 1000))
-    }
-
-    if (status === "failed" || status === "cancelled" || status === "expired") {
-      throw new Error("run is not 'completed'")
-    }
-
-    const threadMessages = await openai.beta.threads.messages.list(run.thread_id)
-    const updates = threadMessages.data.map(async (message: ThreadMessage) => {
-        if (message.role === "assistant" && message.content[0].type === "text") {
-            const respuesta = message.content[0].text.value
-
-            console.log("respuesta", respuesta)         
-
-            let newStatus= "budget_banned"
-            if (respuesta === "SI") {
-                newStatus= "checked"
-            }
-
-            console.log("updating coincidence", coincidenceId)
-            const updated = await prisma.coincidence.update({
-                where: {
-                    id: coincidenceId
-                },
-                data: {
-                    state: newStatus,
-                }
-            })
-        }
-      })
-      
-      const results = await Promise.all(updates)
-      
-      const successfulUpdates = results.filter(result => result !== null)
-      
-      console.log("All updates completed:", successfulUpdates)
-      return successfulUpdates.length > 0
-}
 
 function getValorInmueble(coincidence: CoincidenceDAO, operacion: string) {
     if (operacion.toUpperCase() === "VENTA") {
@@ -235,12 +137,14 @@ export async function checkBudget2(coincidenceId: string) {
 
     const coincidence= await getCoincidenceDAO(coincidenceId)
     if (!coincidence) {
-      throw new Error(`coincidence ${coincidenceId} not found`)
+        console.log(`coincidence ${coincidenceId} not found`)
+        return      
     }
 
     const pedido= await getPedidoDAO(coincidence.pedidoId)
     if (!pedido.operacion) {
-        throw new Error(`pedido ${pedido.id} does not have operacion`)
+        console.log(`pedido ${pedido.id} does not have operacion`)
+        return
     }
 
     const presupuestoStr= pedido.presupuesto || ""
@@ -316,14 +220,19 @@ export async function checkCoincidences() {
     if (zoneOKCoincidences.length === 0) {
         return
     }
-    const firstZoneOk= zoneOKCoincidences[0]
-    console.log("first coincidence:", firstZoneOk)
-    const checked= await checkBudget2(firstZoneOk.id)
-    console.log("checked:", checked)
+    // iterate over zone_ok coincidences and check budget
+    for (const zoneOKCoincidence of zoneOKCoincidences) {
+        const checked= await checkBudget2(zoneOKCoincidence.id)
+        console.log("checked:", checked)
+        const pedido= await getPedidoDAO(zoneOKCoincidence.pedidoId)
+        await updateCoincidencesNumbers(pedido.id)    
+    }
 
-    const pedido= await getPedidoDAO(firstZoneOk.pedidoId)
-    await updateCoincidencesNumbers(pedido.id)
-    // update cantCoincidences
+    // const firstZoneOk= zoneOKCoincidences[0]
+    // console.log("first coincidence:", firstZoneOk)
+    // const checked= await checkBudget2(firstZoneOk.id)
+    // console.log("checked:", checked)
+
 
 }
 
