@@ -396,7 +396,12 @@ export async function similaritySearch(tipo: string, operacion: string, caracter
     verbose: true,
   })
 
-  const tipoConMayuscula= tipo.charAt(0).toUpperCase() + tipo.slice(1)
+  let tipoConMayuscula= ""
+  if (tipo.toLowerCase().includes("casa")) 
+    tipoConMayuscula= "Casa"
+  else if (tipo.toLowerCase().includes("apartamento") || tipo.toLowerCase().includes("apto") || tipo.toLowerCase().includes("departamento") || tipo.toLowerCase().includes("depto"))
+    tipoConMayuscula= "Apartamento"
+  else tipoConMayuscula= tipo.charAt(0).toUpperCase() + tipo.slice(1)
 
   const vector= await embeddings.embedQuery(caracteristicas)
   const embedding = pgvector.toSql(vector)
