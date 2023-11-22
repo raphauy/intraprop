@@ -295,7 +295,11 @@ export async function createCoincidencesProperties(pedidoId: string) {
   await removeCoincidences(pedidoId)
   
 
-  const caracteristicas= pedido.caracteristicas || "N/D"
+  const caracteristicas= pedido.caracteristicas
+  if (!caracteristicas) {
+    console.log("caracteristicas is null")
+    return null
+  }
   const operacion= pedido.operacion || "N/D"
   const tipo= pedido.tipo || "N/D"
   const similarityResult= await similaritySearchV2(tipo, operacion, caracteristicas)
