@@ -64,7 +64,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                     <TableCell>
                                         <Link href={`/${coincidencia.property.inmobiliariaSlug}/tablero?id=${coincidencia.pedidoId}`} target="_blank">
                                             <Button size="sm" variant="link" className="flex flex-col items-start px-0">
-                                                <p className="overflow-hidden whitespace-nowrap">{coincidencia.property.inmobiliariaName}</p>
+                                                <p className="whitespace-nowrap">{coincidencia.property.inmobiliariaName}</p>
                                                 { coincidencia.number !== 0 && <p>#{coincidencia.number} </p> }
                                             </Button>
                                         </Link>
@@ -109,6 +109,6 @@ function getZona(coincidencia: CoincidenceDAO) {
     if (zona) res= zona
     if (departamento) res+= `${res ? ", " : ""}${departamento}`
     if (ciudad) res+= `${res ? ", " : ""}${ciudad}`
-
+    
     return res
 }
