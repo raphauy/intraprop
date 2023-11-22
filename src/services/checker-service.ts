@@ -165,8 +165,8 @@ export async function checkBudget(coincidenceId: string) {
     if (!presupuesto || !valorInmueble) {
         newState= "checked"
     } else {
-        const presupuestoMin= valorInmueble * 0.5
-        const presupuestoMax= valorInmueble * 1.5
+        const presupuestoMin= valorInmueble * 0.85
+        const presupuestoMax= valorInmueble * 1.1
         if (presupuestoMax >= presupuesto && presupuesto >= presupuestoMin) {
             newState= "checked"
         }
