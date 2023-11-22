@@ -48,6 +48,8 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
 
                                 const distance= coincidencia.distance
                                 const score= distanceToPercentage(distance)
+
+                                const zona= getZona(coincidencia)
                                 return (
                                 <TableRow key={coincidencia.id}>
                                     <TableCell>{coincidencia.property.idPropiedad}</TableCell>
@@ -58,11 +60,11 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">{precio}</TableCell>
-                                    <TableCell><p className="dos-lineas">{coincidencia.property.zona}</p></TableCell>
+                                    <TableCell><p className="dos-lineas">{zona}</p></TableCell>
                                     <TableCell>
                                         <Link href={`/${coincidencia.property.inmobiliariaSlug}/tablero?id=${coincidencia.pedidoId}`} target="_blank">
                                             <Button size="sm" variant="link" className="flex flex-col items-start px-0">
-                                                <p className="whitespace-nowrap">{coincidencia.property.inmobiliariaName}</p>
+                                                <p className="overflow-hidden whitespace-nowrap">{coincidencia.property.inmobiliariaName}</p>
                                                 { coincidencia.number !== 0 && <p>#{coincidencia.number} </p> }
                                             </Button>
                                         </Link>
@@ -97,4 +99,16 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
             </CardContent>
         </Card>
   )
+}
+
+function getZona(coincidencia: CoincidenceDAO) {
+    let res= ""
+    const zona= coincidencia.property.zona
+    const departamento= coincidencia.property.departamento
+    const ciudad= coincidencia.property.ciudad
+    if (zona) res= zona
+    if (departamento) res+= `${res ? ", " : ""}${departamento}`
+    if (ciudad) res+= `${res ? ", " : ""}${ciudad}`
+
+    return res
 }
