@@ -43,7 +43,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                         {
                             coincidencias.map((coincidencia) => {
                                 const precioVenta= operacion.toUpperCase() === "VENTA" ? `${formatNumberWithDots(coincidencia.property.precioVenta)} ${coincidencia.property.monedaVenta}` : ""
-                                const precioAlquiler= operacion.toUpperCase() === "ALQUILER" ? `${formatNumberWithDots(coincidencia.property.precioAlquiler)}${coincidencia.property.monedaVenta}/mes` : ""
+                                const precioAlquiler= operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR" ? `${formatNumberWithDots(coincidencia.property.precioAlquiler)}${coincidencia.property.monedaAlquiler}/mes` : ""
                                 const precio= precioVenta || precioAlquiler
 
                                 const distance= coincidencia.distance
