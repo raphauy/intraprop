@@ -58,9 +58,9 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                             <p className="font-bold">{coincidencia.property.tipo}</p>
                                             <div className="flex items-center gap-1">
                                                 {coincidencia.property.dormitorios}<BedSingle size={20} />
-                                                {coincidencia.property.garages !== "0" && <Car size={20} />}
-                                                {coincidencia.property.parrilleros === "si" || coincidencia.property.parrilleros !== "0" && <Drumstick size={20} />}
-                                                {coincidencia.property.piscinas === "si" || coincidencia.property.piscinas !== "0" && <Waves size={20} />}
+                                                {coincidencia.property.garages !== "" && coincidencia.property.garages !== "0" && coincidencia.property.garages } {coincidencia.property.garages !== "" && coincidencia.property.garages !== "0" && <Car size={20} />}
+                                                {coincidencia.property.parrilleros !== "" && coincidencia.property.parrilleros !== "no" && coincidencia.property.parrilleros !== "0" && <Drumstick size={20} />}
+                                                {coincidencia.property.piscinas !== "" && coincidencia.property.piscinas !== "no" && coincidencia.property.piscinas !== "0" && <Waves size={20} />}
                                             </div>
                                         </div>
                                     </TableCell>
