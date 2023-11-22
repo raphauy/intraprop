@@ -1,9 +1,7 @@
-import { prisma } from "@/lib/db"
+import { prisma } from "@/lib/db";
 import { OpenAI } from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
-import { getPedidoDAO } from "./pedido-services";
 import { functions, runFunction } from "./functions";
-import { OpenAIStream, StreamingTextResponse } from "ai";
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
