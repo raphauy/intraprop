@@ -121,22 +121,25 @@ model Property {
 }
 
 model Pedido {
-  id              String      @id @default(cuid())
-  number          Int         @default(autoincrement())
-  text            String      @db.Text
-  phone           String      @default("")
-  contacto        String?
-  operacion       String?
-  tipo            String?
-  presupuesto     String?
-  zona            String?
-  dormitorios     String?
-  caracteristicas String?
-  openaiJson      String?     @db.Text
-  embeddings      Unsupported("vector(1536)")?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  coincidences    Coincidence[]
+  id                String      @id @default(cuid())
+  number            Int         @default(autoincrement())
+  text              String      @db.Text
+  phone             String      @default("")
+  contacto          String?
+  operacion         String?
+  tipo              String?
+  presupuesto       String?
+  presupuestoMin    Int?
+  presupuestoMax    Int?
+  presupuestoMoneda String?
+  zona              String?
+  dormitorios       String?
+  caracteristicas   String?
+  openaiJson        String?     @db.Text
+  embeddings        Unsupported("vector(1536)")?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  coincidences      Coincidence[]
 }
 
 model Coincidence {

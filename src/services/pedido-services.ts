@@ -17,6 +17,9 @@ export type PedidoDAO = {
 	operacion?:  string
 	tipo?:  string
 	presupuesto?:  string
+  presupuestoMin?:  number
+  presupuestoMax?:  number
+  presupuestoMoneda?:  string
 	zona?:  string
 	dormitorios?:  string
 	caracteristicas?:  string
@@ -33,6 +36,9 @@ export const pedidoFormSchema = z.object({
 	operacion: z.string().optional(),
 	tipo: z.string().optional(),
 	presupuesto: z.string().optional(),
+  presupuestoMin: z.number().optional(),
+  presupuestoMax: z.number().optional(),
+  presupuestoMoneda: z.string().optional(),
 	zona: z.string().optional(),
 	dormitorios: z.string().optional(),
 	caracteristicas: z.string().optional(),  
@@ -289,22 +295,10 @@ export async function createCoincidencesProperties(pedidoId: string) {
   await removeCoincidences(pedidoId)
   
 
-  const caracteristicas= pedido.caracteristicas
-  const operacion= pedido.operacion
-  const tipo= pedido.tipo
-  if (!tipo || tipo === "N/D") {
-    console.log("El pedido no tiene tipo");    
-    return []
-  }
-  if (!operacion || operacion === "N/D") {
-    console.log("El pedido no tiene operacion");    
-    return []
-  }
-  if (!caracteristicas || caracteristicas === "N/D") {
-    console.log("El pedido no tiene caracteristicas");    
-    return []
-  }
-  const similarityResult= await similaritySearch(tipo, operacion, caracteristicas)
+  const caracteristicas= pedido.caracteristicas || "N/D"
+  const operacion= pedido.operacion || "N/D"
+  const tipo= pedido.tipo || "N/D"
+  const similarityResult= await similaritySearchV2(tipo, operacion, caracteristicas)
   console.log("similarityResult length:", similarityResult.length);
   
   // iterate over similarityResult and create coincidences
@@ -390,6 +384,78 @@ export async function updateCoincidencesNumbers(pedidoId: string) {
   }
 }
 
+
+export async function similaritySearchV2(tipo: string, operacion: string, caracteristicas: string, limit: number = 10) : Promise<SimilaritySearchResult[]> {
+  const embeddings = new OpenAIEmbeddings({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    verbose: true,
+  })
+  let result: SimilaritySearchResult[]= []
+
+  const esCasa= tipo && tipo.toLowerCase().includes("casa")
+  const esApartamento= tipo && (tipo.toLowerCase().includes("apartamento") || tipo.toLowerCase().includes("apto") || tipo.toLowerCase().includes("departamento") || tipo.toLowerCase().includes("depto"))
+  const esVenta= operacion.toLocaleLowerCase() === "venta" || operacion.toLocaleLowerCase() === "vender" || operacion.toLocaleLowerCase() === "compra" || operacion.toLocaleLowerCase() === "comprar"
+  const esAlquiler= operacion.toLocaleLowerCase() === "alquiler" || operacion.toLocaleLowerCase() === "alquilar" || operacion.toLocaleLowerCase() === "renta" || operacion.toLocaleLowerCase() === "rentar"
+
+  const vector= await embeddings.embedQuery(caracteristicas)
+  const embedding = pgvector.toSql(vector)
+
+  if (esCasa && esVenta) {
+    result = await prisma.$queryRaw`
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      FROM "Property" 
+      WHERE LOWER("tipo") = 'casa' AND "enVenta" = 'si' 
+      ORDER BY distance 
+      LIMIT ${limit}`
+  } else if (esCasa && esAlquiler) {
+    result = await prisma.$queryRaw`
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      FROM "Property" 
+      WHERE LOWER("tipo") = 'casa' AND "enAlquiler" = 'si' 
+      ORDER BY distance 
+      LIMIT ${limit}`
+  } else if (esApartamento && esVenta) {
+    result = await prisma.$queryRaw`
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      FROM "Property" 
+      WHERE LOWER("tipo") = 'apartamento' AND "enVenta" = 'si' 
+      ORDER BY distance 
+      LIMIT ${limit}`
+  } else if (esApartamento && esAlquiler) {
+    result = await prisma.$queryRaw`
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      FROM "Property" 
+      WHERE LOWER("tipo") = 'apartamento' AND "enAlquiler" = 'si' 
+      ORDER BY distance 
+      LIMIT ${limit}`
+  } else if (esVenta) {
+    result = await prisma.$queryRaw`
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      FROM "Property" 
+      WHERE "enVenta" = 'si' 
+      ORDER BY distance 
+      LIMIT ${limit}`
+  } else if (esAlquiler) {
+    result = await prisma.$queryRaw`
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      FROM "Property" 
+      WHERE "enAlquiler" = 'si' 
+      ORDER BY distance 
+      LIMIT ${limit}`
+  } else {
+    result = await prisma.$queryRaw`
+      SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
+      FROM "Property" 
+      ORDER BY distance 
+      LIMIT ${limit}`
+  }  
+
+  result.map((item) => {
+    console.log(`${item.inmobiliariaId}: ${item.distance}`)    
+  })
+
+  return result
+}
 
 export async function similaritySearch(tipo: string, operacion: string, caracteristicas: string, limit: number = 10) : Promise<SimilaritySearchResult[]> {
   const embeddings = new OpenAIEmbeddings({

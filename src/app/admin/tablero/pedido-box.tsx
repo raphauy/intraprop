@@ -37,13 +37,13 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
                 <div className="flex flex-col justify-between">
                     <div className="grid grid-cols-[1fr_2fr] gap-2 w-[260px]">
                         <p>Operación: </p>
-                        <p className="font-bold">{pedido.operacion}</p>
+                        <p className="font-bold">{pedido.operacion?.toUpperCase()}</p>
                         <p>Tipo: </p>
                         <p className="font-bold whitespace-nowrap">{pedido.tipo}</p>
                         <p>Dormitorios: </p>
                         <p className="font-bold whitespace-nowrap">{pedido.dormitorios}</p>
                         <p>Presupuesto: </p>
-                        <p className="font-bold">{pedido.presupuesto}</p>
+                        <p className="font-bold">{formatPresupuesto(pedido.presupuestoMin, pedido.presupuestoMax, pedido.presupuestoMoneda)}</p>
                     </div>
                     <p className="max-w-xs">Contacto: {getContacto(pedido)}</p>                    
                 </div>
@@ -61,6 +61,23 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
         </Card>
 
   )
+}
+
+function formatPresupuesto(presupuestoMin: number | undefined, presupuestoMax: number | undefined, presupuestoMoneda: string | undefined) {
+   
+    if (presupuestoMin && presupuestoMax && presupuestoMin === presupuestoMax)
+        return presupuestoMin.toLocaleString("es-UY") + " " + presupuestoMoneda
+
+    if (presupuestoMin && presupuestoMax)
+        return presupuestoMin.toLocaleString("es-UY") + " - " + presupuestoMax.toLocaleString("es-UY") + " " + presupuestoMoneda
+
+    if (presupuestoMin)
+        return presupuestoMin.toLocaleString("es-UY") + " " + presupuestoMoneda
+
+    if (presupuestoMax)
+        return presupuestoMax.toLocaleString("es-UY") + " " + presupuestoMoneda
+
+    return "N/D"
 }
 
 

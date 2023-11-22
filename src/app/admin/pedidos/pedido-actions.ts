@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { PedidoDAO, PedidoFormValues, createPedido, updatePedido, getPedidoDAO, deletePedido, runThread, createCoincidencesProperties } from "@/services/pedido-services"
+import { createPedidoWithFunctions } from "@/services/openai-services"
 
 export async function getPedidoDAOAction(id: string): Promise<PedidoDAO | null> {
   return getPedidoDAO(id)
@@ -12,7 +13,8 @@ export async function createOrUpdatePedidoAction(id: string | null, data: Pedido
   if (id) {
       updated= await updatePedido(id, data)
   } else {
-      updated= await createPedido(data)
+      //updated= await createPedido(data)
+      updated= await createPedidoWithFunctions(data.text, data.phone)
   }
 
   if (!updated) throw new Error("Error al crear el pedido")
