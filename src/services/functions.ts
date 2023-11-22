@@ -108,7 +108,7 @@ function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: num
   if (operacion && operacion !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + " para " + operacion
   }
-  if (presupuestoMin === presupuestoMax) {
+  if (presupuestoMin === presupuestoMax && presupuestoMin && presupuestoMax) {
     formattedCaracteristicas= formattedCaracteristicas + " con valor " + presupuestoMax
   } else if (presupuestoMin && presupuestoMax) {
     formattedCaracteristicas= formattedCaracteristicas + " con valor entre " + presupuestoMin + " y " + presupuestoMax
