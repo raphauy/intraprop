@@ -19,6 +19,9 @@ export type CoincidenceDAO = {
     monedaVenta: string
     monedaAlquiler: string
     dormitorios: string
+    garages: string
+    parrilleros: string
+    piscinas: string
     zona: string
     ciudad: string
     departamento: string
@@ -57,6 +60,9 @@ export async function getAllCoincidencesDAO() {
           monedaVenta: true,
           monedaAlquiler: true,
           dormitorios: true,
+          garages: true,
+          parrilleros: true,
+          piscinas: true,
           zona: true,
           ciudad: true,
           departamento: true,
@@ -105,6 +111,9 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
           monedaVenta: true,
           monedaAlquiler: true,
           dormitorios: true,
+          garages: true,
+          parrilleros: true,
+          piscinas: true,
           zona: true,
           ciudad: true,
           departamento: true,
@@ -128,12 +137,26 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
       },
     }
   })
-  // // filter only coincidences with state "checked"
-  // const res= all.filter((coincidence) => {
-  //   return coincidence.state === "checked"
-  // })
 
-  return all as CoincidenceDAO[]
+  // sort the results, first criteria: checked, second criteria: ordered by number
+  const ordered= all.sort((a, b) => {
+    if (a.state === "checked" && b.state !== "checked") {
+      return -1
+    }
+    if (a.state !== "checked" && b.state === "checked") {
+      return 1
+    }
+    if (a.number < b.number) {
+      return -1
+    }
+    if (a.number > b.number) {
+      return 1
+    }
+    return 0
+  })
+
+
+  return ordered as CoincidenceDAO[]
 }
 
 export async function getTotalCoincidencesByInmo(inmobiliariaId: string) {
@@ -171,6 +194,9 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
           monedaVenta: true,
           monedaAlquiler: true,
           dormitorios: true,
+          garages: true,
+          parrilleros: true,
+          piscinas: true,
           zona: true,
           ciudad: true,
           departamento: true,
@@ -215,6 +241,9 @@ export async function getCoincidenceDAO(id: string) {
           monedaVenta: true,
           monedaAlquiler: true,
           dormitorios: true,
+          garages: true,
+          parrilleros: true,
+          piscinas: true,
           zona: true,
           ciudad: true,
           departamento: true,
@@ -291,6 +320,9 @@ export async function getPendingCoincidences(state: string) {
           monedaVenta: true,
           monedaAlquiler: true,
           dormitorios: true,
+          garages: true,
+          parrilleros: true,
+          piscinas: true,
           zona: true,
           ciudad: true,
           departamento: true,

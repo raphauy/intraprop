@@ -1,6 +1,6 @@
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { Ban, BedSingle, CheckCircle2, ExternalLink, Eye } from "lucide-react"
+import { Ban, BedSingle, Car, CheckCircle2, Drumstick, ExternalLink, Eye } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
@@ -56,7 +56,11 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                     <TableCell>
                                         <div>
                                             <p className="font-bold">{coincidencia.property.tipo}</p>
-                                            <p className="flex items-center">{coincidencia.property.dormitorios} <BedSingle size={20} /></p>
+                                            <div className="flex items-center gap-1">
+                                                {coincidencia.property.dormitorios}<BedSingle size={20} />
+                                                {coincidencia.property.garages !== "0" && <Car size={20} />}
+                                                {coincidencia.property.parrilleros === "si" || coincidencia.property.parrilleros !== "0" && <Drumstick />}
+                                            </div>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">{precio}</TableCell>
