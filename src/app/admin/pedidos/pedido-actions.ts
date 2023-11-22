@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { PedidoDAO, PedidoFormValues, createPedido, updatePedido, getPedidoDAO, deletePedido, runThread, createCoincidencesProperties } from "@/services/pedido-services"
-import { createPedidoWithFunctions } from "@/services/openai-services"
+import { createPedidoWithFunctions, updatePedidoWithFunctions } from "@/services/openai-services"
 
 export async function getPedidoDAOAction(id: string): Promise<PedidoDAO | null> {
   return getPedidoDAO(id)
@@ -40,14 +40,19 @@ export async function deletePedidoAction(id: string): Promise<PedidoDAO | null> 
 }
 
 export async function runThreadAction(id: string): Promise<boolean> {
-  const ok= await runThread(id)
+  //const ok= await runThread(id)
 
-  await createCoincidencesProperties(id)
+  //const res= await createCoincidencesProperties(id)
+
+  const updated= await updatePedidoWithFunctions(id)
+  if (!updated) throw new Error("Error al actualizar el pedido")
+
+  await createCoincidencesProperties(updated.id)
 
   console.log("revalidating...");
   
   revalidatePath("/admin/pedidos")
   revalidatePath("/admin/tablero")
   
-  return ok
+  return true
 }

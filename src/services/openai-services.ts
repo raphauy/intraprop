@@ -28,6 +28,24 @@ export async function createPedidoWithFunctions(text: string, phone: string) {
   return created
 }
 
+export async function updatePedidoWithFunctions(pedidoId: string) {
+  const pedido= await prisma.pedido.findUnique({
+    where: {
+      id: pedidoId,
+    },
+  })
+
+  if (!pedido) return null
+
+  const textToPenAI= {
+    pedidoId: pedido.id,
+    text: pedido.text,
+  }
+  await runFunctions(JSON.stringify(textToPenAI))
+
+  return pedido
+}
+
 export async function runFunctions(text: string) {
 
 
