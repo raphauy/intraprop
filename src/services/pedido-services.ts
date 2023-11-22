@@ -408,42 +408,42 @@ export async function similaritySearchV2(tipo: string, operacion: string, caract
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("tipo") = 'casa' AND "enVenta" = 'si' 
+      WHERE LOWER("tipo") = 'casa' AND LOWER("enVenta") = 'si'
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esCasa && esAlquiler) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("tipo") = 'casa' AND "enAlquiler" = 'si' 
+      WHERE LOWER("tipo") = 'casa' AND LOWER("enAlquiler") = 'si' 
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esApartamento && esVenta) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("tipo") = 'apartamento' AND "enVenta" = 'si' 
+      WHERE LOWER("tipo") = 'apartamento' AND LOWER("enVenta") = 'si' 
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esApartamento && esAlquiler) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("tipo") = 'apartamento' AND "enAlquiler" = 'si' 
+      WHERE LOWER("tipo") = 'apartamento' AND LOWER("enAlquiler") = 'si' 
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esVenta) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE "enVenta" = 'si' 
+      WHERE LOWER("enVenta") = 'si' 
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esAlquiler) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE "enAlquiler" = 'si' 
+      WHERE LOWER("enAlquiler") = 'si' 
       ORDER BY distance 
       LIMIT ${limit}`
   } else {
