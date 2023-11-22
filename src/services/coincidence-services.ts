@@ -146,10 +146,10 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
     if (a.state !== "checked" && b.state === "checked") {
       return 1
     }
-    if (a.number < b.number) {
+    if (a.distance < b.distance) {
       return -1
     }
-    if (a.number > b.number) {
+    if (a.distance > b.distance) {
       return 1
     }
     return 0
