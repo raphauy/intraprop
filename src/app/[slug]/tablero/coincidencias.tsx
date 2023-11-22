@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
 import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
+import { getZona } from "@/app/admin/tablero/coincidencias"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
@@ -43,11 +44,14 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                         {
                             coincidencias.map((coincidencia) => {
                                 const precioVenta= operacion.toUpperCase() === "VENTA" ? `${formatNumberWithDots(coincidencia.property.precioVenta)} ${coincidencia.property.monedaVenta}` : ""
-                                const precioAlquiler= operacion.toUpperCase() === "ALQUILER" ? `${formatNumberWithDots(coincidencia.property.precioAlquiler)}${coincidencia.property.monedaVenta}/mes` : ""
+                                const precioAlquiler= operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR" ? `${formatNumberWithDots(coincidencia.property.precioAlquiler)}${coincidencia.property.monedaAlquiler}/mes` : ""
                                 const precio= precioVenta || precioAlquiler
 
                                 const distance= coincidencia.distance
                                 const score= distanceToPercentage(distance)
+
+                                const zona= getZona(coincidencia)
+
                                 return (
                                 <TableRow key={coincidencia.id}>
                                     <TableCell>{coincidencia.property.idPropiedad}</TableCell>
@@ -58,7 +62,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">{precio}</TableCell>
-                                    <TableCell><p className="dos-lineas">{coincidencia.property.zona}</p></TableCell>
+                                    <TableCell><p className="dos-lineas">{zona}</p></TableCell>
                                     <TableCell className="text-center">
                                         #{coincidencia.number} 
                                     </TableCell>

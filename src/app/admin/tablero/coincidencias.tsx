@@ -101,7 +101,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
   )
 }
 
-function getZona(coincidencia: CoincidenceDAO) {
+export function getZona(coincidencia: CoincidenceDAO) {
     let res= ""
     const zona= coincidencia.property.zona
     const departamento= coincidencia.property.departamento
@@ -109,6 +109,6 @@ function getZona(coincidencia: CoincidenceDAO) {
     if (zona) res= zona
     if (departamento) res+= `${res ? ", " : ""}${departamento}`
     if (ciudad) res+= `${res ? ", " : ""}${ciudad}`
-    
+
     return res
 }
