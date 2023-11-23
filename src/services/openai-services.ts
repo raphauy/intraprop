@@ -105,5 +105,6 @@ function getSystemMessage() {
   return `
 Tu función es extraer del texto toda la información que puedas y utilizar la función 'registrarPedido' con esa información.
 Si en lo que refiere a presupuesto hay un rango, se debe utilizar el valor más alto.
-  `
+Es importante no confundir el valor del inmueble (en el caso de venta) o el valor del alquiler (en el caso de alquiler) con el valor de gastos comunes (que se pide a veces para apartamentos en alquiler).
+`
 }

@@ -23,15 +23,19 @@ export const functions= [
         },
         presupuestoMin: {
           type: "number",
-          description: "valor de presupuesto mínimo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. Si no se puede encontrar un valor para presupuesto en el texto del pedido se debe llenar este campo con N/D",
+          description: "valor de presupuesto mínimo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. Si no se puede encontrar un valor para presupuesto en el texto del pedido se debe llenar este campo con N/D. No confundir ese valor con el valor de gastos comunes.",
         },
         presupuestoMax: {
           type: "number",
-          description: "valor de presupuesto máximo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. Si no se puede encontrar un valor para presupuesto en el texto del pedido se debe llenar este campo con N/D",
+          description: "valor de presupuesto máximo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. Si no se puede encontrar un valor para presupuesto en el texto del pedido se debe llenar este campo con N/D. No confundir ese valor con el valor de gastos comunes.",
         },
         presupuestoMoneda: {
           type: "string",
           description: "USD, UYU, N/D. Notar que los pedidos son en Uruguay, si se utiliza la palabra pesos se refiere a UYU, si se utiliza la palabra dólares se refiere a USD. Si utiliza el símbolo $ se refiere a UYU.",
+        },
+        gastosComunes: {
+          type: "string",
+          description: "Valor y moneda de los gastos comunes. Por ejemplo: 100 USD, 1000 UYU. Este dato generalmente no está y cuando está es para un alquiler. Si no está se debe llenar este campo con N/D",
         },
         zona: {
           type: "string",
@@ -56,7 +60,7 @@ export const functions= [
 ];
 
 
-export async function registrarPedido(pedidoId: string, tipo: string, operacion: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string, zona: string, dormitorios: string, caracteristicas: string, contacto: string) {
+export async function registrarPedido(pedidoId: string, tipo: string, operacion: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string, gastosComunes: string, zona: string, dormitorios: string, caracteristicas: string, contacto: string) {
   console.log("pedidoId: ", pedidoId)
   console.log("tipo: ", tipo)
   console.log("operacion: ", operacion)
@@ -69,7 +73,7 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
 
   if (pedidoId) {
     const pedido= await getPedidoDAO(pedidoId)
-    const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMin, presupuestoMax, presupuestoMoneda, zona, dormitorios, caracteristicas)
+    const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMin, presupuestoMax, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
     const pedidoForm: PedidoFormValues= {
       text: pedido.text,
       phone: pedido.phone as string,
@@ -100,7 +104,7 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
   return responseData
 }
 
-function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string, zona: string, dormitorios: string, caracteristicas: string) {
+function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string, gastosComunes: string, zona: string, dormitorios: string, caracteristicas: string) {
   let formattedCaracteristicas= ""
   if (tipo && tipo !== "N/D") {
     formattedCaracteristicas= tipo
@@ -126,6 +130,9 @@ function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: num
   if (zona && zona !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + ", en " + zona
   }
+  if (gastosComunes && gastosComunes !== "N/D") {
+    formattedCaracteristicas= formattedCaracteristicas + ", con gastos comunes " + gastosComunes
+  }
   if (caracteristicas && caracteristicas !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + ". Extras: " + caracteristicas
   }
@@ -137,7 +144,7 @@ function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: num
 export async function runFunction(name: string, args: any) {
   switch (name) {
     case "registrarPedido":
-      return registrarPedido(args["pedidoId"], args["tipo"], args["operacion"], args["presupuestoMin"], args["presupuestoMax"], args["presupuestoMoneda"], args["zona"], args["dormitorios"], args["caracteristicas"], args["contacto"])
+      return registrarPedido(args["pedidoId"], args["tipo"], args["operacion"], args["presupuestoMin"], args["presupuestoMax"], args["presupuestoMoneda"], args["gastosComunes"], args["zona"], args["dormitorios"], args["caracteristicas"], args["contacto"])
 
     default:
       return null;
