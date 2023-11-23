@@ -130,7 +130,7 @@ function getValorInmueble(coincidence: CoincidenceDAO, operacion: string) {
         return coincidence.property.precioVenta + " " + coincidence.property.monedaVenta
     }
 
-    if (operacion.toUpperCase() === "ALQUILER") {
+    if (operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR" || operacion.toUpperCase() === "RENTA") {
         return coincidence.property.precioAlquiler + " " + coincidence.property.monedaAlquiler
     }
 }

@@ -19,7 +19,7 @@ export const functions= [
         },
         operacion: {
           type: "string",
-          description: "alquilar o venta. Si no se puede encontrar la operación en el texto del pedido se debe llenar este campo con N/D",
+          description: "alquiler o venta. Si no se puede encontrar la operación en el texto del pedido se debe llenar este campo con N/D",
         },
         presupuestoMin: {
           type: "number",
