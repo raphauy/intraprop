@@ -13,7 +13,6 @@ export async function POST(request: Request ) {
         console.log("tablero", notification.tablero)
         console.log("----------------------")
 
-
         return NextResponse.json({ data: "ACK" }, { status: 200 })
 
     } catch (error) {

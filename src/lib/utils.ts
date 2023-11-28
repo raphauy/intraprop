@@ -74,3 +74,8 @@ export function formatDateTime(date: Date) {
   const isToday= format(date, "dd/MM/yyyy", { locale: es }) === format(new Date(), "dd/MM/yyyy", { locale: es })
   return isToday ? format(date, "'hoy' HH:mm", { locale: es }) : format(date, "dd/MM/yyyy HH:mm", { locale: es })
 }
+
+export function formatDateTimeWithSeconds(date: Date) {
+  const isToday= format(date, "dd/MM/yyyy", { locale: es }) === format(new Date(), "dd/MM/yyyy", { locale: es })
+  return isToday ? format(date, "'hoy' HH:mm:ss", { locale: es }) : format(date, "dd/MM/yyyy HH:mm:ss", { locale: es })
+}

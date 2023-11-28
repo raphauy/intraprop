@@ -26,21 +26,25 @@ export async function sendPendingNotifications() {
             },
             body: JSON.stringify(json)
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            updateNotificationSent(notification.id)
-            .then(() => {
-                console.log("notification updated")
-            })
-            .catch(error => {
-                console.log("error: ", error)
-            })
+        // check status code and only 200 is ok
+        .then(response => {
+            console.log("response: ", response.status, " - text: ", response.statusText)
+            
+            if (response.status === 200) {
+                updateNotificationSent(notification.id)
+                .then(() => {
+                    console.log("notification updated")
+                })
+                .catch(error => {
+                    console.log("error: ", error)
+                })
+            } else {
+                console.log("error on fetch: ", response.status)
+            }
         })
         .catch(error => {
             console.log("error: ", error)
-        })
-        
+        })        
     })
 
 }

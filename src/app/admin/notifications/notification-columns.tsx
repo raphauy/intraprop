@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatDateTimeWithSeconds } from "@/lib/utils";
 import { NotificationDAO } from "@/services/notification-services";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, CheckCircle2 } from "lucide-react";
@@ -8,8 +9,6 @@ import Link from "next/link";
 import {
   DeleteNotificationDialog,
 } from "./notification-dialogs";
-import { format } from "date-fns";
-import { formatDateTime, formatPedidoNumber } from "@/lib/utils";
 
 export const columns: ColumnDef<NotificationDAO>[] = [
   {
@@ -128,7 +127,7 @@ export const columns: ColumnDef<NotificationDAO>[] = [
       }
 
       return (
-        <p>{formatDateTime(data.sentAt)}</p>
+        <p>{formatDateTimeWithSeconds(data.sentAt)}</p>
       );
     }
   },
