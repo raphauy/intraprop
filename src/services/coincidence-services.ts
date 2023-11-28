@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/db"
 import * as z from "zod"
+import { NotificationDAO } from "./notification-services"
 
 export type CoincidenceDAO = {
   id:  string
 	number:  number
 	distance:  number
+  score:  number
 	pedidoId:  string
 	propertyId:  string
 	createdAt:  Date
@@ -32,12 +34,14 @@ export type CoincidenceDAO = {
     inmobiliariaId: string
     inmobiliariaName: string
     inmobiliariaSlug: string
-  }
+  },
+  notification?: NotificationDAO
 }
 
 export const coincidenceFormSchema = z.object({
   number: z.number({required_error: "Number is required."}),
   distance: z.number({required_error: "Distance is required."}),
+  score: z.number({required_error: "Score is required."}),
 	pedidoId: z.string({required_error: "PedidoId is required."}),
 	propertyId: z.string({required_error: "PropertyId is required."}),
 })
@@ -123,10 +127,12 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
           url: true,
           inmobiliaria: true
         },
-      }
+      },
+      notifications: true      
     }
   })
   const all= found.map((coincidence) => {
+    const notification= coincidence.notifications[0] ? coincidence.notifications[0] : undefined
     return {
       ...coincidence,
       property: {
@@ -135,6 +141,7 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
         inmobiliariaName: coincidence.property.inmobiliaria?.name,
         inmobiliariaSlug: coincidence.property.inmobiliaria?.slug
       },
+      notification
     }
   })
 
@@ -205,11 +212,13 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
           precioAlquiler: true,
           url: true,
           inmobiliaria: true
-        },
-      }
-    }
+        },        
+      },
+      notifications: true
+    }    
   })
   const res= found.map((coincidence) => {
+    const notification= coincidence.notifications[0] ? coincidence.notifications[0] : undefined
     return {
       ...coincidence,
       property: {
@@ -218,6 +227,7 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
         inmobiliariaName: coincidence.property.inmobiliaria?.name,
         inmobiliariaSlug: coincidence.property.inmobiliaria?.slug
       },
+      notification
     }
   })
 
@@ -253,13 +263,15 @@ export async function getCoincidenceDAO(id: string) {
           url: true,
           inmobiliaria: true
         },
-      }
+      },
+      notifications: true
     }
   })
   if (!found) {
     return null
   }
 
+  const notification= found.notifications[0] ? found.notifications[0] : undefined
   const res= {
     ...found,
     property: {
@@ -268,6 +280,7 @@ export async function getCoincidenceDAO(id: string) {
       inmobiliariaName: found.property.inmobiliaria?.name,
       inmobiliariaSlug: found.property.inmobiliaria?.slug
     },
+    notification
   }
 
   return res as CoincidenceDAO

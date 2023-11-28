@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, formatPedidoNumber } from "@/lib/utils";
 import { PedidoDAO } from "@/services/pedido-services";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -27,9 +27,9 @@ export const columns: ColumnDef<PedidoDAO>[] = [
     },
     cell: ({ row }) => {
       const data = row.original
-      const numberFormatted= data.number.toString().padStart(4, "0")
+      const numberFormatted= formatPedidoNumber(data.number)
 
-      return (<p className="">#{numberFormatted}</p>)
+      return (<p className="">{numberFormatted}</p>)
     },
   },
 
@@ -101,7 +101,8 @@ export const columns: ColumnDef<PedidoDAO>[] = [
     cell: ({ row }) => {
       const data = row.original
       const hourFormatted= format(data.createdAt, "HH:mm 'h'", { locale: es })
-      const dateFormatted= format(data.createdAt, "MMM dd", { locale: es })
+      const isToday= format(data.createdAt, "dd/MM/yyyy", { locale: es }) === format(new Date(), "dd/MM/yyyy", { locale: es })
+      const dateFormatted= isToday ? "hoy" : format(data.createdAt, "MMM dd", { locale: es })      
 
       return (
       <div className="w-12">

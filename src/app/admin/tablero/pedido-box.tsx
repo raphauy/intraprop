@@ -1,5 +1,6 @@
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { formatPresupuesto } from "@/lib/utils"
 import { PedidoDAO } from "@/services/pedido-services"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -63,22 +64,6 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
   )
 }
 
-function formatPresupuesto(presupuestoMin: number | undefined, presupuestoMax: number | undefined, presupuestoMoneda: string | undefined) {
-   
-    if (presupuestoMin && presupuestoMax && presupuestoMin === presupuestoMax)
-        return presupuestoMin.toLocaleString("es-UY") + " " + presupuestoMoneda
-
-    if (presupuestoMin && presupuestoMax)
-        return presupuestoMin.toLocaleString("es-UY") + " - " + presupuestoMax.toLocaleString("es-UY") + " " + presupuestoMoneda
-
-    if (presupuestoMin)
-        return presupuestoMin.toLocaleString("es-UY") + " " + presupuestoMoneda
-
-    if (presupuestoMax)
-        return presupuestoMax.toLocaleString("es-UY") + " " + presupuestoMoneda
-
-    return "N/D"
-}
 
 
 function getContacto(pedido: PedidoDAO) {

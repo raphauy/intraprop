@@ -7,6 +7,7 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai"
 import pgvector from 'pgvector/utils';
 import { Pedido } from "@prisma/client"
 import { InmobiliariaDAO, getInmobiliariaDAO, getInmobiliariaDAOByslug } from "./inmobiliaria-services"
+import { distanceToPercentage } from "@/lib/utils"
 
 export type PedidoDAO = {
   id:  string
@@ -312,6 +313,7 @@ export async function createCoincidencesProperties(pedidoId: string) {
       number: 0,
       // round distance to 2 decimals
       distance: Math.round(item.distance * 100) / 100,
+      score: distanceToPercentage(item.distance),
       pedidoId: pedido.id,
       propertyId: item.id,
     }

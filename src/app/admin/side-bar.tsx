@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { Building, Clipboard, LayoutDashboard, Music3, PackageOpen, Settings, User } from "lucide-react";
+import { BellRing, Building, Clipboard, LayoutDashboard, Music3, PackageOpen, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -33,9 +33,9 @@ const data= [
     href: "divider", icon: User
   },  
   {
-    href: "/admin/hooks",
-    icon: Music3,
-    text: "Hook Pedidos"
+    href: "/admin/notifications",
+    icon: BellRing,
+    text: "Notificaciones"
   },
   {
     href: "divider", icon: User
@@ -44,6 +44,19 @@ const data= [
     href: "/admin/users",
     icon: User,
     text: "Usuarios"
+  },
+  {
+    href: "divider", icon: User
+  },  
+  {
+    href: "/admin/hooks",
+    icon: Music3,
+    text: "Hook Pedidos"
+  },
+  {
+    href: "/admin/configs",
+    icon: Settings,
+    text: "Config"
   },
 ]
 
@@ -85,7 +98,7 @@ export default function SideBar() {
       <section className="mb-4">
         {divider()}
         
-        <p className="hidden sm:block lg:w-36 ml-3 font-bold">Versión 0.11.20</p>                  
+        <p className="hidden sm:block lg:w-36 ml-3 font-bold">Versión 0.11.28</p>                  
       </section>
     </div>
   );

@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
 import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
 import { getZona } from "@/app/admin/tablero/coincidencias"
+import HoverNotification from "@/app/admin/tablero/hover-notification"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
     operacion: string
+    coincidenceId?: string
 }
 
-export default function Coincidencias({ coincidencias, operacion }: Props) {
+export default function Coincidencias({ coincidencias, operacion, coincidenceId }: Props) {
     if (coincidencias.length === 0) 
         return (
             <Card>
@@ -36,7 +38,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead>Zona</TableHead>
                         <TableHead className="text-center">#</TableHead>
-                        <TableHead>Score</TableHead>
+                        <TableHead>Coincidencia</TableHead>
                         <TableHead className="text-center">URL</TableHead>
                     </TableRow>
                     </TableHeader>
@@ -53,7 +55,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                 const zona= getZona(coincidencia)
 
                                 return (
-                                <TableRow key={coincidencia.id}>
+                                <TableRow key={coincidencia.id} className={cn( coincidenceId === coincidencia.id && "bg-green-100")}>
                                     <TableCell>{coincidencia.property.idPropiedad}</TableCell>
                                     <TableCell>
                                         <div>
@@ -71,15 +73,13 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                     <TableCell className="text-center">
                                         #{coincidencia.number} 
                                     </TableCell>
-                                    <TableCell className="flex items-center gap-1">
-                                        <p className={
-                                            cn("border-[3px] h-8 w-8 rounded-full flex items-center justify-center font-bold", 
-                                            score < 50 && "border-red-500",
-                                            50 <= score && score < 60 && "border-yellow-500",
-                                            60 <= score && "border-green-500",
-                                            )}>
-                                                {score}
-                                        </p>
+                                    <TableCell>
+                                        <div className="whitespace-nowrap text-base flex items-center gap-1">
+                                            {coincidencia.state === "checked" && 65 <= score && <p>Alta 💚</p>}
+                                            {coincidencia.state === "checked" && 50 <= score && score < 65 && <p>Media 💛</p>}
+                                            {coincidencia.state === "checked" && score < 50 && <p>Baja 🧡</p>}
+                                            {coincidencia.notification && <HoverNotification coincidence={coincidencia} />}
+                                        </div>
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <Link href={coincidencia.property.url} target="_blank">

@@ -7,11 +7,13 @@ import { getCoincidencesDAO } from "@/services/coincidence-services"
 type Props = {
   searchParams: {
     id: string
+    coincidenceId?: string
   }
 }
 export default async function TableroPage({ searchParams }: Props) {
 
   const id = searchParams.id
+  const coincidenceId = searchParams.coincidenceId
   if (!id) {
     const last= await getLastPedidoDAO()
     if (last) {
@@ -30,7 +32,7 @@ export default async function TableroPage({ searchParams }: Props) {
       pedido && <PedidoBox pedido={pedido} cantCoincidencias={coincidencias.length} />
     }
     {
-      pedido && <Coincidencias coincidencias={coincidencias} operacion={pedido.operacion || ""}/>
+      pedido && <Coincidencias coincidencias={coincidencias} operacion={pedido.operacion || ""} coincidenceId={coincidenceId}/>
     }
     
   </main>

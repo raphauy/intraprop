@@ -8,12 +8,14 @@ import Coincidencias from "./coincidencias"
 type Props = {
   searchParams: {
     id: string
+    coincidenceId?: string
   }
   params: {
     slug: string
   }
 }
 export default async function TableroPage({ searchParams, params }: Props) {
+  const coincidenceId = searchParams.coincidenceId
   const slug= params.slug
   const inmo= await getInmobiliariaDAOByslug(slug)
   if (!inmo) {
@@ -38,7 +40,7 @@ export default async function TableroPage({ searchParams, params }: Props) {
       pedido && <PedidoBox pedido={pedido} cantCoincidencias={coincidencias.length} />
     }
     {
-      pedido && <Coincidencias coincidencias={coincidencias} operacion={pedido.operacion || ""}/>
+      pedido && <Coincidencias coincidencias={coincidencias} operacion={pedido.operacion || ""} coincidenceId={coincidenceId}/>
     }
     
   </main>

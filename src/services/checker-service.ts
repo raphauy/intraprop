@@ -5,10 +5,28 @@ import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.m
 import { prisma } from "@/lib/db";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { createNotification } from "./notification-services";
+import { sendPendingNotifications } from "./notification-sender";
 
+
+
+export async function checkDistance() {
+    const coincidences= await getPendingCoincidences("pending")
+    console.log("pending coincidences to check:", coincidences.length)
+    if (coincidences.length === 0) {
+        return
+    }
+    // iterate over pending coincidences and check distance
+    for (const coincidence of coincidences) {
+        let newStatus= "distance_banned"
+        if (coincidence.distance <= 0.45) {
+            newStatus= "distance_ok"
+        }
+        await updateCoincidence(coincidence.id, newStatus)
+    }
+}
 
 export async function checkZone(coincidenceId: string) {
-    console.log("checking coincidence", coincidenceId)
     
     const OPENAI_ASSISTANT_ID= process.env.OPENAI_ZONE_ASSISTANT_ID
     if (!OPENAI_ASSISTANT_ID) {
@@ -48,7 +66,6 @@ export async function checkZone(coincidenceId: string) {
       createdThread.id, 
       { 
         assistant_id: OPENAI_ASSISTANT_ID,
-//        model: "gpt-3.5-turbo-1106",
         model: "gpt-4-1106-preview",
       }
     )
@@ -85,18 +102,10 @@ export async function checkZone(coincidenceId: string) {
             
             let newStatus= "zone_banned"
             if (respuesta === "SI") {
-                newStatus= "zone_ok"
+                newStatus= "checked"
             }
 
-            console.log("updating coincidence", coincidenceId)
-            const updated = await prisma.coincidence.update({
-                where: {
-                    id: coincidenceId
-                },
-                data: {
-                    state: newStatus,
-                }
-            })
+            await updateCoincidence(coincidenceId, newStatus)
         }
       })
       
@@ -107,7 +116,6 @@ export async function checkZone(coincidenceId: string) {
       return successfulUpdates.length > 0
     
 }
-
 function getZonaInmueble(coincidence: CoincidenceDAO) {
     // property.zona !== null && property.zona !== "" && (textToEmbed += ` en ${property.zona},`) 
     const zona= coincidence.property.zona 
@@ -122,9 +130,6 @@ function getZonaInmueble(coincidence: CoincidenceDAO) {
 
     return zonaInmueble
 }
-
-
-
 function getValorInmueble(coincidence: CoincidenceDAO, operacion: string) {
     if (operacion.toUpperCase() === "VENTA") {
         return coincidence.property.precioVenta + " " + coincidence.property.monedaVenta
@@ -132,6 +137,43 @@ function getValorInmueble(coincidence: CoincidenceDAO, operacion: string) {
 
     if (operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR" || operacion.toUpperCase() === "RENTA") {
         return coincidence.property.precioAlquiler + " " + coincidence.property.monedaAlquiler
+    }
+}
+
+
+function parseCustom(valueString: string): number | null {
+    // Eliminar espacios y separadores no numéricos excepto el punto
+    const sanitizedString = valueString.replace(/[^0-9.]+/g, '');
+
+    // Dividir en caso de que haya puntos como separadores de miles
+    const parts = sanitizedString.split('.');
+
+    // Unir las partes para obtener el número completo
+    const joinedNumber = parts.join('');
+
+    // Convertir a número
+    const value = parseInt(joinedNumber);
+
+    // Verificar si el resultado es un número válido
+    if (isNaN(value)) {
+        return null;
+    }
+
+    return value;
+}
+
+
+
+export async function checkBudgetPendings() {
+
+    const coincidences= await getPendingCoincidences("distance_ok")
+    console.log("budget coincidences to check:", coincidences.length)
+    if (coincidences.length === 0) {
+        return
+    }
+    // iterate over pending coincidences and check budget        
+    for (const coincidence of coincidences) {
+        await checkBudget(coincidence.id)
     }
 }
 
@@ -163,85 +205,22 @@ export async function checkBudget(coincidenceId: string) {
 
     let newState= "budget_banned"
     if (!presupuesto || !valorInmueble) {
-        newState= "checked"
+        newState= "budget_ok"
     } else {
         const presupuestoMin= valorInmueble * 0.85
         const presupuestoMax= valorInmueble * 1.1
         if (presupuestoMax >= presupuesto && presupuesto >= presupuestoMin) {
-            newState= "checked"
+            newState= "budget_ok"
         }
     }
 
-
-    console.log("updating coincidence newState: ", newState)  
-    const updated = await prisma.coincidence.update({
-        where: {
-            id: coincidenceId
-        },
-        data: {
-            state: newState,
-        }
-    })
-}
-
-function parseCustom(valueString: string): number | null {
-    // Eliminar espacios y separadores no numéricos excepto el punto
-    const sanitizedString = valueString.replace(/[^0-9.]+/g, '');
-
-    // Dividir en caso de que haya puntos como separadores de miles
-    const parts = sanitizedString.split('.');
-
-    // Unir las partes para obtener el número completo
-    const joinedNumber = parts.join('');
-
-    // Convertir a número
-    const value = parseInt(joinedNumber);
-
-    // Verificar si el resultado es un número válido
-    if (isNaN(value)) {
-        return null;
-    }
-
-    return value;
+    await updateCoincidence(coincidenceId, newState)
 }
 
 
-export async function checkCoincidences() {
-    console.log("starting checker")
-    const coincidences= await getPendingCoincidences("pending")
-    console.log("coincidences to check:", coincidences.length)
-    if (coincidences.length === 0) {
-        return
-    }
-    const firstCoincidence= coincidences[0]
-    console.log("first coincidence:", firstCoincidence)
-    await checkZone(firstCoincidence.id)
+export async function checkZonePendings() {
 
-    const zoneOKCoincidences= await getPendingCoincidences("zone_ok")
-    console.log("coincidences zone_ok to check:", zoneOKCoincidences.length)
-    if (zoneOKCoincidences.length === 0) {
-        return
-    }
-    // iterate over zone_ok coincidences and check budget
-    for (const zoneOKCoincidence of zoneOKCoincidences) {
-        const checked= await checkBudget(zoneOKCoincidence.id)
-        console.log("checked:", checked)
-        const pedido= await getPedidoDAO(zoneOKCoincidence.pedidoId)
-        await updateCoincidencesNumbers(pedido.id)    
-    }
-
-    // const firstZoneOk= zoneOKCoincidences[0]
-    // console.log("first coincidence:", firstZoneOk)
-    // const checked= await checkBudget2(firstZoneOk.id)
-    // console.log("checked:", checked)
-
-
-}
-
-
-export async function checkZoneLoop() {
-
-    const coincidences= await getPendingCoincidences("pending")
+    const coincidences= await getPendingCoincidences("budget_ok")
     console.log("zone coincidences to check:", coincidences.length)
     if (coincidences.length === 0) {
         return
@@ -250,33 +229,42 @@ export async function checkZoneLoop() {
     for (const coincidence of coincidences) {
         const checked= await checkZone(coincidence.id)
         console.log("checked:", checked)
+        await updateNumbersAndCreateNotifications(coincidence.pedidoId, coincidence.id)
     }
 }
 
-export async function checkBudgetLoop() {
 
-    const coincidences= await getPendingCoincidences("zone_ok")
-    console.log("budget coincidences to check:", coincidences.length)
-    if (coincidences.length === 0) {
-        return
+async function updateNumbersAndCreateNotifications(pedidoId: string, coincidenceId: string) {
+    await updateCoincidencesNumbers(pedidoId)
+    const posibleCoincidence= await getCoincidenceDAO(coincidenceId)
+    if (posibleCoincidence && posibleCoincidence.state === "checked" && posibleCoincidence.distance <= 0.45)
+        await createNotification(coincidenceId)
+    else {
+        console.log("not creating notification because coincidence is not checked or distance is not less than 0.45, distance: ", posibleCoincidence?.distance)            
     }
-    // iterate over pending coincidences and check budget        
-    for (const coincidence of coincidences) {
-        const checked= await checkBudget(coincidence.id)
-        console.log("checked:", checked)
-        const pedido= await getPedidoDAO(coincidence.pedidoId)
-        await updateCoincidencesNumbers(pedido.id)    
-    }
+}
+
+async function updateCoincidence(coincidenceId: string, newState: string) {
+    console.log("updating coincidence newState: ", newState)  
+    await prisma.coincidence.update({
+        where: {
+            id: coincidenceId
+        },
+        data: {
+            state: newState,
+        }
+    })    
 }
 
 // check both zone and budget in parallel
-export async function checkCoincidencesLoop() {
-    const timezone= "America/Montevideo"
+export async function checkCoincidences() {
     const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
     console.log(nowMontevideo)    
 
-    await checkZoneLoop()
-    await checkBudgetLoop()
+    await checkDistance()
+    await checkBudgetPendings()
+    await checkZonePendings()
+    await sendPendingNotifications()
 }
 
-checkCoincidencesLoop()
+checkCoincidences()

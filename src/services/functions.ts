@@ -23,11 +23,11 @@ export const functions= [
         },
         presupuestoMin: {
           type: "number",
-          description: "valor de presupuesto mínimo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. Si no se puede encontrar un valor para presupuesto en el texto del pedido se debe llenar este campo con N/D. No confundir ese valor con el valor de gastos comunes.",
+          description: "valor de presupuesto mínimo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. No confundir ese valor con el valor de gastos comunes.",
         },
         presupuestoMax: {
           type: "number",
-          description: "valor de presupuesto máximo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. Si no se puede encontrar un valor para presupuesto en el texto del pedido se debe llenar este campo con N/D. No confundir ese valor con el valor de gastos comunes.",
+          description: "valor de presupuesto máximo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. No confundir ese valor con el valor de gastos comunes.",
         },
         presupuestoMoneda: {
           type: "string",

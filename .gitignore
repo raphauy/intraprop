@@ -2,6 +2,7 @@
 .env
 .env.postgres.docker
 bun.lockb
+pru.json
 /scripts
 
 # dependencies

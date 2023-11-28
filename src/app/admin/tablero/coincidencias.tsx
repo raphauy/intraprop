@@ -1,18 +1,21 @@
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { Ban, BedSingle, Car, CheckCircle2, Drumstick, ExternalLink, Eye, Waves } from "lucide-react"
+import { Ban, BedSingle, BellRing, Car, CheckCircle2, Drumstick, ExternalLink, Eye, Waves } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
 import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
 import { number } from "zod"
+import HoverNotification from "./hover-notification"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
     operacion: string
+    coincidenceId?: string
 }
 
-export default function Coincidencias({ coincidencias, operacion }: Props) {
+export default function Coincidencias({ coincidencias, operacion, coincidenceId }: Props) {
+    
     if (coincidencias.length === 0) 
         return (
             <Card>
@@ -36,7 +39,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead>Zona</TableHead>
                         <TableHead>Inmobiliaria</TableHead>
-                        <TableHead>Score/Estado</TableHead>
+                        <TableHead>Coincidencia</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -51,7 +54,7 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
 
                                 const zona= getZona(coincidencia)
                                 return (
-                                <TableRow key={coincidencia.id}>
+                                <TableRow key={coincidencia.id} className={cn( coincidenceId === coincidencia.id && "bg-green-100")}>
                                     <TableCell>{coincidencia.property.idPropiedad}</TableCell>
                                     <TableCell>
                                         <div>
@@ -76,17 +79,17 @@ export default function Coincidencias({ coincidencias, operacion }: Props) {
                                     </TableCell>
                                     <TableCell className="flex items-center gap-1 justify-between">
                                         <div className="flex items-center gap-1">
-                                            <p className={
-                                                cn("border-[3px] h-8 w-8 rounded-full flex items-center justify-center font-bold", 
-                                                coincidencia.state === "checked" && score < 50 && "border-red-500",
-                                                coincidencia.state === "checked" && 50 <= score && score < 60 && "border-yellow-500",
-                                                coincidencia.state === "checked" && 60 <= score && "border-green-500",
-                                                )}>{score}
-                                            </p>
+                                            <div className="whitespace-nowrap text-base flex items-center gap-1">
+                                                    {coincidencia.state === "checked" && 65 <= score && <p>Alta 💚</p>}
+                                                    {coincidencia.state === "checked" && 50 <= score && score < 65 && <p>Media 💛</p>}
+                                                    {coincidencia.state === "checked" && score < 50 && <p>Baja 🧡</p>}
+                                                    {coincidencia.notification && <HoverNotification coincidence={coincidencia} />}
+                                            </div>
                                             <div className="w-fit">{
                                                 coincidencia.state === "checked" ? "" : 
-                                                coincidencia.state === "zone_banned" ? <p className="flex items-center"><Ban /> Z</p>: 
-                                                coincidencia.state === "budget_banned" ? <p className="flex items-center"><Ban /> $</p>: 
+                                                coincidencia.state === "distance_banned" ? <p className="flex items-center gap-1"><Ban /> {coincidencia.score}</p>: 
+                                                coincidencia.state === "zone_banned" ? <p className="flex items-center gap-1"><Ban /> Z</p>: 
+                                                coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban /> $</p>: 
                                                 "pending"
                                                 }
                                             </div>
