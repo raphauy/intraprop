@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { createNotification } from "./notification-services";
 import { sendPendingNotifications } from "./notification-sender";
+import { getValue } from "./config-services";
 
 
 
@@ -166,6 +167,16 @@ function parseCustom(valueString: string): number | null {
 
 export async function checkBudgetPendings() {
 
+    const BUDGET_PERC_MIN= await getValue("BUDGET_PERC_MIN")
+    let budgetPercMin= 0.85
+    if(BUDGET_PERC_MIN) budgetPercMin= parseFloat(BUDGET_PERC_MIN) / 100
+    else console.log("BUDGET_PERC_MIN not found")
+
+    const BUDGET_PERC_MAX= await getValue("BUDGET_PERC_MAX")
+    let budgetPercMax= 1.1
+    if(BUDGET_PERC_MAX) budgetPercMax= parseFloat(BUDGET_PERC_MAX) / 100
+    else console.log("BUDGET_PERC_MAX not found")
+
     const coincidences= await getPendingCoincidences("distance_ok")
     console.log("budget coincidences to check:", coincidences.length)
     if (coincidences.length === 0) {
@@ -173,11 +184,11 @@ export async function checkBudgetPendings() {
     }
     // iterate over pending coincidences and check budget        
     for (const coincidence of coincidences) {
-        await checkBudget(coincidence.id)
+        await checkBudget(coincidence.id, budgetPercMin, budgetPercMax)
     }
 }
 
-export async function checkBudget(coincidenceId: string) {
+export async function checkBudget(coincidenceId: string, budgetPercMin: number, budgetPercMax: number) {
 
     const coincidence= await getCoincidenceDAO(coincidenceId)
     if (!coincidence) {
@@ -194,22 +205,21 @@ export async function checkBudget(coincidenceId: string) {
     const presupuestoStr= pedido.presupuesto || ""
     const valorInmuebleStr= getValorInmueble(coincidence, pedido.operacion) || ""
 
-    console.log("presupuestoStr", presupuestoStr)
-    console.log("valorInmuebleStr", valorInmuebleStr)
-    
-
     const presupuesto= parseCustom(presupuestoStr)
     const valorInmueble= parseCustom(valorInmuebleStr)
-    console.log("presupuesto", presupuesto)
-    console.log("valorInmueble", valorInmueble)    
 
     let newState= "budget_banned"
     if (!presupuesto || !valorInmueble) {
         newState= "budget_ok"
     } else {
-        const presupuestoMin= valorInmueble * 0.85
-        const presupuestoMax= valorInmueble * 1.1
-        if (presupuestoMax >= presupuesto && presupuesto >= presupuestoMin) {
+        const presupuestoMin= Math.round((presupuesto * (1-budgetPercMin)) * 100) / 100
+        const presupuestoMax= Math.round((presupuesto * (1+budgetPercMax)) * 100) / 100
+        console.log("----------------------")
+        console.log("presupuestoMin: ", presupuestoMin)
+        console.log("presupuestoMax: ", presupuestoMax)
+        console.log("valorInmueble: ", valorInmueble)
+        console.log("----------------------")
+        if (presupuestoMax >= valorInmueble && valorInmueble >= presupuestoMin) {
             newState= "budget_ok"
         }
     }

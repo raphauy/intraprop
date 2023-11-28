@@ -358,7 +358,6 @@ export async function updateCoincidencesNumbers(pedidoId: string) {
     }
     coincidencesByClient[inmobiliariaId].push(coincidence)
   });
-  console.log("coincidencesByClient:", coincidencesByClient)
   
   for (const inmobiliariaId of Object.keys(coincidencesByClient)) {
     const coincidencesForClient = coincidencesByClient[inmobiliariaId]

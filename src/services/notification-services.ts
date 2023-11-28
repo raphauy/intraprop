@@ -164,7 +164,7 @@ export async function createNotification(coincidenceId: string) {
   }
   const celulares= inmobiliaria.celulares
   const status= celulares ? "pending" : "error"
-  const error= status === "error" ? "No hay celulares para enviar notificación" : undefined
+  const error= status === "error" ? "No hay celulares" : undefined
 
   const created = await prisma.notification.create({
     data: {
