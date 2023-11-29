@@ -74,6 +74,11 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
         }
       }   
     },
+    where: {
+      caracteristicas: {
+        not: null
+      }
+    },
     take: pedidosResults
   })
  
@@ -134,10 +139,6 @@ export async function getLastPedidoDAO(): Promise<PedidoDAO | null> {
 }
 
 export async function getLastPedidoDAOByInmobiliaria(inmobiliariaId: string) {
-  const PEDIDOS_RESULTS= await getValue("PEDIDOS_RESULTS")
-  let pedidosResults= 100
-  if(PEDIDOS_RESULTS) pedidosResults= parseInt(PEDIDOS_RESULTS)
-  else console.log("PEDIDOS_RESULTS not found")
 
   const found = await prisma.pedido.findFirst({
     where: {
@@ -152,7 +153,6 @@ export async function getLastPedidoDAOByInmobiliaria(inmobiliariaId: string) {
     orderBy: {
       createdAt: "desc"
     },
-    take: pedidosResults    
   })
   return found as PedidoDAO
 }

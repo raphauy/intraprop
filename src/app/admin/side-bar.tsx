@@ -72,8 +72,8 @@ export default function SideBar() {
   return (
     <div className="flex flex-col justify-between border-r border-r-osom-color/50">
       <section className="flex flex-col gap-3 py-4 mt-3 ">
-        {data.map(({ href, icon: Icon, text }) => {
-          if (href === "divider") return divider()
+        {data.map(({ href, icon: Icon, text }, index) => {
+          if (href === "divider") return divider(index)
           
           const selected= path.endsWith(href)
           const classes= cn(commonClasses, selected && selectedClasses)
@@ -105,6 +105,6 @@ export default function SideBar() {
 }
 
 
-function divider() {
-  return <div className="mx-2 my-5 border-b border-b-osom-color/50" />
+function divider(key?: number) {
+  return <div key={key} className="mx-2 my-5 border-b border-b-osom-color/50" />
 }
