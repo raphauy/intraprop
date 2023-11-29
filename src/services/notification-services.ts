@@ -190,6 +190,7 @@ function generateJSON(coincidence: CoincidenceDAO, pedido: PedidoDAO, celulares:
     celulares,
     score: coincidence.score,
     tablero: `${basePath}/${slug}/tablero?id=${pedido.id}&coincidenceId=${coincidence.id}`,
+    order: coincidence.number,
     pedido: {
       id: pedido.id,
       number: formatPedidoNumber(pedido.number),
