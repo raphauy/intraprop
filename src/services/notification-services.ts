@@ -42,7 +42,7 @@ export async function getNotificationsDAO() {
   const found = await prisma.notification.findMany({
     orderBy: [
       {
-        status: "asc",
+        status: "desc",
       },
       {
         sentAt: "desc",
