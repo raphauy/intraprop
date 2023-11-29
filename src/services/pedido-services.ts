@@ -8,6 +8,7 @@ import pgvector from 'pgvector/utils';
 import { Pedido } from "@prisma/client"
 import { InmobiliariaDAO, getInmobiliariaDAO, getInmobiliariaDAOByslug } from "./inmobiliaria-services"
 import { distanceToPercentage } from "@/lib/utils"
+import { getValue } from "./config-services"
 
 export type PedidoDAO = {
   id:  string
@@ -47,6 +48,12 @@ export const pedidoFormSchema = z.object({
 export type PedidoFormValues = z.infer<typeof pedidoFormSchema>
 
 export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
+
+  const PEDIDOS_RESULTS= await getValue("PEDIDOS_RESULTS")
+  let pedidosResults= 100
+  if(PEDIDOS_RESULTS) pedidosResults= parseInt(PEDIDOS_RESULTS)
+  else console.log("PEDIDOS_RESULTS not found")
+
   let inmobiliariaId= ""
   console.log("slug:", slug);
   
@@ -66,7 +73,8 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
           property: true
         }
       }   
-    }      
+    },
+    take: pedidosResults
   })
  
   const res: PedidoDAO[] = []
@@ -126,6 +134,11 @@ export async function getLastPedidoDAO(): Promise<PedidoDAO | null> {
 }
 
 export async function getLastPedidoDAOByInmobiliaria(inmobiliariaId: string) {
+  const PEDIDOS_RESULTS= await getValue("PEDIDOS_RESULTS")
+  let pedidosResults= 100
+  if(PEDIDOS_RESULTS) pedidosResults= parseInt(PEDIDOS_RESULTS)
+  else console.log("PEDIDOS_RESULTS not found")
+
   const found = await prisma.pedido.findFirst({
     where: {
       coincidences: {
@@ -139,6 +152,7 @@ export async function getLastPedidoDAOByInmobiliaria(inmobiliariaId: string) {
     orderBy: {
       createdAt: "desc"
     },
+    take: pedidosResults    
   })
   return found as PedidoDAO
 }
@@ -390,7 +404,12 @@ export async function updateCoincidencesNumbers(pedidoId: string) {
 }
 
 
-export async function similaritySearchV2(tipo: string, operacion: string, caracteristicas: string, limit: number = 10) : Promise<SimilaritySearchResult[]> {
+export async function similaritySearchV2(tipo: string, operacion: string, caracteristicas: string) : Promise<SimilaritySearchResult[]> {
+  const LIMIT_RESULTS= await getValue("LIMIT_RESULTS")
+  let limit= 10
+  if(LIMIT_RESULTS) limit= parseInt(LIMIT_RESULTS)
+  else console.log("LIMIT_RESULTS not found")
+
   const embeddings = new OpenAIEmbeddings({
     openAIApiKey: process.env.OPENAI_API_KEY,
     verbose: true,

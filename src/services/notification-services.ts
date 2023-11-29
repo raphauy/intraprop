@@ -5,6 +5,7 @@ import { PedidoDAO, getPedidoDAO } from "./pedido-services"
 import { format } from "date-fns"
 import { getInmobiliariaDAO } from "./inmobiliaria-services"
 import { formatPedidoNumber, formatPresupuesto } from "@/lib/utils"
+import { getValue } from "./config-services"
 
 export type NotificationDAO = {
   id:  string
@@ -33,11 +34,21 @@ export const notificationFormSchema = z.object({
 export type NotificationFormValues = z.infer<typeof notificationFormSchema>
 
 export async function getNotificationsDAO() {
+  const NOTIFICATIONS_RESULTS= await getValue("NOTIFICATIONS_RESULTS")
+  let notificationsResults= 100
+  if(NOTIFICATIONS_RESULTS) notificationsResults= parseInt(NOTIFICATIONS_RESULTS)
+  else console.log("NOTIFICATIONS_RESULTS not found")
+
   const found = await prisma.notification.findMany({
-    orderBy: {
-      sentAt: "desc"
-    },
-    take: 1000,    
+    orderBy: [
+      {
+        status: "asc",
+      },
+      {
+        sentAt: "desc",
+      },
+    ],
+    take: notificationsResults,
   })
 
   const res = []
