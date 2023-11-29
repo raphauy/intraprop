@@ -76,8 +76,20 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
     },
     where: {
       caracteristicas: {
-        not: null
-      }
+        not: null,
+      },
+      AND: [
+        {
+          caracteristicas: {
+            not: ""
+          }
+        },
+        {
+          caracteristicas: {
+            not: "N/D"
+          }
+        }
+      ]      
     },
     take: pedidosResults
   })
