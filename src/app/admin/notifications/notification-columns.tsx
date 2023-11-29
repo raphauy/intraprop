@@ -39,7 +39,10 @@ export const columns: ColumnDef<NotificationDAO>[] = [
           }
         </div>
       );
-    }
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
 
   {

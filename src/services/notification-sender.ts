@@ -30,47 +30,6 @@ export async function sendPendingNotifications() {
         return 0
     })
     
-    console.log("notifications post:")
-    console.log(notifications)
-
-    // notifications.forEach(notification => {
-    //     const pedido= notification.coincidences.pedido
-    //     console.log("celulares: ", notification.celulares)
-    //     console.log("pedido #", pedido.number)
-    //     console.log("coincidence #", notification.coincidences.number)
-    //     console.log("----------------------")
-    //     const json= notification.json
-    //     const url= notificationsEndpoint
-    //     fetch(url, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(json)
-    //     })
-    //     //check status code and only 200 is ok
-    //     .then(response => {
-    //         console.log("response: ", response.status, " - text: ", response.statusText)
-            
-    //         if (response.status === 200) {
-    //             updateNotificationSent(notification.id)
-    //             .then(() => {
-    //                 console.log("notification updated")
-    //             })
-    //             .catch(error => {
-    //                 console.log("error: ", error)
-    //             })
-    //         } else {
-    //             console.log("error on fetch: ", response.status)
-    //         }
-    //     })
-    //     .catch(error => {
-    //         console.log("error: ", error)
-    //     })        
-    // })
-
-    // change the above forEach to a for loop to avoid sending all notifications at once
-    // and instead send them one by one with await
     for (const notification of notifications) {
         const pedido= notification.coincidences.pedido
         console.log("celulares: ", notification.celulares)
