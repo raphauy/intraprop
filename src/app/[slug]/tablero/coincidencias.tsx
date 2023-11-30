@@ -1,6 +1,6 @@
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { Ban, BedSingle, Car, CheckCircle2, Drumstick, ExternalLink, Eye, Waves } from "lucide-react"
+import { Ban, BedSingle, BellRing, Car, CheckCircle2, Drumstick, ExternalLink, Eye, Waves } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
@@ -37,7 +37,7 @@ export default function Coincidencias({ coincidencias, operacion, coincidenceId 
                         <TableHead>Tipo</TableHead>
                         <TableHead className="text-right">Precio</TableHead>
                         <TableHead>Zona</TableHead>
-                        <TableHead className="text-center">#</TableHead>
+                        <TableHead className="flex items-center text-lg gap-1"><p>#</p><BellRing size={18} /></TableHead>
                         <TableHead>Coincidencia</TableHead>
                         <TableHead className="text-center">URL</TableHead>
                     </TableRow>
