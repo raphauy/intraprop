@@ -187,7 +187,7 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
       property: {
         inmobiliariaId,
       },
-      state: "checked"
+      //state: "checked"
     },
     include: {
       property: {
