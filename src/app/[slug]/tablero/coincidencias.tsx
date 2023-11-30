@@ -1,6 +1,6 @@
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { BedSingle, Car, CheckCircle2, Drumstick, ExternalLink, Eye, Waves } from "lucide-react"
+import { Ban, BedSingle, Car, CheckCircle2, Drumstick, ExternalLink, Eye, Waves } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CoincidenceDAO } from "@/services/coincidence-services"
@@ -68,17 +68,27 @@ export default function Coincidencias({ coincidencias, operacion, coincidenceId 
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-right">{precio}</TableCell>
-                                    <TableCell><p className="dos-lineas">{zona}</p></TableCell>
-                                    <TableCell className="text-center">
-                                        #{coincidencia.number} 
+                                    <TableCell className={cn("text-right", coincidencia.state === "budget_banned" && "text-red-400")}>{precio}</TableCell>
+                                    <TableCell><p className={cn("dos-lineas", coincidencia.state === "zone_banned" && "text-red-400")}>{zona}</p></TableCell>
+                                    <TableCell className="text-center">                                        
+                                        {coincidencia.number > 0 ? "#" + coincidencia.number : ""} 
                                     </TableCell>
                                     <TableCell>
-                                        <div className="whitespace-nowrap text-base flex items-center gap-1">
-                                            {coincidencia.state === "checked" && 65 <= score && <p>Alta 💚</p>}
-                                            {coincidencia.state === "checked" && 50 <= score && score < 65 && <p>Media 💛</p>}
-                                            {coincidencia.state === "checked" && score < 50 && <p>Baja 🧡</p>}
-                                            {coincidencia.notification && <HoverNotification coincidence={coincidencia} />}
+                                        <div className="flex items-center gap-1">
+                                            <div className="whitespace-nowrap text-base flex items-center gap-1">
+                                                {65 <= score && <p>Alta 💚</p>}
+                                                {50 <= score && score < 65 && <p>Media 💛</p>}
+                                                {score < 50 && <p>Baja 🧡</p>}
+                                                {coincidencia.notification && <HoverNotification coincidence={coincidencia} />}
+                                            </div>
+                                            <div className="w-fit">{
+                                                    coincidencia.state === "checked" ? "" : 
+                                                    coincidencia.state === "distance_banned" ? <p className="flex items-center gap-1"> {coincidencia.score > 0 ? coincidencia.score : 0}</p>: 
+                                                    coincidencia.state === "zone_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /> Z</p>: 
+                                                    coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /> $</p>: 
+                                                    "pending"
+                                                    }
+                                            </div>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-center">

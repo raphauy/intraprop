@@ -67,8 +67,8 @@ export default function Coincidencias({ coincidencias, operacion, coincidenceId 
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-right">{precio}</TableCell>
-                                    <TableCell><p className="dos-lineas">{zona}</p></TableCell>
+                                    <TableCell className={cn("text-right", coincidencia.state === "budget_banned" && "text-red-400")}>{precio}</TableCell>
+                                    <TableCell><p className={cn("dos-lineas", coincidencia.state === "zone_banned" && "text-red-400")}>{zona}</p></TableCell>
                                     <TableCell>
                                         <Link href={`/${coincidencia.property.inmobiliariaSlug}/tablero?id=${coincidencia.pedidoId}`} target="_blank">
                                             <Button size="sm" variant="link" className="flex flex-col items-start px-0">
