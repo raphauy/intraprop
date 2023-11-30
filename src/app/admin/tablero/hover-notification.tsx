@@ -17,7 +17,9 @@ export default function HoverNotification({ coincidence }: Props) {
     return (
         <div>
             <HoverCard>
-                <HoverCardTrigger><BellRing size={20} className={cn(notification.status === "error" && "text-red-500")}/></HoverCardTrigger>
+                <HoverCardTrigger>
+                    <BellRing size={20} className={cn(notification.status === "error" && "text-red-500", notification.status === "sent" && "text-green-500")}/>
+                </HoverCardTrigger>
                 <HoverCardContent className="w-72">
                     <p className="mb-5 text-lg font-bold">Notificación</p>
                     <div className="flex flex-col gap-1">

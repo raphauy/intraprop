@@ -10,8 +10,6 @@ export async function sendPendingNotifications() {
         return
     }
     const notifications= await getPendingNotificationsDAO()
-    console.log("notifications pre:")    
-    console.log(notifications)
 
     // order notifications by pedido.number first and then by coincidence.number
     notifications.sort((a, b) => {

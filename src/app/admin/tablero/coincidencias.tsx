@@ -80,16 +80,16 @@ export default function Coincidencias({ coincidencias, operacion, coincidenceId 
                                     <TableCell className="flex items-center gap-1 justify-between">
                                         <div className="flex items-center gap-1">
                                             <div className="whitespace-nowrap text-base flex items-center gap-1">
-                                                    {coincidencia.state === "checked" && 65 <= score && <p>Alta 💚</p>}
-                                                    {coincidencia.state === "checked" && 50 <= score && score < 65 && <p>Media 💛</p>}
-                                                    {coincidencia.state === "checked" && score < 50 && <p>Baja 🧡</p>}
+                                                    {65 <= score && <p>Alta 💚</p>}
+                                                    {50 <= score && score < 65 && <p>Media 💛</p>}
+                                                    {score < 50 && <p>Baja 🧡</p>}
                                                     {coincidencia.notification && <HoverNotification coincidence={coincidencia} />}
                                             </div>
                                             <div className="w-fit">{
                                                 coincidencia.state === "checked" ? "" : 
-                                                coincidencia.state === "distance_banned" ? <p className="flex items-center gap-1"><Ban /> {coincidencia.score}</p>: 
-                                                coincidencia.state === "zone_banned" ? <p className="flex items-center gap-1"><Ban /> Z</p>: 
-                                                coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban /> $</p>: 
+                                                coincidencia.state === "distance_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /> {coincidencia.score}</p>: 
+                                                coincidencia.state === "zone_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /> Z</p>: 
+                                                coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /> $</p>: 
                                                 "pending"
                                                 }
                                             </div>
