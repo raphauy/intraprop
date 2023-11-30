@@ -83,9 +83,9 @@ export default function Coincidencias({ coincidencias, operacion, coincidenceId 
                                             </div>
                                             <div className="w-fit">{
                                                     coincidencia.state === "checked" ? "" : 
-                                                    coincidencia.state === "distance_banned" ? <p className="flex items-center gap-1"> {coincidencia.score > 0 ? coincidencia.score : 0}</p>: 
-                                                    coincidencia.state === "zone_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /> Z</p>: 
-                                                    coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /> $</p>: 
+                                                    coincidencia.state === "distance_banned" ? "": 
+                                                    coincidencia.state === "zone_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>: 
+                                                    coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>: 
                                                     "pending"
                                                     }
                                             </div>

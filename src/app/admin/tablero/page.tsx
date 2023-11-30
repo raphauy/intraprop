@@ -25,7 +25,6 @@ export default async function TableroPage({ searchParams }: Props) {
   const pedido= await getPedidoDAO(id)
   const coincidencias= await getCoincidencesDAO(id)
 
-
   return (
     <main className="flex flex-col gap-2 mt-[25px] overflow-auto lg:gap-8 ">
     {
