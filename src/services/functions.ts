@@ -1,5 +1,7 @@
 import { createOrUpdatePedidoAction } from "@/app/admin/pedidos/pedido-actions";
 import { PedidoFormValues, getPedidoDAO, updatePedido } from "./pedido-services";
+import { getValue } from "./config-services";
+import { formatNumberWithDots } from "@/lib/utils";
 
 export const functions= [
   {
@@ -23,7 +25,7 @@ export const functions= [
         },
         presupuestoMin: {
           type: "number",
-          description: "valor de presupuesto mínimo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. No confundir ese valor con el valor de gastos comunes.",
+          description: "valor de presupuesto mínimo. Valor de compra si quiere comprar o valor de alquiler si quiere alquilar. No confundir ese valor con el valor de gastos comunes. Si dicen '...hasta cierto valor' se debe llenar este campo con 0. Si el presupuesto no es un rango, es un valor solo, este campo se debe llegar con ese valor al igual que el campo presupuestoMax.",
         },
         presupuestoMax: {
           type: "number",
@@ -31,7 +33,7 @@ export const functions= [
         },
         presupuestoMoneda: {
           type: "string",
-          description: "USD, UYU, N/D. Notar que los pedidos son en Uruguay, si se utiliza la palabra pesos se refiere a UYU, si se utiliza la palabra dólares se refiere a USD. Si utiliza el símbolo $ se refiere a UYU.",
+          description: "USD, UYU, N/D. Notar que los pedidos son en Uruguay, si se utiliza la palabra pesos se refiere a UYU, si se utiliza la palabra dólares se refiere a USD. Si utiliza el símbolo $ se refiere a UYU. A veces no ponen la moneda, debes tratar de inferir la moneda teniendo en cuenta que las ventas generalmente son en USD y los alquileres en UYU.",
         },
         gastosComunes: {
           type: "string",
@@ -60,28 +62,48 @@ export const functions= [
 ];
 
 
-export async function registrarPedido(pedidoId: string, tipo: string, operacion: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string, gastosComunes: string, zona: string, dormitorios: string, caracteristicas: string, contacto: string) {
+export async function registrarPedido(pedidoId: string, tipo: string, operacion: string, presupuestoMinOrig: number, presupuestoMaxOrig: number, presupuestoMoneda: string, gastosComunes: string, zona: string, dormitorios: string, caracteristicas: string, contacto: string) {
   console.log("pedidoId: ", pedidoId)
   console.log("tipo: ", tipo)
   console.log("operacion: ", operacion)
-  console.log("presupuestoMin: ", presupuestoMin)
-  console.log("presupuestoMax: ", presupuestoMax)
+  console.log("presupuestoMin: ", presupuestoMinOrig)
+  console.log("presupuestoMax: ", presupuestoMaxOrig)
   console.log("presupuestoMoneda: ", presupuestoMoneda)
   console.log("zona: ", zona)
   console.log("dormitorios: ", dormitorios)
   console.log("caracteristicas: ", caracteristicas)
 
   if (pedidoId) {
+    const BUDGET_PERC_MIN= await getValue("BUDGET_PERC_MIN")
+    let budgetPercMin= 0.85
+    if(BUDGET_PERC_MIN) budgetPercMin= parseFloat(BUDGET_PERC_MIN) / 100
+    else console.log("BUDGET_PERC_MIN not found")
+
+    const BUDGET_PERC_MAX= await getValue("BUDGET_PERC_MAX")
+    let budgetPercMax= 1.1
+    if(BUDGET_PERC_MAX) budgetPercMax= parseFloat(BUDGET_PERC_MAX) / 100
+    else console.log("BUDGET_PERC_MAX not found")
+
+
+    let presupuestoMin= undefined
+    if (presupuestoMinOrig) presupuestoMin= Math.round((presupuestoMinOrig * (1-budgetPercMin)) * 100) / 100
+    let presupuestoMax= undefined
+    if (presupuestoMaxOrig) presupuestoMax= Math.round((presupuestoMaxOrig * (1+budgetPercMax)) * 100) / 100
+
+    const presupuestoLog= `Rango buscado: (${presupuestoMin ? presupuestoMin.toLocaleString('es-UY') : "0"}, ${presupuestoMax ? presupuestoMax.toLocaleString('es-UY') : "inf"}) ${presupuestoMoneda}, (-${budgetPercMin*100}%, +${budgetPercMax*100}%)`
+    const presupuesto= (presupuestoMinOrig === presupuestoMaxOrig ? presupuestoMinOrig.toLocaleString('es-UY') + "" : presupuestoMinOrig.toLocaleString('es-UY') + "-" + presupuestoMaxOrig.toLocaleString('es-UY')) + " " + presupuestoMoneda
+
     const pedido= await getPedidoDAO(pedidoId)
-    const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMin, presupuestoMax, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
+    const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
     const pedidoForm: PedidoFormValues= {
       text: pedido.text,
       phone: pedido.phone as string,
       tipo: tipo,
       operacion: operacion,
-      presupuesto: presupuestoMin === presupuestoMax ? presupuestoMin + "" : presupuestoMin + "-" + presupuestoMax,
-      presupuestoMin: presupuestoMin,
-      presupuestoMax: presupuestoMax,
+      presupuesto,
+      presupuestoMin,
+      presupuestoMax,
+      presupuestoLog: presupuestoLog,
       presupuestoMoneda: presupuestoMoneda,
       zona: zona,
       dormitorios: dormitorios,

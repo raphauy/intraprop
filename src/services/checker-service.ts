@@ -167,15 +167,6 @@ function parseCustom(valueString: string): number | null {
 
 export async function checkBudgetPendings() {
 
-    const BUDGET_PERC_MIN= await getValue("BUDGET_PERC_MIN")
-    let budgetPercMin= 0.85
-    if(BUDGET_PERC_MIN) budgetPercMin= parseFloat(BUDGET_PERC_MIN) / 100
-    else console.log("BUDGET_PERC_MIN not found")
-
-    const BUDGET_PERC_MAX= await getValue("BUDGET_PERC_MAX")
-    let budgetPercMax= 1.1
-    if(BUDGET_PERC_MAX) budgetPercMax= parseFloat(BUDGET_PERC_MAX) / 100
-    else console.log("BUDGET_PERC_MAX not found")
 
     const coincidences= await getPendingCoincidences("distance_ok")
     console.log("budget coincidences to check:", coincidences.length)
@@ -184,11 +175,11 @@ export async function checkBudgetPendings() {
     }
     // iterate over pending coincidences and check budget        
     for (const coincidence of coincidences) {
-        await checkBudget(coincidence.id, budgetPercMin, budgetPercMax)
+        await checkBudget(coincidence.id)
     }
 }
 
-export async function checkBudget(coincidenceId: string, budgetPercMin: number, budgetPercMax: number) {
+export async function checkBudget(coincidenceId: string) {
 
     const coincidence= await getCoincidenceDAO(coincidenceId)
     if (!coincidence) {
@@ -212,8 +203,9 @@ export async function checkBudget(coincidenceId: string, budgetPercMin: number, 
     if (!presupuesto || !valorInmueble) {
         newState= "budget_ok"
     } else {
-        const presupuestoMin= Math.round((presupuesto * (1-budgetPercMin)) * 100) / 100
-        const presupuestoMax= Math.round((presupuesto * (1+budgetPercMax)) * 100) / 100
+        const presupuestoMin= pedido.presupuestoMin || 0
+        const presupuestoMax= pedido.presupuestoMax || 10000000000
+
         console.log("----------------------")
         console.log("presupuestoMin: ", presupuestoMin)
         console.log("presupuestoMax: ", presupuestoMax)
@@ -226,6 +218,8 @@ export async function checkBudget(coincidenceId: string, budgetPercMin: number, 
 
     await updateCoincidence(coincidenceId, newState)
 }
+
+
 
 
 export async function checkZonePendings() {

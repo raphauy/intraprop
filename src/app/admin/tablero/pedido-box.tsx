@@ -44,7 +44,7 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
                         <p>Dormitorios: </p>
                         <p className="font-bold whitespace-nowrap">{pedido.dormitorios}</p>
                         <p>Presupuesto: </p>
-                        <p className="font-bold">{formatPresupuesto(pedido.presupuestoMin, pedido.presupuestoMax, pedido.presupuestoMoneda)}</p>
+                        <p className="font-bold">{pedido.presupuesto}</p>
                     </div>
                     <p className="max-w-xs">Contacto: {getContacto(pedido)}</p>                    
                 </div>

@@ -21,6 +21,7 @@ export type PedidoDAO = {
 	presupuesto?:  string
   presupuestoMin?:  number
   presupuestoMax?:  number
+  presupuestoLog?:  string
   presupuestoMoneda?:  string
 	zona?:  string
 	dormitorios?:  string
@@ -40,6 +41,7 @@ export const pedidoFormSchema = z.object({
 	presupuesto: z.string().optional(),
   presupuestoMin: z.number().optional(),
   presupuestoMax: z.number().optional(),
+  presupuestoLog: z.string().optional(),
   presupuestoMoneda: z.string().optional(),
 	zona: z.string().optional(),
 	dormitorios: z.string().optional(),
@@ -89,13 +91,14 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
             not: "N/D"
           }
         }
-      ]      
+      ],
     },
     take: pedidosResults
   })
  
   const res: PedidoDAO[] = []
-  found.forEach((item) => {
+  found.filter((item) => (item.operacion !== "N/D" || item.tipo !== "N/D"))
+  .forEach((item) => {
     const pedido: PedidoDAO = item as PedidoDAO
     const cantCoincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
     pedido.cantCoincidencias = cantCoincidenciasChecked.length

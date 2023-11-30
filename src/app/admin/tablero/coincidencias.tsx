@@ -12,9 +12,10 @@ type Props = {
     coincidencias: CoincidenceDAO[]
     operacion: string
     coincidenceId?: string
+    presupuestoLog?: string
 }
 
-export default function Coincidencias({ coincidencias, operacion, coincidenceId }: Props) {
+export default function Coincidencias({ coincidencias, operacion, coincidenceId, presupuestoLog }: Props) {
     
     if (coincidencias.length === 0) 
         return (
@@ -26,8 +27,11 @@ export default function Coincidencias({ coincidencias, operacion, coincidenceId 
     )
     return (
         <Card>
-            <CardHeader className="px-4">
-                <CardTitle>Coincidencias</CardTitle>
+            <CardHeader>
+                <div className="flex items-center justify-between">
+                    <CardTitle>Coincidencias</CardTitle>
+                    <p>{presupuestoLog}</p>
+                </div>
             </CardHeader>
             <CardContent className="text-muted-foreground px-1 xl:px-4">
                 <div className="p-2 border rounded-lg shadow-sm">

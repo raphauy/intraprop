@@ -45,10 +45,10 @@ export function formatPresupuesto(presupuestoMin: number | undefined, presupuest
       return presupuestoMin.toLocaleString("es-UY") + " - " + presupuestoMax.toLocaleString("es-UY") + " " + presupuestoMoneda
 
   if (presupuestoMin)
-      return presupuestoMin.toLocaleString("es-UY") + " " + presupuestoMoneda
+      return presupuestoMin.toLocaleString("es-UY") + " " + presupuestoMoneda + " o más"
 
   if (presupuestoMax)
-      return presupuestoMax.toLocaleString("es-UY") + " " + presupuestoMoneda
+      return presupuestoMax.toLocaleString("es-UY") + " " + presupuestoMoneda + " o menos"
 
   return "N/D"
 }

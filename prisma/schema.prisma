@@ -131,6 +131,7 @@ model Pedido {
   presupuesto       String?
   presupuestoMin    Int?
   presupuestoMax    Int?
+  presupuestoLog    String?
   presupuestoMoneda String?
   zona              String?
   dormitorios       String?
