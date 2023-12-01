@@ -17,7 +17,7 @@ export const functions= [
         },
         tipo: {
           type: "string",
-          description: "casa, apartamento, terreno, local, etc. Si no se puede encontrar un tipo en el texto del pedido se debe llenar este campo con N/D",
+          description: "casa, apartamento, terreno, local, oficina, etc. Cuando dicen PH se refieren a un apartamento. Si no se puede encontrar un tipo en el texto del pedido se debe llenar este campo con N/D",
         },
         operacion: {
           type: "string",
@@ -98,8 +98,8 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
     const pedidoForm: PedidoFormValues= {
       text: pedido.text,
       phone: pedido.phone as string,
-      tipo: tipo,
-      operacion: operacion,
+      tipo: tipo.toLowerCase(),
+      operacion: operacion.toUpperCase(),
       presupuesto,
       presupuestoMin,
       presupuestoMax,

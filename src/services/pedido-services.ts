@@ -172,6 +172,46 @@ export async function getLastPedidoDAOByInmobiliaria(inmobiliariaId: string) {
   return found as PedidoDAO
 }
 
+export async function getOperaciones(): Promise<string[]> {
+  const found = await prisma.pedido.findMany({
+    where: {
+      operacion: {
+        not: null
+      }
+    },
+    distinct: ["operacion"]
+  })
+  const res: string[] = []
+
+  found.forEach((item) => {
+    if (item.operacion !== null) {
+      res.push(item.operacion)
+    }
+  })
+
+  return res
+}
+
+export async function getTipos(): Promise<string[]> {
+  const found = await prisma.pedido.findMany({
+    where: {
+      tipo: {
+        not: null
+      }
+    },
+    distinct: ["tipo"]
+  })
+
+  const res: string[] = []
+  found.forEach((item) => {
+    if (item.tipo !== null) {
+      res.push(item.tipo)
+    }
+  })
+
+  return res  
+}
+
 export async function createPedido(data: PedidoFormValues) {
   const created = await prisma.pedido.create({
     data

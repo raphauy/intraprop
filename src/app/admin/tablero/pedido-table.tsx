@@ -25,18 +25,19 @@ import {
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table";
-import { PlusCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import { PedidoDialog } from "./pedido-dialogs";
-import Link from "next/link";
 
 interface DataTableToolbarProps<TData> {
-  table: TanstackTable<TData>;
+  table: TanstackTable<TData>
+  operaciones: string[]
+  tipos: string[]
 }
 
-export function DataTableToolbar<TData>({table}: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({table, operaciones, tipos}: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
@@ -54,14 +55,14 @@ export function DataTableToolbar<TData>({table}: DataTableToolbarProps<TData>) {
           <DataTableFacetedFilter
             column={table.getColumn("operacion")}
             title="Operación"
-            options={["ALQUILER", "VENTA"]}
+            options={operaciones}
           />
         )}
         {table.getColumn("tipo") && (
           <DataTableFacetedFilter
             column={table.getColumn("tipo")}
             title="Tipo"
-            options={["Casa", "Apartamento", "Casa o Apartamento", "Local", "Terreno"]}
+            options={tipos}
           />
         )}
         {isFiltered && (
@@ -83,9 +84,11 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   columnsOff?: string[];
   subject: string;
+  operaciones: string[]
+  tipos: string[]
 }
 
-export function DataTable<TData, TValue>({columns, data, columnsOff, subject}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({columns, data, columnsOff, subject, operaciones, tipos}: DataTableProps<TData, TValue>) {
   const searchParams= useSearchParams()
   const actualId= searchParams.get("id")
 
@@ -128,7 +131,7 @@ export function DataTable<TData, TValue>({columns, data, columnsOff, subject}: D
 
   return (
     <div className="w-full mt-3 space-y-1 dark:text-white">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} operaciones={operaciones} tipos={tipos} />
       <div className="border rounded-md">
         <Table>
           <TableHeader>

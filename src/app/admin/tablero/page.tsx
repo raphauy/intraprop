@@ -1,8 +1,8 @@
+import { getCoincidencesDAO } from "@/services/coincidence-services"
 import { getLastPedidoDAO, getPedidoDAO } from "@/services/pedido-services"
 import { redirect } from "next/navigation"
-import PedidoBox from "./pedido-box"
 import Coincidencias from "./coincidencias"
-import { getCoincidencesDAO } from "@/services/coincidence-services"
+import PedidoBox from "./pedido-box"
 
 type Props = {
   searchParams: {
