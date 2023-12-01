@@ -24,11 +24,12 @@ export default async function TableroPage({ searchParams }: Props) {
   }
   const pedido= await getPedidoDAO(id)
   const coincidencias= await getCoincidencesDAO(id)
+  const coincidencesSent= coincidencias.filter((coincidence) => coincidence.state === "checked")
 
   return (
     <main className="flex flex-col gap-2 mt-[25px] overflow-auto lg:gap-8 ">
     {
-      pedido && <PedidoBox pedido={pedido} cantCoincidencias={coincidencias.length} />
+      pedido && <PedidoBox pedido={pedido} cantCoincidencias={coincidencesSent.length} />
     }
     {
       pedido && <Coincidencias coincidencias={coincidencias} operacion={pedido.operacion || ""} coincidenceId={coincidenceId} presupuestoLog={pedido.presupuestoLog} />
