@@ -1,7 +1,7 @@
 import { columns } from "@/app/admin/tablero/pedido-columns";
 import { DataTable } from "@/app/admin/tablero/pedido-table";
 import { getCurrentUser } from "@/lib/auth";
-import { getPedidosDAO } from "@/services/pedido-services";
+import { getOperaciones, getPedidosDAO, getTipos } from "@/services/pedido-services";
 import { redirect } from "next/navigation";
 
 interface Props {
@@ -25,11 +25,13 @@ export default async function TableroLayout({ children, params }: Props) {
   const slug= params.slug
   console.log(slug)  
   const data = await getPedidosDAO(slug);
- 
+  const operaciones= await getOperaciones()
+  const tipos= await getTipos()
+
   return (
     <div className="mx-1 flex flex-col w-full gap-2 lg:items-start xl:gap-4 lg:flex-row sm:items-center">
       <div className="sm:w-full lg:w-[450px] mt-3">
-        <DataTable columns={columns} data={data} subject="Pedido" columnsOff={["tipo"]} />
+        <DataTable columns={columns} data={data} subject="Pedido" columnsOff={["tipo"]} operaciones={operaciones} tipos={tipos} />
       </div>
       <div className="flex-1 w-full">
         {children}
