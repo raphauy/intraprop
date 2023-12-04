@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getTotalCoincidencesByInmo } from "@/services/coincidence-services";
+import { getTotalCoincidencesByInmo, getTotalCoincidencesWithNotificationByInmo } from "@/services/coincidence-services";
 import { getInmobiliariaDAOByslug, getTotalProperiesByInmobiliaria } from "@/services/inmobiliaria-services";
 import { getPedidosDAO } from "@/services/pedido-services";
 import { getPropertiesOfInmobiliaria } from "@/services/property-services";
@@ -19,6 +19,7 @@ export default async function AdminPage({ params }: Props) {
   const inmo= await getInmobiliariaDAOByslug(slug)
   const pedidos= await getPedidosDAO("ALL")
   const totalCoincidences= await getTotalCoincidencesByInmo(inmo.id)
+  const totalNotifications= await getTotalCoincidencesWithNotificationByInmo(inmo.id)
   const users= await getUsersDAOBySlug(slug)
   
   const properties= await getPropertiesOfInmobiliaria(inmo.id)
@@ -41,10 +42,10 @@ export default async function AdminPage({ params }: Props) {
                 <div className="text-2xl font-bold">{totalProperties}</div>
                 <div className="flex justify-between">
                     <p className="text-xs text-muted-foreground">
-                      casas ({totalCasas})
+                      {totalCasas} casas
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      apartamentos ({totalApartamentos})
+                      {totalApartamentos} apartamentos
                     </p>
                 </div>
                 <div className="flex justify-between">
@@ -64,6 +65,9 @@ export default async function AdminPage({ params }: Props) {
               <div className="flex justify-between">
                 <p className="text-xs text-muted-foreground">
                   {totalCoincidences} coincidencias
+                </p>                  
+                <p className="text-xs text-muted-foreground">
+                  {totalNotifications} 💚
                 </p>                  
               </div>
             </CardContent>
