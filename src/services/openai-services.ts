@@ -9,11 +9,12 @@ const openai = new OpenAI({
   })
   
 
-export async function createPedidoWithFunctions(text: string, phone: string) {
+export async function createPedidoWithFunctions(text: string, phone: string, name: string | undefined) {
   const created = await prisma.pedido.create({
     data: {
       text,
       phone,
+      name,
     },
   })
 

@@ -125,6 +125,7 @@ model Pedido {
   number            Int         @default(autoincrement())
   text              String      @db.Text
   phone             String      @default("")
+  name              String?     @default("")
   contacto          String?
   operacion         String?
   tipo              String?

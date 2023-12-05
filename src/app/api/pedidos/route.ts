@@ -24,6 +24,7 @@ export async function POST(request: Request, { params }: Props ) {
         const message= json.message
         const text= message.text
         const phone= message.phone + ""
+        const name= message.name
 
         if (!text) return NextResponse.json({ error: "text is required" }, { status: 400 })
         if (!phone) return NextResponse.json({ error: "phone is required" }, { status: 400 })
@@ -31,6 +32,7 @@ export async function POST(request: Request, { params }: Props ) {
         const dataPedido= {
             text: text,
             phone: phone as string,
+            name: name as string,
         }
 
         const updated= await createOrUpdatePedidoAction(null, dataPedido)

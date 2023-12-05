@@ -12,6 +12,7 @@ export async function POST(request: Request ) {
         console.log("pedido #", notification.pedido.number)
         console.log("idPropiedad", notification.propiedad.idPropiedad)
         console.log("tablero", notification.tablero)
+        console.log("name", notification.pedido.name)
         console.log("----------------------")
 
         // sleep 2 seconds
