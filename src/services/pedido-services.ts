@@ -16,6 +16,7 @@ export type PedidoDAO = {
 	text:  string
   phone?:  string
   name?:  string
+  group?:  string
 	contacto?:  string
 	operacion?:  string
 	tipo?:  string
@@ -37,6 +38,7 @@ export const pedidoFormSchema = z.object({
 	text: z.string({required_error: "Text is required."}),
   phone: z.string({required_error: "Phone is required."}),
   name: z.string().optional(),
+  group: z.string().optional(),
 	contacto: z.string().optional(),
 	operacion: z.string().optional(),
 	tipo: z.string().optional(),

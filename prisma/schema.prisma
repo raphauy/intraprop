@@ -126,6 +126,7 @@ model Pedido {
   text              String      @db.Text
   phone             String      @default("")
   name              String?     @default("")
+  group             String?     @default("")
   contacto          String?
   operacion         String?
   tipo              String?

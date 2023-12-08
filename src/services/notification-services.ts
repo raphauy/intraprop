@@ -207,6 +207,7 @@ function generateJSON(coincidence: CoincidenceDAO, pedido: PedidoDAO, celulares:
       number: formatPedidoNumber(pedido.number),
       phone: pedido.phone,
       name: pedido.name,
+      group: pedido.group,
       operacion: pedido.operacion,
       tipo: pedido.tipo,
       presupuesto: formatPresupuesto(pedido.presupuestoMin, pedido.presupuestoMax, pedido.presupuestoMoneda),

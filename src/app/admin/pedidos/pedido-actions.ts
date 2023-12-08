@@ -14,7 +14,7 @@ export async function createOrUpdatePedidoAction(id: string | null, data: Pedido
       updated= await updatePedido(id, data)
   } else {
       //updated= await createPedido(data)
-      updated= await createPedidoWithFunctions(data.text, data.phone, data.name)
+      updated= await createPedidoWithFunctions(data.text, data.phone, data.name, data.group)
   }
 
   if (!updated) throw new Error("Error al crear el pedido")
