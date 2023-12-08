@@ -49,6 +49,8 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
                         <p className="font-bold pt-2 border-t">{pedido.group}</p>
                         <p>Nombre: </p>
                         <p className="font-bold">{pedido.name}</p>
+                        <p>Contacto: </p>
+                        <p className="font-bold">{pedido.phone}</p>
                     </div>
                 </div>
                 <div className="flex flex-col justify-between flex-1 pl-2 border-l gap-7">
