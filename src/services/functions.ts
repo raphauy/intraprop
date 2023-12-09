@@ -92,7 +92,7 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
 
     const presupuestoLog= `Rango buscado: (${presupuestoMin ? presupuestoMin.toLocaleString('es-UY') : "0"}, ${presupuestoMax ? presupuestoMax.toLocaleString('es-UY') : "inf"}) ${presupuestoMoneda}, (-${budgetPercMin*100}%, +${budgetPercMax*100}%)`
     const presupuesto= (presupuestoMinOrig === presupuestoMaxOrig ? (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY') : "-") + "" : 
-        (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY') : "") + "-" + (presupuestoMaxOrig ? presupuestoMaxOrig.toLocaleString('es-UY') : "")) + " " + (presupuestoMoneda ? presupuestoMoneda : "")
+        (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY')+"-" : "") + (presupuestoMaxOrig ? presupuestoMaxOrig.toLocaleString('es-UY') : "inf")) + " " + (presupuestoMoneda ? presupuestoMoneda : "")
 
     const pedido= await getPedidoDAO(pedidoId)
     const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
