@@ -87,7 +87,7 @@ export default function Coincidencias({ coincidencias, operacion, coincidenceId,
                                                     {65 <= score && <p>Alta 💚</p>}
                                                     {50 <= score && score < 65 && <p>Media 💛</p>}
                                                     {score < 50 && <p>Baja 🧡</p>}
-                                                    {coincidencia.notification && <HoverNotification coincidence={coincidencia} />}
+                                                    {coincidencia.notificationPedido && <HoverNotification coincidence={coincidencia} />}
                                             </div>
                                             <div className="w-fit">{
                                                 coincidencia.state === "checked" ? "" : 

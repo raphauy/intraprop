@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BellRing, Building, Clipboard, LayoutDashboard, Music3, PackageOpen, Settings, User } from "lucide-react";
+import { BellRing, Building, ChevronRightSquare, Clipboard, LayoutDashboard, Music3, PackageOpen, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -48,6 +48,11 @@ const data= [
   {
     href: "divider", icon: User
   },  
+  {
+    href: "/admin/prompt",
+    icon: ChevronRightSquare,
+    text: "Prompt"
+  },
   {
     href: "/admin/hooks",
     icon: Music3,

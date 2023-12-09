@@ -143,6 +143,8 @@ model Pedido {
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
   coincidences      Coincidence[]
+  notifications     NotificationPedido[]
+  status            String      @default("")
 }
 
 model Coincidence {
@@ -157,6 +159,7 @@ model Coincidence {
   createdAt       DateTime    @default(now())
   state           String      @default("pending")
   notifications   Notification[]
+  notificationPedidos NotificationPedido[]
 }
 
 model Notification {
@@ -168,6 +171,20 @@ model Notification {
   json           String?      @db.Text
   coincidences   Coincidence  @relation(fields: [coincidenceId], references: [id], onDelete: Cascade)
   coincidenceId  String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt  
+}
+
+model NotificationPedido {
+  id             String       @id @default(cuid())
+  status         String       @default("pending")
+  error          String?
+  sentAt         DateTime?
+  celulares      String?
+  json           String?      @db.Text
+  pedido         Pedido       @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  pedidoId       String
+  coincidences   Coincidence[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt  
 }

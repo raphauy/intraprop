@@ -1,5 +1,5 @@
-import { getConfigDAO, getValue } from "./config-services";
-import { getPendingNotificationsDAO, updateNotificationSent } from "./notification-services";
+import { getValue } from "./config-services";
+import { getPendingNotifications, updateNotificationSent } from "./notification-pedidos-services";
 
 
 export async function sendPendingNotifications() {   
@@ -9,30 +9,10 @@ export async function sendPendingNotifications() {
         console.log("NOTIFICATIONS_ENDPOINT endpoint not found")
         return
     }
-    const notifications= await getPendingNotificationsDAO()
+    const notifications= await getPendingNotifications()
 
-    // order notifications by pedido.number first and then by coincidence.number
-    notifications.sort((a, b) => {
-        if (a.coincidences.pedido.number < b.coincidences.pedido.number) {
-            return -1
-        }
-        if (a.coincidences.pedido.number > b.coincidences.pedido.number) {
-            return 1
-        }
-        if (a.coincidences.number < b.coincidences.number) {
-            return -1
-        }
-        if (a.coincidences.number > b.coincidences.number) {
-            return 1
-        }
-        return 0
-    })
-    
     for (const notification of notifications) {
-        const pedido= notification.coincidences.pedido
         console.log("celulares: ", notification.celulares)
-        console.log("pedido #", pedido.number)
-        console.log("coincidence #", notification.coincidences.number)
         console.log("----------------------")
         const json= notification.json
         const url= notificationsEndpoint

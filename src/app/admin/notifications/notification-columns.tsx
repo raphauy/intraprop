@@ -2,15 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { formatDateTimeWithSeconds } from "@/lib/utils";
-import { NotificationDAO } from "@/services/notification-services";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import {
   DeleteNotificationDialog,
 } from "./notification-dialogs";
+import { NotificationPedidoDAO } from "@/services/notification-pedidos-services";
 
-export const columns: ColumnDef<NotificationDAO>[] = [
+export const columns: ColumnDef<NotificationPedidoDAO>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => {
@@ -61,12 +61,17 @@ export const columns: ColumnDef<NotificationDAO>[] = [
     },
     cell: ({ row }) => {
       const data = row.original;
+      let inmobiliariaName= ""
+      if (data.coincidences.length > 0) {
+        inmobiliariaName= data.coincidences[0].property.inmobiliariaName
+      }
+
       return (
         <Button variant="link" className="px-0">
-          <Link href={`/admin/tablero?id=${data.pedidoId}&coincidenceId=${data.coincidenceId}`} prefetch={false} target="_blank" className="text-left">
-            <p>{data.pedidoOperacion?.toUpperCase()}</p>
-            <p>{data.pedidoTipo}</p>
+          <Link href={`/admin/tablero?id=${data.pedidoId}`} prefetch={false} target="_blank" className="text-left">
             <p>{data.pedidoNumber}</p>
+            <p>{inmobiliariaName}</p>
+            <p>{data.pedidoOperacion?.toUpperCase()}({data.pedidoTipo})</p>
           </Link>
         </Button>
       );
@@ -77,16 +82,26 @@ export const columns: ColumnDef<NotificationDAO>[] = [
     accessorKey: "Propiedad",
     cell: ({ row }) => {
       const data = row.original;
-      const slug= data.coincidence.property.inmobiliariaSlug
+      const coincidences= data.coincidences
+      if (!coincidences) {
+        return null
+      }
+      const slug= coincidences[0].property.inmobiliariaSlug
       return (
-        <Button variant="link" className="px-0">
-          <Link href={`/${slug}/tablero?id=${data.pedidoId}&coincidenceId=${data.coincidenceId}`} prefetch={false} target="_blank" className="text-left">
-            <p>{data.coincidence.property.inmobiliariaName}</p>
-            <p>Propiedad: {data.coincidence.property.idPropiedad}</p>
-            <p>#{data.coincidence.number}</p>
-          </Link>
-        </Button>
-      );
+        <div className="flex flex-col">
+        {
+          coincidences.map((coincidence) => {
+            return (
+              <Link key={coincidence.id} prefetch={false} target="_blank" 
+                href={`/${slug}/tablero?id=${data.pedidoId}&coincidenceId=${coincidence.id}`}                 
+                className="text-left cursor-pointer text-black hover:underline whitespace-nowrap">
+                #{coincidence.number} - Propiedad: {coincidence.property.idPropiedad}
+              </Link>
+          )
+          })
+        }
+        </div>
+      )
     }
   },
 
@@ -137,32 +152,17 @@ export const columns: ColumnDef<NotificationDAO>[] = [
 
 
   // {
-  //   accessorKey: "role",
-  //   header: ({ column }) => {
+  //   id: "actions",
+  //   cell: ({ row }) => {
+  //     const data = row.original;
+
+  //     const description = `Do you want to delete Notification ${data.id}?`;
+
   //     return (
-  //       <Button variant="ghost" className="pl-0 dark:text-white"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-  //         Rol
-  //         <ArrowUpDown className="w-4 h-4 ml-1" />
-  //       </Button>
-  //     )
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id))
+  //       <div className="flex items-center justify-end gap-2">
+  //         <DeleteNotificationDialog description={description} id={data.id} />
+  //       </div>
+  //     );
   //   },
   // },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const data = row.original;
-
-      const description = `Do you want to delete Notification ${data.id}?`;
-
-      return (
-        <div className="flex items-center justify-end gap-2">
-          <DeleteNotificationDialog description={description} id={data.id} />
-        </div>
-      );
-    },
-  },
 ];

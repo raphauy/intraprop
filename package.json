@@ -12,6 +12,7 @@
     "generate-services": "tsx src/generator/generate-services.ts",
     "generate-form": "tsx src/generator/generate-form.ts",
     "check": "tsx src/services/checker-service.ts",
+    "check-pedidos": "tsx src/services/checker-pedidos.ts",
     "send": "tsx src/services/notification-sender.ts"
   },
   "dependencies": {

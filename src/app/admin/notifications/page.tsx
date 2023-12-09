@@ -1,10 +1,10 @@
-import { getNotificationsDAO } from "@/services/notification-services";
-import { DataTable } from "./notification-table";
-import { columns } from "./notification-columns";
 import { getInmobiliariasDAO } from "@/services/inmobiliaria-services";
+import { getNotificationsPedidoDAO } from "@/services/notification-pedidos-services";
+import { columns } from "./notification-columns";
+import { DataTable } from "./notification-table";
 
 export default async function UsersPage() {
-  const data = await getNotificationsDAO();
+  const data = await getNotificationsPedidoDAO()
   const inmobiliariasDAO= await getInmobiliariasDAO()
   const inmobiliarias= inmobiliariasDAO.map(i=> i.name)
 

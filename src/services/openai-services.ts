@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { OpenAI } from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { functions, runFunction } from "./functions";
+import { getValue } from "./config-services";
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
@@ -54,7 +55,7 @@ export async function runFunctions(text: string) {
     const messages: ChatCompletionMessageParam[] = [
         {
             role: "system",
-            content: getSystemMessage(),
+            content: await getSystemMessage(),
         },
         {
             role: "user",
@@ -103,10 +104,22 @@ type FunctionCallType = {
 }
 
 
-function getSystemMessage() {
+async function getSystemMessage() {
+  const prompt= await getValue("PROMPT")
+  if(!prompt) {
+      console.log("PROMPT config not found")
+  } else {
+      console.log("PROMPT config found")
+      return prompt
+  }
+
   return `
 Tu función es extraer del texto toda la información que puedas y utilizar la función 'registrarPedido' con esa información.
 Si en lo que refiere a presupuesto hay un rango, se debe utilizar el valor más alto.
 Es importante no confundir el valor del inmueble (en el caso de venta) o el valor del alquiler (en el caso de alquiler) con el valor de gastos comunes (que se pide a veces para apartamentos en alquiler).
+Cuando hablan de "lawn", "lawn tennis", están haciendo referencia a Carrasco Sur.
+Cuando hacen referencia a "lagos", " barrio lagos", están haciendo referencia a Parque Miramar
+Cuando hacen referencia a "Av de las américas", "Avenida de las américas", hacen referencia a Parque Miramar y Carrasco Este.
+Debes agregar la referencia al barrio en el que se encuentra el inmueble. Por ejemplo, si piden "Lagos", sabemos que el inmueble está en Parque Miramar, en las características del inmueble debes agregar "Lagos, Parque Miramar".
 `
 }

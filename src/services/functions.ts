@@ -91,15 +91,17 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
     if (presupuestoMaxOrig) presupuestoMax= Math.round((presupuestoMaxOrig * (1+budgetPercMax)) * 100) / 100
 
     const presupuestoLog= `Rango buscado: (${presupuestoMin ? presupuestoMin.toLocaleString('es-UY') : "0"}, ${presupuestoMax ? presupuestoMax.toLocaleString('es-UY') : "inf"}) ${presupuestoMoneda}, (-${budgetPercMin*100}%, +${budgetPercMax*100}%)`
-    const presupuesto= (presupuestoMinOrig === presupuestoMaxOrig ? presupuestoMinOrig.toLocaleString('es-UY') + "" : presupuestoMinOrig.toLocaleString('es-UY') + "-" + presupuestoMaxOrig.toLocaleString('es-UY')) + " " + presupuestoMoneda
+    const presupuesto= (presupuestoMinOrig === presupuestoMaxOrig ? (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY') : "-") + "" : 
+        (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY') : "") + "-" + (presupuestoMaxOrig ? presupuestoMaxOrig.toLocaleString('es-UY') : "")) + " " + (presupuestoMoneda ? presupuestoMoneda : "")
 
     const pedido= await getPedidoDAO(pedidoId)
     const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
+    const notDiscard= formattedCaracteristicas && ((operacion && operacion.toUpperCase() !== "N/D") || (tipo && tipo.toUpperCase() !== "N/D"))
     const pedidoForm: PedidoFormValues= {
       text: pedido.text,
       phone: pedido.phone as string,
-      tipo: tipo.toLowerCase(),
-      operacion: operacion.toUpperCase(),
+      tipo: tipo && tipo.toLowerCase(),
+      operacion: operacion && operacion.toUpperCase(),
       presupuesto,
       presupuestoMin,
       presupuestoMax,
@@ -108,7 +110,8 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
       zona: zona,
       dormitorios: dormitorios,
       caracteristicas: formattedCaracteristicas,
-      contacto: contacto,        
+      contacto: contacto,
+      status: notDiscard ? "pending" : "discarded",
     }
 
     const updated= await updatePedido(pedidoId, pedidoForm)
@@ -128,10 +131,10 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
 
 function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string, gastosComunes: string, zona: string, dormitorios: string, caracteristicas: string) {
   let formattedCaracteristicas= ""
-  if (tipo && tipo !== "N/D") {
+  if (tipo && tipo.toUpperCase() !== "N/D") {
     formattedCaracteristicas= tipo
   }
-  if (operacion && operacion !== "N/D") {
+  if (operacion && operacion.toUpperCase() !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + " para " + operacion
   }
   if (presupuestoMin === presupuestoMax && presupuestoMin && presupuestoMax) {
@@ -143,19 +146,19 @@ function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: num
   } else if (presupuestoMax) {
     formattedCaracteristicas= formattedCaracteristicas + " con valor menor a " + presupuestoMax
   }
-  if (presupuestoMoneda && presupuestoMoneda !== "N/D") {
+  if (presupuestoMoneda && presupuestoMoneda.toUpperCase() !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + " " + presupuestoMoneda
   }
-  if (dormitorios && dormitorios !== "N/D") {
+  if (dormitorios && dormitorios.toUpperCase() !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + " con " + dormitorios + " dormitorios"
   }
-  if (zona && zona !== "N/D") {
+  if (zona && zona.toUpperCase() !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + ", en " + zona
   }
-  if (gastosComunes && gastosComunes !== "N/D") {
+  if (gastosComunes && gastosComunes.toUpperCase() !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + ", con gastos comunes " + gastosComunes
   }
-  if (caracteristicas && caracteristicas !== "N/D") {
+  if (caracteristicas && caracteristicas.toUpperCase() !== "N/D") {
     formattedCaracteristicas= formattedCaracteristicas + ". Extras: " + caracteristicas
   }
   return formattedCaracteristicas

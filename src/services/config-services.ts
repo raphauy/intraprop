@@ -22,7 +22,9 @@ export async function getConfigsDAO() {
       id: 'asc'
     },
   })
-  return found as ConfigDAO[]
+  const filtered= found.filter((config) => (config.name !== "PROMPT"))
+
+  return filtered as ConfigDAO[]
 }
   
 export async function getConfigDAO(id: string) {
@@ -43,6 +45,32 @@ export async function getValue(name: string) {
   return found?.value
 }
 
+export async function setValue(name: string, value: string) {
+  const found = await prisma.config.findUnique({
+    where: {
+      name
+    },
+  })
+  if (found) {
+    const updated = await prisma.config.update({
+      where: {
+        id: found.id
+      },
+      data: {
+        value
+      }
+    })
+    return updated
+  } else {
+    const created = await prisma.config.create({
+      data: {
+        name,
+        value
+      }
+    })
+    return created
+  }
+}
 
 export async function createConfig(data: ConfigFormValues) {
   const created = await prisma.config.create({

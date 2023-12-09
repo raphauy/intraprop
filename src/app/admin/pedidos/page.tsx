@@ -1,10 +1,10 @@
-import { getPedidosDAO } from "@/services/pedido-services";
+import { getAllPedidosDAO, getPedidosDAO } from "@/services/pedido-services";
 import { PedidoDialog } from "./pedido-dialogs";
 import { DataTable } from "./pedido-table";
 import { columns } from "./pedido-columns";
 
 export default async function UsersPage() {
-  const data = await getPedidosDAO("ALL");
+  const data = await getAllPedidosDAO();
 
   return (
     <div className="w-full">

@@ -6,14 +6,26 @@ export async function POST(request: Request ) {
         
         const json= await request.json()
         const notification= JSON.parse(json)
-        console.log("inmobiliaria: ", notification.propiedad.inmobiliaria)        
-        console.log("order #", notification.order)
+        console.log(notification)        
+        
+        console.log("pedido #", notification.number)
+        console.log("inmobiliaria: ", notification.inmobiliaria)        
         console.log("celulares: ", notification.celulares)
-        console.log("pedido #", notification.pedido.number)
-        console.log("idPropiedad", notification.propiedad.idPropiedad)
         console.log("tablero", notification.tablero)
-        console.log("name", notification.pedido.name)
-        console.log("group", notification.pedido.group)
+        console.log("name", notification.name)
+        console.log("group", notification.group)
+        const coincidences= notification.coincidencias
+        console.log("coincidences: ")
+        for(const coincidence of coincidences) {
+            console.log("\tcoincidence: #", coincidence.number)
+            console.log("\tscore: ", coincidence.score)
+            console.log("\tidPropiedad: ", coincidence.idPropiedad)
+            console.log("\ttipo: ", coincidence.tipo)
+            console.log("\tvalor: ", coincidence.valor)
+            console.log("\tmoneda: ", coincidence.moneda)
+            console.log("\tzona: ", coincidence.zona)
+            console.log("\turl: ", coincidence.url)
+        }
         console.log("----------------------")
 
         // sleep 2 seconds
@@ -22,6 +34,7 @@ export async function POST(request: Request ) {
         return NextResponse.json({ data: "ACK" }, { status: 200 })
 
     } catch (error) {
+        console.log("error: ", error)        
         return NextResponse.json({ error: "error: " + error}, { status: 502 })        
     }
    

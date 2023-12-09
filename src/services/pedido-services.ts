@@ -5,7 +5,7 @@ import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.m
 import { CoincidenceDAO, CoincidenceFormValues, getCoincidencesDAO } from "./coincidence-services"
 import { OpenAIEmbeddings } from "langchain/embeddings/openai"
 import pgvector from 'pgvector/utils';
-import { Pedido } from "@prisma/client"
+import { Coincidence, Inmobiliaria, Pedido, Property } from "@prisma/client"
 import { InmobiliariaDAO, getInmobiliariaDAO, getInmobiliariaDAOByslug } from "./inmobiliaria-services"
 import { distanceToPercentage } from "@/lib/utils"
 import { getValue } from "./config-services"
@@ -49,7 +49,8 @@ export const pedidoFormSchema = z.object({
   presupuestoMoneda: z.string().optional(),
 	zona: z.string().optional(),
 	dormitorios: z.string().optional(),
-	caracteristicas: z.string().optional(),  
+	caracteristicas: z.string().optional(),
+  status: z.string().optional(),
 })
 export type PedidoFormValues = z.infer<typeof pedidoFormSchema>
 
@@ -117,7 +118,85 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
   
   return res
 }
+
+export async function getAllPedidosDAO(): Promise<PedidoDAO[]> {
+  const found = await prisma.pedido.findMany({
+    orderBy: {
+      createdAt: "desc"
+    },
+    include: {
+      coincidences: {
+        include: {
+          property: true
+        }
+      }   
+    },
+  })
+
+  return found as PedidoDAO[]
+ 
+  // const res: PedidoDAO[] = []
+  // found.filter((item) => ((item.operacion !== null && item.operacion !== "" && item.operacion !== "N/D") || (item.tipo !== null && item.tipo !== "" && item.tipo !== "N/D")))
+  // .forEach((item) => {
+  //   const pedido: PedidoDAO = item as PedidoDAO
+  //   const cantCoincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
+  //   pedido.cantCoincidencias = cantCoincidenciasChecked.length
+  //   res.push(pedido)
+  // })
   
+  // return res
+}
+
+export type CoincidenceWithProperty = Coincidence & {
+  property: Property
+}
+export type PedidoWithCoincidences = Pedido & {
+  coincidences: CoincidenceWithProperty[]
+}
+
+export async function getPedidosPending(): Promise<PedidoWithCoincidences[]> {
+  const found = await prisma.pedido.findMany({
+    orderBy: {
+      createdAt: "desc"
+    },
+    include: {
+      coincidences: {
+        include: {
+          property: true
+        }
+      }
+    },
+    where: {
+      status: "pending",
+    },
+  })
+  
+  return found
+}
+
+export async function getPedidosChecked(): Promise<PedidoWithCoincidences[]> {
+  const found = await prisma.pedido.findMany({
+    orderBy: {
+      createdAt: "desc"
+    },
+    include: {
+      coincidences: {
+        include: {
+          property: true
+        },
+        orderBy: {
+          number: "asc"
+        }
+      }
+    },
+    where: {
+      status: "checked",
+    },
+  })
+  
+  return found
+}
+
 export async function getPedidoDAO(id: string) {  
   const found = await prisma.pedido.findUnique({
     where: {
@@ -144,7 +223,24 @@ export async function getLastPedidoDAO(): Promise<PedidoDAO | null> {
     },
     include: {
       coincidences: true      
-    }
+    },
+    where: {
+      caracteristicas: {
+        not: null,
+      },
+      AND: [
+        {
+          caracteristicas: {
+            not: ""
+          }
+        },
+        {
+          caracteristicas: {
+            not: "N/D"
+          }
+        }
+      ],
+    },
   })
 
   if (!found) {
@@ -233,6 +329,18 @@ export async function updatePedido(id: string, data: PedidoFormValues) {
       id
     },
     data
+  })
+  return updated
+}
+
+export async function updatePedidoStatus(id: string, status: string) {
+  const updated = await prisma.pedido.update({
+    where: {
+      id
+    },
+    data: {
+      status
+    }
   })
   return updated
 }
