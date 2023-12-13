@@ -7,6 +7,7 @@ import { CoincidenceDAO } from "@/services/coincidence-services"
 import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
 import { number } from "zod"
 import HoverNotification from "./hover-notification"
+import { getValue } from "@/services/config-services"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
@@ -15,8 +16,14 @@ type Props = {
     presupuestoLog?: string
 }
 
-export default function Coincidencias({ coincidencias, operacion, coincidenceId, presupuestoLog }: Props) {
+export default async function Coincidencias({ coincidencias, operacion, coincidenceId, presupuestoLog }: Props) {
     
+    const MIN_SCORE_ALTA= await getValue("MIN_SCORE_ALTA")
+    const minScoreAlta= MIN_SCORE_ALTA ? parseInt(MIN_SCORE_ALTA) : 60
+
+    const MIN_SCORE_MEDIA= await getValue("MIN_SCORE_MEDIA")
+    const minScoreMedia= MIN_SCORE_MEDIA ? parseInt(MIN_SCORE_MEDIA) : 50
+
     if (coincidencias.length === 0) 
         return (
             <Card>
@@ -84,9 +91,9 @@ export default function Coincidencias({ coincidencias, operacion, coincidenceId,
                                     <TableCell className="flex items-center gap-1 justify-between">
                                         <div className="flex items-center gap-1">
                                             <div className="whitespace-nowrap text-base flex items-center gap-1">
-                                                    {65 <= score && <p>Alta 💚</p>}
-                                                    {50 <= score && score < 65 && <p>Media 💛</p>}
-                                                    {score < 50 && <p>Baja 🧡</p>}
+                                                    {minScoreAlta <= score && <p>Alta 💚</p>}
+                                                    {minScoreMedia <= score && score < minScoreAlta && <p>Media 💛</p>}
+                                                    {score < minScoreMedia && <p>Baja 🧡</p>}
                                                     {coincidencia.notificationPedido && <HoverNotification coincidence={coincidencia} />}
                                             </div>
                                             <div className="w-fit">{

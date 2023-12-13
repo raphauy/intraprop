@@ -227,11 +227,11 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
           inmobiliaria: true
         },        
       },
-      notifications: true
+      notificationPedidos: true
     }    
   })
   const res= found.map((coincidence) => {
-    const notification= coincidence.notifications[0] ? coincidence.notifications[0] : undefined
+    const notificationPedido= coincidence.notificationPedidos[0] ? coincidence.notificationPedidos[0] : undefined
     return {
       ...coincidence,
       property: {
@@ -240,7 +240,7 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
         inmobiliariaName: coincidence.property.inmobiliaria?.name,
         inmobiliariaSlug: coincidence.property.inmobiliaria?.slug
       },
-      notification
+      notificationPedido
     }
   })
 

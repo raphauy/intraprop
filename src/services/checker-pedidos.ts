@@ -7,6 +7,7 @@ import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.m
 import { CoincidenceWithProperty, getPedidosChecked, getPedidosPending, updateCoincidencesNumbers, updatePedidoStatus } from "./pedido-services";
 import { createNotificationPedido } from "./notification-pedidos-services";
 import { sendPendingNotifications } from "./notification-sender";
+import { getValue } from "./config-services";
 
 
 export async function checkPendingCoincidences() {
@@ -18,14 +19,19 @@ export async function checkPendingCoincidences() {
         })
         console.log("pending coincidences: ", pendingCoincidences.length)        
         for (const coincidence of pendingCoincidences) {
-            await checkDistance(coincidence)
+            await checkScore(coincidence)
         }
     }
 }
 
-export async function checkDistance(coincidence: Coincidence) {
+export async function checkScore(coincidence: Coincidence) {
+    const MIN_SCORE_ALTA= await getValue("MIN_SCORE_ALTA")
+    if(!MIN_SCORE_ALTA) console.log("MIN_SCORE_ALTA not found")
+
+    const minScore= MIN_SCORE_ALTA ? parseInt(MIN_SCORE_ALTA) : 60
+  
     let newStatus= "distance_banned"
-    if (coincidence.distance <= 0.45) {
+    if (coincidence.score >= minScore) {
         newStatus= "distance_ok"
     }
     await updateCoincidence(coincidence.id, newStatus)

@@ -504,8 +504,6 @@ export async function createCoincidencesProperties(pedidoId: string) {
     data: coincidences
   })
 
-//  await updateCoincidencesNumbers(pedidoId)
-
   return createdCoincidences  
 }
 
