@@ -660,9 +660,12 @@ export async function similaritySearchV2(tipo: string, operacion: string, caract
       ORDER BY distance 
       LIMIT ${limit}`
   } else {
+    console.log("no operacion en la query")
+    
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
+      WHERE TRUE ${Prisma.sql([dormitoriosCondition])}
       ORDER BY distance 
       LIMIT ${limit}`
   }  
