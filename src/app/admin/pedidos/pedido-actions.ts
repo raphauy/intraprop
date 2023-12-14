@@ -13,15 +13,13 @@ export async function createOrUpdatePedidoAction(id: string | null, data: Pedido
   if (id) {
       updated= await updatePedido(id, data)
   } else {
-      //updated= await createPedido(data)
       updated= await createPedidoWithFunctions(data.text, data.phone, data.name, data.group)
   }
 
   if (!updated) throw new Error("Error al crear el pedido")
   
-  //sleep 2 seconds
-  await new Promise(resolve => setTimeout(resolve, 2000))
-  
+  await new Promise(resolve => setTimeout(resolve, 4000))
+
   await createCoincidencesProperties(updated.id)
 
   revalidatePath("/admin/pedidos")
@@ -46,6 +44,8 @@ export async function runThreadAction(id: string): Promise<boolean> {
 
   const updated= await updatePedidoWithFunctions(id)
   if (!updated) throw new Error("Error al actualizar el pedido")
+
+  await new Promise(resolve => setTimeout(resolve, 4000))
 
   await createCoincidencesProperties(updated.id)
 

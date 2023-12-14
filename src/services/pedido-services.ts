@@ -5,7 +5,7 @@ import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.m
 import { CoincidenceDAO, CoincidenceFormValues, getCoincidencesDAO } from "./coincidence-services"
 import { OpenAIEmbeddings } from "langchain/embeddings/openai"
 import pgvector from 'pgvector/utils';
-import { Coincidence, Inmobiliaria, Pedido, Property } from "@prisma/client"
+import { Coincidence, Inmobiliaria, Pedido, Prisma, Property } from "@prisma/client"
 import { InmobiliariaDAO, getInmobiliariaDAO, getInmobiliariaDAOByslug } from "./inmobiliaria-services"
 import { distanceToPercentage } from "@/lib/utils"
 import { getValue } from "./config-services"
@@ -484,7 +484,8 @@ export async function createCoincidencesProperties(pedidoId: string) {
   }
   const operacion= pedido.operacion || "N/D"
   const tipo= pedido.tipo || "N/D"
-  const similarityResult= await similaritySearchV2(tipo, operacion, caracteristicas)
+  const dormitorios= parseDormitorios(pedido.dormitorios)
+  const similarityResult= await similaritySearchV2(tipo, operacion, caracteristicas, dormitorios)
   console.log("similarityResult length:", similarityResult.length);
   
   // iterate over similarityResult and create coincidences
@@ -505,6 +506,31 @@ export async function createCoincidencesProperties(pedidoId: string) {
   })
 
   return createdCoincidences  
+}
+
+function parseDormitorios(dormitorios: string | undefined): number {
+  if (!dormitorios) {
+    return 0
+  }
+
+  // Convertir a minúsculas para manejar casos insensibles a mayúsculas
+  dormitorios = dormitorios.toLowerCase()
+
+  // Verificar si la entrada es directamente un número
+  if (!isNaN(Number(dormitorios))) {
+      return Number(dormitorios)
+  }
+
+  // Separar la entrada en partes por comas o la palabra 'o'
+  const partes = dormitorios.split(/,| o /)
+
+  // Convertir las partes a números y filtrar los no numéricos
+  const numeros = partes
+      .map(parte => Number(parte.trim()))
+      .filter(num => !isNaN(num))
+
+  // Si hay números, devolver el menor valor, de lo contrario, devolver 0
+  return numeros.length > 0 ? Math.min(...numeros) : 0
 }
 
 async function removeCoincidences(pedidoId: string) {
@@ -569,7 +595,7 @@ export async function updateCoincidencesNumbers(pedidoId: string) {
 }
 
 
-export async function similaritySearchV2(tipo: string, operacion: string, caracteristicas: string) : Promise<SimilaritySearchResult[]> {
+export async function similaritySearchV2(tipo: string, operacion: string, caracteristicas: string, dormitorios: number) : Promise<SimilaritySearchResult[]> {
   const LIMIT_RESULTS= await getValue("LIMIT_RESULTS")
   let limit= 10
   if(LIMIT_RESULTS) limit= parseInt(LIMIT_RESULTS)
@@ -589,46 +615,48 @@ export async function similaritySearchV2(tipo: string, operacion: string, caract
   const vector= await embeddings.embedQuery(caracteristicas)
   const embedding = pgvector.toSql(vector)
 
+  const dormitoriosCondition= dormitorios > 0 ? `AND "dormitorios"::NUMERIC >= ${dormitorios}` : ""
+
   if (esCasa && esVenta) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("tipo") = 'casa' AND LOWER("enVenta") = 'si'
+      WHERE LOWER("tipo") = 'casa' AND LOWER("enVenta") = 'si' ${Prisma.sql([dormitoriosCondition])}
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esCasa && esAlquiler) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("tipo") = 'casa' AND LOWER("enAlquiler") = 'si' 
+      WHERE LOWER("tipo") = 'casa' AND LOWER("enAlquiler") = 'si' ${Prisma.sql([dormitoriosCondition])}
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esApartamento && esVenta) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("tipo") = 'apartamento' AND LOWER("enVenta") = 'si' 
+      WHERE LOWER("tipo") = 'apartamento' AND LOWER("enVenta") = 'si' ${Prisma.sql([dormitoriosCondition])}
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esApartamento && esAlquiler) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("tipo") = 'apartamento' AND LOWER("enAlquiler") = 'si' 
+      WHERE LOWER("tipo") = 'apartamento' AND LOWER("enAlquiler") = 'si' ${Prisma.sql([dormitoriosCondition])}
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esVenta) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("enVenta") = 'si' 
+      WHERE LOWER("enVenta") = 'si' ${Prisma.sql([dormitoriosCondition])}
       ORDER BY distance 
       LIMIT ${limit}`
   } else if (esAlquiler) {
     result = await prisma.$queryRaw`
       SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance 
       FROM "Property" 
-      WHERE LOWER("enAlquiler") = 'si' 
+      WHERE LOWER("enAlquiler") = 'si' ${Prisma.sql([dormitoriosCondition])}
       ORDER BY distance 
       LIMIT ${limit}`
   } else {
