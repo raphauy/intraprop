@@ -29,6 +29,12 @@ export async function POST(request: Request, { params }: Props ) {
             return NextResponse.json({ error: "idPropiedad is required" }, { status: 400 })
         }
 
+        const dormitorios= json.dormitorios
+        if (dormitorios && isNaN(dormitorios)) {
+            console.log("dormitorios is not a number")            
+            return NextResponse.json({ error: "dormitorios is not a number" }, { status: 400 })
+        }
+
         const updated= await createOrUpdatePropertyWithPrisma(json, inmobiliariaId)
 
         if (!updated) return NextResponse.json({ error: "error updating property" }, { status: 502 })
