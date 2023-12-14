@@ -522,7 +522,7 @@ function parseDormitorios(dormitorios: string | undefined): number {
   }
 
   // Separar la entrada en partes por comas o la palabra 'o'
-  const partes = dormitorios.split(/,| o /)
+  const partes = dormitorios.split(/,| o |\/|-/);
 
   // Convertir las partes a números y filtrar los no numéricos
   const numeros = partes
