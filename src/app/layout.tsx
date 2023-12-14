@@ -44,6 +44,17 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                 <div className="sm:px-1 md:px-2 xl:px-3 flex flex-col items-center flex-1">
                   {children}
                   <Toaster />
+                  <p className="text-xs text-center text-gray-400">
+                    Powered by {" "}
+                    <a
+                      href="https://www.osomdigital.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-colors hover:text-black"
+                    >            
+                      Osom Digital
+                    </a>
+                  </p>
                 </div>
               </div>            
               <TailwindIndicator />
