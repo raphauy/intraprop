@@ -103,7 +103,7 @@ export default function SideBar() {
       <section className="mb-4">
         {divider()}
         
-        <p className="hidden sm:block lg:w-36 ml-3 font-bold">Versión 0.12.14</p>                  
+        <p className="hidden sm:block lg:w-36 ml-3 font-bold">Versión 0.12.15</p>                  
       </section>
     </div>
   );
