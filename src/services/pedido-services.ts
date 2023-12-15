@@ -253,6 +253,17 @@ export async function getLastPedidoDAO(): Promise<PedidoDAO | null> {
   return res
 }
 
+export async function getLast10Pedidos(){
+  const found = await prisma.pedido.findMany({
+    orderBy: {
+      createdAt: "desc"
+    },
+    take: 10
+  })
+  
+  return found
+}
+
 export async function getLastPedidoDAOByInmobiliaria(inmobiliariaId: string) {
 
   const found = await prisma.pedido.findFirst({

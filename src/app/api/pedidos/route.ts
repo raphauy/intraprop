@@ -1,4 +1,5 @@
 import { createOrUpdatePedidoAction } from "@/app/admin/pedidos/pedido-actions";
+import { getLast10Pedidos } from "@/services/pedido-services";
 import { updateEmbedding } from "@/services/property-services";
 import { createOrUpdatePropertyWithPrisma } from "@/services/propertyUpdateService";
 import { NextResponse } from "next/server";
@@ -29,6 +30,15 @@ export async function POST(request: Request, { params }: Props ) {
 
         if (!text) return NextResponse.json({ error: "text is required" }, { status: 400 })
         if (!phone) return NextResponse.json({ error: "phone is required" }, { status: 400 })
+
+        const last10Pedidos= await getLast10Pedidos()
+        // check texts of the las 10 pedidos, if there is the same text as text, return
+        for (const pedido of last10Pedidos) {
+            if (pedido.text === text) {
+                console.log("Pedido already exists")
+                return NextResponse.json({ error: "error: " + "Pedido already exists."}, { status: 400 })
+            }
+        }
 
         const dataPedido= {
             text: text,
