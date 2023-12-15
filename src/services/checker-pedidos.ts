@@ -117,6 +117,11 @@ export async function checkBudgetOkCoincidences() {
 }
 
 export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pedido) {
+    const zona= pedido.zona
+    if (zona && (zona === "" || zona.toUpperCase() === "N/D")) {
+        await updateCoincidence(coincidence.id, "checked")
+        return
+    }
     
     const OPENAI_ASSISTANT_ID= process.env.OPENAI_ZONE_ASSISTANT_ID
     if (!OPENAI_ASSISTANT_ID) {
