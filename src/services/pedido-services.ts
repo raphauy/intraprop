@@ -102,7 +102,7 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
   })
  
   const res: PedidoDAO[] = []
-  found.filter((item) => ((item.operacion !== null && item.operacion !== "" && item.operacion !== "N/D") || (item.tipo !== null && item.tipo !== "" && item.tipo !== "N/D")))
+  found.filter((item) => ((item.operacion !== null && item.operacion !== "" && item.operacion.toUpperCase() !== "N/D") || (item.tipo !== null && item.tipo !== "" && item.tipo.toUpperCase() !== "N/D")))
   .forEach((item) => {
     const pedido: PedidoDAO = item as PedidoDAO
     const cantCoincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
