@@ -82,6 +82,9 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
       }   
     },
     where: {
+      status: {
+        not: "discarded"
+      },      
       caracteristicas: {
         not: null,
       },

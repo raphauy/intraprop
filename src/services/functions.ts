@@ -13,6 +13,10 @@ export const functions= [
           type: "string",
           description: "Identificador del pedido a analizar. Este identificador es proporcionado junto al texto del pedido.",
         },
+        intencion: {
+          type: "string",
+          description: "Este campo tiene tres valores posibles PEDIDO, OFERTA y NINGUNO. Se debe identificar la intención del texto que puede ser un pedido de propiedad o una oferta de propiedad. Generalmente las ofertas dicen cosas como 'comparto', 'compartimos' o ponen links. Generalmente los pedidos dicen cosas como 'busco', 'necesito', 'estoy buscando', etc. Si no se puede identificar la intención se debe llenar este campo con NINGUNO.",
+        },
         tipo: {
           type: "string",
           description: "casa, apartamento, terreno, local, oficina, etc. Cuando dicen PH se refieren a un apartamento. Si no se puede encontrar un tipo en el texto del pedido se debe llenar este campo con N/D",
@@ -60,8 +64,9 @@ export const functions= [
 ];
 
 
-export async function registrarPedido(pedidoId: string, tipo: string, operacion: string, presupuestoMinOrig: number, presupuestoMaxOrig: number, presupuestoMoneda: string, gastosComunes: string, zona: string, dormitorios: string, caracteristicas: string, contacto: string) {
+export async function registrarPedido(pedidoId: string, intencion: string, tipo: string, operacion: string, presupuestoMinOrig: number, presupuestoMaxOrig: number, presupuestoMoneda: string, gastosComunes: string, zona: string, dormitorios: string, caracteristicas: string, contacto: string) {
   console.log("pedidoId: ", pedidoId)
+  console.log("intencion: ", intencion)
   console.log("tipo: ", tipo)
   console.log("operacion: ", operacion)
   console.log("presupuestoMin: ", presupuestoMinOrig)
@@ -70,6 +75,7 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
   console.log("zona: ", zona)
   console.log("dormitorios: ", dormitorios)
   console.log("caracteristicas: ", caracteristicas)
+
 
   if (pedidoId) {
     const BUDGET_PERC_MIN= await getValue("BUDGET_PERC_MIN")
@@ -113,24 +119,42 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
     const presupuesto= (presupuestoMinOrig === presupuestoMaxOrig ? (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY') : "-") + "" : 
         (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY')+"-" : "") + (presupuestoMaxOrig ? presupuestoMaxOrig.toLocaleString('es-UY') : "inf")) + " " + (presupuestoMoneda ? presupuestoMoneda : "")
 
+    const isPedido= intencion && intencion.toUpperCase() === "PEDIDO"
     const pedido= await getPedidoDAO(pedidoId)
-    const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
-    const notDiscard= formattedCaracteristicas && ((operacion && operacion.toUpperCase() !== "N/D") || (tipo && tipo.toUpperCase() !== "N/D"))
-    const pedidoForm: PedidoFormValues= {
+
+    if (!pedido) {
+      console.log("Pedido not found")
+      return
+    } 
+
+    let pedidoForm: PedidoFormValues= {
       text: pedido.text,
       phone: pedido.phone as string,
-      tipo: tipo && tipo.toLowerCase(),
-      operacion: operacion && operacion.toUpperCase(),
-      presupuesto,
-      presupuestoMin,
-      presupuestoMax,
-      presupuestoLog: presupuestoLog,
-      presupuestoMoneda: presupuestoMoneda,
-      zona: zona,
-      dormitorios: dormitorios,
-      caracteristicas: formattedCaracteristicas,
-      contacto: contacto,
-      status: notDiscard ? "pending" : "discarded",
+      contacto: "status: discarded, intención: " + intencion, 
+      status: "discarded",
+    }
+
+    if (isPedido) {
+      const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
+      const notDiscard= formattedCaracteristicas && ((operacion && operacion.toUpperCase() !== "N/D") || (tipo && tipo.toUpperCase() !== "N/D"))
+      pedidoForm= {
+        text: pedido.text,
+        phone: pedido.phone as string,
+        tipo: tipo && tipo.toLowerCase(),
+        operacion: operacion && operacion.toUpperCase(),
+        presupuesto,
+        presupuestoMin,
+        presupuestoMax,
+        presupuestoLog: presupuestoLog,
+        presupuestoMoneda: presupuestoMoneda,
+        zona: zona,
+        dormitorios: dormitorios,
+        caracteristicas: formattedCaracteristicas,
+        contacto: notDiscard ? contacto : "status: discarded",
+        status: notDiscard ? "pending" : "discarded",
+      }
+    } else {
+      console.log("Pedido is " + intencion + ", discarding.")      
     }
 
     const updated= await updatePedido(pedidoId, pedidoForm)
@@ -139,6 +163,7 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
     } else {
       console.log("Pedido actualizado.")
     }
+
   }
 
   const responseData = {
@@ -188,7 +213,7 @@ function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: num
 export async function runFunction(name: string, args: any) {
   switch (name) {
     case "registrarPedido":
-      return registrarPedido(args["pedidoId"], args["tipo"], args["operacion"], args["presupuestoMin"], args["presupuestoMax"], args["presupuestoMoneda"], args["gastosComunes"], args["zona"], args["dormitorios"], args["caracteristicas"], args["contacto"])
+      return registrarPedido(args["pedidoId"], args["intencion"], args["tipo"], args["operacion"], args["presupuestoMin"], args["presupuestoMax"], args["presupuestoMoneda"], args["gastosComunes"], args["zona"], args["dormitorios"], args["caracteristicas"], args["contacto"])
 
     default:
       return null;
