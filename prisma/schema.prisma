@@ -88,8 +88,10 @@ model Property {
   enAlquilerTemporal     String?
   monedaVenta            String?
   precioVenta            String?
+  precioVentaUSD         Int?
   monedaAlquiler         String?
   precioAlquiler         String?
+  precioAlquilerUYU      Int?
   monedaAlquilerTemporal String?
   precioAlquilerTemporal String?
   alquilada              String?  

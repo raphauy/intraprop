@@ -31,6 +31,7 @@ export type CoincidenceDAO = {
     pais: string
     precioVenta: string
     precioAlquiler: string
+    precioAlquilerUYU: number
     url: string
     inmobiliariaId: string
     inmobiliariaName: string
@@ -74,6 +75,7 @@ export async function getAllCoincidencesDAO() {
           pais: true,
           precioVenta: true,
           precioAlquiler: true,
+          precioAlquilerUYU: true,
           url: true,
           inmobiliaria: true
         },
@@ -125,6 +127,7 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
           pais: true,
           precioVenta: true,
           precioAlquiler: true,
+          precioAlquilerUYU: true,
           url: true,
           inmobiliaria: true
         },
@@ -223,6 +226,7 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
           pais: true,
           precioVenta: true,
           precioAlquiler: true,
+          precioAlquilerUYU: true,
           url: true,
           inmobiliaria: true
         },        
@@ -273,6 +277,7 @@ export async function getCoincidenceDAO(id: string) {
           pais: true,
           precioVenta: true,
           precioAlquiler: true,
+          precioAlquilerUYU: true,
           url: true,
           inmobiliaria: true
         },
@@ -355,6 +360,7 @@ export async function getPendingCoincidences(state: string) {
           pais: true,
           precioVenta: true,
           precioAlquiler: true,
+          precioAlquilerUYU: true,
           url: true,
           inmobiliaria: true
         },

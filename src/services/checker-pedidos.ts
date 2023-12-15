@@ -62,20 +62,30 @@ export async function checkBudget(coincidence: CoincidenceWithProperty, pedido: 
 
     const presupuesto= parseCustom(presupuestoStr)
     const valorInmueble= parseCustom(valorInmuebleStr)
+    
 
     let newState= "budget_banned"
-    if (!presupuesto || !valorInmueble) {
+    // if (!presupuesto || !valorInmueble) {
+    if (!presupuesto) {
+            console.log("*****************************")
+        console.log("presupuesto ", presupuesto)
+        console.log("valorInmuebleStr ", valorInmuebleStr)        
+        console.log("valorInmueble ", valorInmueble)
+        console.log("*****************************")
         newState= "budget_ok"
     } else {
         const presupuestoMin= pedido.presupuestoMin || 0
         const presupuestoMax= pedido.presupuestoMax || 10000000000
+        const isAlquiler= pedido.operacion && (pedido.operacion.toUpperCase() === "ALQUILER" || pedido.operacion.toUpperCase() === "ALQUILAR")
+        const coincidenceMoneda= isAlquiler ? coincidence.property.monedaAlquiler : coincidence.property.monedaVenta
 
         console.log("----------------------")
         console.log("presupuestoMin: ", presupuestoMin)
         console.log("presupuestoMax: ", presupuestoMax)
         console.log("valorInmueble: ", valorInmueble)
+        console.log("coincidenceMoneda: ", coincidenceMoneda)
         console.log("----------------------")
-        if (presupuestoMax >= valorInmueble && valorInmueble >= presupuestoMin) {
+        if (valorInmueble && coincidenceMoneda && presupuestoMax >= valorInmueble && valorInmueble >= presupuestoMin) {
             newState= "budget_ok"
         }
     }
@@ -88,8 +98,8 @@ function getValorInmueble(coincidence: CoincidenceWithProperty, operacion: strin
         return coincidence.property.precioVenta + " " + coincidence.property.monedaVenta
     }
 
-    if (operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR" || operacion.toUpperCase() === "RENTA") {
-        return coincidence.property.precioAlquiler + " " + coincidence.property.monedaAlquiler
+    if (coincidence.property.precioAlquilerUYU && (operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR" || operacion.toUpperCase() === "RENTA")) {
+        return coincidence.property.precioAlquilerUYU + " UYU"
     }
 }
 

@@ -56,8 +56,13 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                     <TableBody>
                         {
                             coincidencias.map((coincidencia) => {
-                                const precioVenta= operacion.toUpperCase() === "VENTA" ? `${formatNumberWithDots(coincidencia.property.precioVenta)} ${coincidencia.property.monedaVenta}` : ""
-                                const precioAlquiler= operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR" ? `${formatNumberWithDots(coincidencia.property.precioAlquiler)}${coincidencia.property.monedaAlquiler}/mes` : ""
+                                const isVenta= operacion.toUpperCase() === "VENTA"
+                                const isAlquiler= operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR"
+                                const precioVenta= isVenta ? `${formatNumberWithDots(coincidencia.property.precioVenta)} ${coincidencia.property.monedaVenta}` : ""
+                                const precioAlquiler= isAlquiler ? `${formatNumberWithDots(coincidencia.property.precioAlquiler)}${coincidencia.property.monedaAlquiler}/mes` : ""
+                                const isUSD= coincidencia.property.monedaAlquiler === "USD" || coincidencia.property.monedaAlquiler === "U$S"
+                                const precioAlquilerUYU= isAlquiler  && isUSD && coincidencia.property.precioAlquilerUYU ? `${coincidencia.property.precioAlquilerUYU.toLocaleString('es-UY')}UYU/mes` : ""
+
                                 const precio= precioVenta || precioAlquiler
 
                                 const distance= coincidencia.distance
@@ -78,7 +83,10 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className={cn("text-right", coincidencia.state === "budget_banned" && "text-red-400")}>{precio}</TableCell>
+                                    <TableCell className={cn("text-right", coincidencia.state === "budget_banned" && "text-red-400")}>
+                                        {precio}
+                                        {isAlquiler && precioAlquilerUYU && <p className="text-xs">{precioAlquilerUYU}</p>}
+                                    </TableCell>
                                     <TableCell><p className={cn("dos-lineas", coincidencia.state === "zone_banned" && "text-red-400")}>{zona}</p></TableCell>
                                     <TableCell>
                                         <Link href={`/${coincidencia.property.inmobiliariaSlug}/tablero?id=${coincidencia.pedidoId}`} target="_blank">

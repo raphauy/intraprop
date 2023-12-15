@@ -1,3 +1,4 @@
+import { getValue } from "@/services/config-services";
 import { updateEmbedding } from "@/services/property-services";
 import { createOrUpdatePropertyWithPrisma } from "@/services/propertyUpdateService";
 import { NextResponse } from "next/server";
@@ -33,6 +34,28 @@ export async function POST(request: Request, { params }: Props ) {
         if (dormitorios && isNaN(dormitorios)) {
             console.log("dormitorios is not a number")            
             return NextResponse.json({ error: "dormitorios is not a number" }, { status: 400 })
+        }
+        const isAlquilable= json.precioAlquiler && json.monedaAlquiler
+        if (isAlquilable) {
+            const monedaAlquiler= json.monedaAlquiler.toUpperCase()
+            if (monedaAlquiler === "USD" || monedaAlquiler === "U$S") {
+                const COTIZACION= await getValue("COTIZACION")
+                let cotizacion= 40
+                if(COTIZACION) cotizacion= parseFloat(COTIZACION)
+                else console.log("COTIZACION not found")
+
+                json.precioAlquilerUYU= Math.round(parseFloat(json.precioAlquiler) * cotizacion)
+            } else if (monedaAlquiler === "UYU" || monedaAlquiler === "$") {
+                json.precioAlquilerUYU= json.precioAlquiler
+            } else {
+                console.log("monedaAlquiler is not valid")                
+            }
+        }
+        const isSellable= json.precioVenta && json.monedaVenta
+        if (!isAlquilable && !isSellable) {
+            console.log("****************************************************")            
+            console.log("ALERT: precioVenta and/or precioAlquiler is required")            
+            console.log("****************************************************")            
         }
 
         const updated= await createOrUpdatePropertyWithPrisma(json, inmobiliariaId)

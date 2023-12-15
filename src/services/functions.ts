@@ -82,6 +82,27 @@ export async function registrarPedido(pedidoId: string, tipo: string, operacion:
     if(BUDGET_PERC_MAX) budgetPercMax= parseFloat(BUDGET_PERC_MAX) / 100
     else console.log("BUDGET_PERC_MAX not found")
 
+    const COTIZACION= await getValue("COTIZACION")
+    let cotizacion= 40
+    if(COTIZACION) cotizacion= parseFloat(COTIZACION)
+    else console.log("COTIZACION not found")
+
+    const isAlquiler= operacion && (operacion.toUpperCase() === "ALQUILER" || operacion.toUpperCase() === "ALQUILAR")
+    // cambiar presupuestoMoneda cuando sea alquiler y la moneda sea USD
+    if (isAlquiler && presupuestoMoneda && presupuestoMoneda.toUpperCase() === "USD") {
+      presupuestoMoneda= "UYU"
+      presupuestoMinOrig= Math.round(presupuestoMinOrig * cotizacion)
+      presupuestoMaxOrig= Math.round(presupuestoMaxOrig * cotizacion)
+    }
+
+    const isVenta= operacion && operacion.toUpperCase() === "VENTA"
+    // cambiar presupuestoMoneda cuando sea venta y la moneda sea UYU
+    if (isVenta && presupuestoMoneda && presupuestoMoneda.toUpperCase() === "UYU") {
+      presupuestoMoneda= "USD"
+      presupuestoMinOrig= Math.round(presupuestoMinOrig / cotizacion)
+      presupuestoMaxOrig= Math.round(presupuestoMaxOrig / cotizacion)
+    }
+
 
     let presupuestoMin= undefined
     if (presupuestoMinOrig) presupuestoMin= Math.round((presupuestoMinOrig * (1-budgetPercMin)) * 100) / 100
