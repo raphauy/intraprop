@@ -46,7 +46,7 @@ export async function POST(request: Request, { params }: Props ) {
 
                 json.precioAlquilerUYU= Math.round(parseFloat(json.precioAlquiler) * cotizacion)
             } else if (monedaAlquiler === "UYU" || monedaAlquiler === "$") {
-                json.precioAlquilerUYU= json.precioAlquiler
+                json.precioAlquilerUYU= parseInt(json.precioAlquiler)
             } else {
                 console.log("monedaAlquiler is not valid")                
             }
