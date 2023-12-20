@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import getSession from "@/lib/auth"
 import { getInmobiliariaDAO } from "@/services/inmobiliaria-services"
+import { getLastPedidoDAO } from "@/services/pedido-services"
 import { HomeIcon } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -23,7 +24,9 @@ export default async function Home() {
   }
 
   if (user.role === "admin") {
-    
+    const last= await getLastPedidoDAO()
+    if (last) redirect(`/admin/tablero?id=${last.id}`)
+
     redirect("/admin/tablero")
   }
 
