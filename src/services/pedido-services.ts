@@ -499,7 +499,7 @@ export async function createCoincidencesProperties(pedidoId: string) {
   const operacion= pedido.operacion || "N/D"
   const tipo= pedido.tipo || "N/D"
   const dormitorios= parseDormitorios(pedido.dormitorios)
-  const similarityResult= await similaritySearchV2(tipo, operacion, caracteristicas, dormitorios)
+  const similarityResult= await similaritySearchV3(tipo, operacion, caracteristicas, dormitorios)
   console.log("similarityResult length:", similarityResult.length);
   
   // iterate over similarityResult and create coincidences
@@ -608,6 +608,77 @@ export async function updateCoincidencesNumbers(pedidoId: string) {
   }
 }
 
+export async function similaritySearchV3(tipo: string, operacion: string, caracteristicas: string, dormitorios: number) : Promise<SimilaritySearchResult[]> {
+  const LIMIT_RESULTS= await getValue("LIMIT_RESULTS")
+  let limit= 10
+  if(LIMIT_RESULTS) limit= parseInt(LIMIT_RESULTS)
+  else console.log("LIMIT_RESULTS not found")
+
+  const embeddings = new OpenAIEmbeddings({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    verbose: true,
+  })
+  let result: SimilaritySearchResult[]= []
+
+  const vector= await embeddings.embedQuery(caracteristicas)
+  const embedding = pgvector.toSql(vector)
+
+  const conditions= []
+
+  tipo= tipo.toLowerCase()
+  if (tipo) {
+    const isCasa= tipo.includes("casa")
+    const isApartamento= tipo.includes("apartamento") || tipo.includes("apto") || tipo.includes("departamento") || tipo.includes("depto")
+    if (isCasa && isApartamento){
+      conditions.push(Prisma.sql`AND (LOWER("tipo") = 'casa' OR LOWER("tipo") = 'apartamento')`)
+    } else if (isCasa) {
+      conditions.push(Prisma.sql`AND LOWER("tipo") = 'casa'`)
+    } else if (isApartamento) {
+      conditions.push(Prisma.sql`AND LOWER("tipo") = 'apartamento'`)
+    } else {
+      conditions.push(Prisma.sql`AND LOWER("tipo") = '${tipo}'`)
+    }
+  }
+
+  operacion= operacion.toUpperCase()  
+  if (operacion === "VENTA" || operacion === "VENDER" || operacion === "COMPRA" || operacion === "COMPRAR") {
+    conditions.push(Prisma.sql`AND LOWER("enVenta") = 'si'`)
+  } else if (operacion === "ALQUILER" || operacion === "ALQUILAR" || operacion === "RENTA" || operacion === "RENTAR") {
+    conditions.push(Prisma.sql`AND LOWER("enAlquiler") = 'si'`)
+  } else {
+    conditions.push(Prisma.sql`AND (LOWER("enVenta") = 'si' OR LOWER("enAlquiler") = 'si')`)
+  }
+
+  if (dormitorios > 0) conditions.push(Prisma.sql`AND "dormitorios"::NUMERIC >= ${dormitorios}`)
+  
+  console.log("conditions:", conditions)
+  const conditionsStr = conditions.map((condition) => {
+    return condition.strings.reduce((acc, str, index) => {
+      // Añade la parte fija de la condición
+      acc += str;
+      // Añade el valor dinámico si existe
+      if (index < condition.values.length) {
+        acc += condition.values[index];
+      }
+      return acc;
+    }, '');
+  }).join(' ');
+  
+  console.log("conditionsStr:", conditionsStr)
+  
+  result= await prisma.$queryRaw`
+  SELECT id, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "url", "inmobiliariaId", embedding <-> ${embedding}::vector as distance
+  FROM "Property"
+  WHERE TRUE ${Prisma.sql([conditionsStr])}
+  ORDER BY distance
+  LIMIT ${limit}`
+
+  result.map((item) => {
+    console.log(`${item.inmobiliariaId}: ${item.distance}`)    
+  })
+
+  return result
+}
 
 export async function similaritySearchV2(tipo: string, operacion: string, caracteristicas: string, dormitorios: number) : Promise<SimilaritySearchResult[]> {
   const LIMIT_RESULTS= await getValue("LIMIT_RESULTS")

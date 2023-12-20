@@ -19,7 +19,7 @@ export const functions= [
         },
         tipo: {
           type: "string",
-          description: "casa, apartamento, terreno, local, oficina, etc. Cuando dicen PH se refieren a un apartamento. Si no se puede encontrar un tipo en el texto del pedido se debe llenar este campo con N/D",
+          description: "ejemplos de los valores de este campo: casa, apartamento, casa/apartamento, terreno, local, oficina, etc. Cuando dicen PH se refieren a un apartamento. Si no se puede encontrar un tipo en el texto del pedido se debe llenar este campo con N/D",
         },
         operacion: {
           type: "string",
