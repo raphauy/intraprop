@@ -2,7 +2,9 @@ import { columns } from "@/app/admin/tablero/pedido-columns";
 import { DataTable } from "@/app/admin/tablero/pedido-table";
 import { getCurrentUser } from "@/lib/auth";
 import { getOperaciones, getPedidosDAO, getTipos } from "@/services/pedido-services";
+import { Loader } from "lucide-react";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 interface Props {
   children: React.ReactNode;
@@ -34,7 +36,9 @@ export default async function TableroLayout({ children, params }: Props) {
         <DataTable columns={columns} data={data} subject="Pedido" columnsOff={["tipo"]} operaciones={operaciones} tipos={tipos} />
       </div>
       <div className="flex-1 w-full">
-        {children}
+        <Suspense fallback={<Loader className="animate-spin w-full mt-10" size="2rem" />}>
+          {children}
+        </Suspense>
       </div>
     </div>
   )
