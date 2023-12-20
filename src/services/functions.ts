@@ -47,7 +47,7 @@ export const functions= [
         },
         dormitorios: {
           type: "string",
-          description: "cantidad de dormitorios",
+          description: "cantidad de dormitorios, este valor debe ser un número, si piden 3 o 4 se debe cargar 3, si piden 2/3 se debe cargar 2, siempre el mínimo, si piden 4+ se debe cargar 4. Si no se puede encontrar la cantidad de dormitorios en el texto del pedido se debe llenar este campo con 0",
         },
         caracteristicas: {
           type: "string",

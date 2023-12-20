@@ -17,6 +17,7 @@ export async function createPedidoWithFunctions(text: string, phone: string, nam
       phone,
       name,
       group,
+      status: "pending",
     },
   })
 

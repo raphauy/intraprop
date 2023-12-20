@@ -250,9 +250,11 @@ export async function checkCoincidencesFinished() {
         })
         console.log("pending coincidences: ", coincidences.length)
         if (coincidences.length === 0) {
-            console.log("updating pedido state to checked")
-            await updatePedidoStatus(pedido.id, "checked")
-            await updateCoincidencesNumbers(pedido.id)
+            if (pedido.status === "coincidences_created") {
+                console.log("updating pedido state to checked")
+                await updatePedidoStatus(pedido.id, "checked")
+                await updateCoincidencesNumbers(pedido.id)    
+            }
         }
     }
 }

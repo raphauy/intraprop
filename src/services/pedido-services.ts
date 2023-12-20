@@ -170,7 +170,7 @@ export async function getPedidosPending(): Promise<PedidoWithCoincidences[]> {
       }
     },
     where: {
-      status: "pending",
+      status: "coincidences_created",
     },
   })
   
@@ -240,6 +240,11 @@ export async function getLastPedidoDAO(): Promise<PedidoDAO | null> {
         {
           caracteristicas: {
             not: "N/D"
+          }
+        },
+        {
+          caracteristicas: {
+            not: "n/d"
           }
         }
       ],
@@ -496,8 +501,8 @@ export async function createCoincidencesProperties(pedidoId: string) {
     console.log("caracteristicas is null")
     return null
   }
-  const operacion= pedido.operacion || "N/D"
-  const tipo= pedido.tipo || "N/D"
+  const operacion= pedido.operacion || "n/d"
+  const tipo= pedido.tipo || "n/d"
   const dormitorios= parseDormitorios(pedido.dormitorios)
   const similarityResult= await similaritySearchV3(tipo, operacion, caracteristicas, dormitorios)
   console.log("similarityResult length:", similarityResult.length);
@@ -519,6 +524,8 @@ export async function createCoincidencesProperties(pedidoId: string) {
     data: coincidences
   })
 
+  await updatePedidoStatus(pedidoId, "coincidences_created")
+
   return createdCoincidences  
 }
 
@@ -526,6 +533,7 @@ function parseDormitorios(dormitorios: string | undefined): number {
   if (!dormitorios) {
     return 0
   }
+  dormitorios= dormitorios.replace("+", "")
 
   // Convertir a minúsculas para manejar casos insensibles a mayúsculas
   dormitorios = dormitorios.toLowerCase()
