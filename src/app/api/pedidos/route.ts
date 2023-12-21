@@ -46,6 +46,10 @@ export async function POST(request: Request, { params }: Props ) {
             name: name as string,
             group: group as string,
         }
+        // sleep an aleatory time between 0 and 1 seconds
+        const sleepTime= Math.floor(Math.random() * 1000)
+        console.log("sleepTime: ", sleepTime + " ms")
+        await new Promise(resolve => setTimeout(resolve, sleepTime))
 
         const updated= await createOrUpdatePedidoAction(null, dataPedido)
 
