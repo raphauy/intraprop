@@ -633,7 +633,7 @@ export async function similaritySearchV3(tipo: string, operacion: string, caract
 
   const conditions= []
 
-  tipo= tipo.toLowerCase()
+  tipo= tipo.toLowerCase().replace("n/d", "")
   if (tipo) {
     const isCasa= tipo.includes("casa")
     const isApartamento= tipo.includes("apartamento") || tipo.includes("apto") || tipo.includes("departamento") || tipo.includes("depto")
@@ -648,7 +648,7 @@ export async function similaritySearchV3(tipo: string, operacion: string, caract
     }
   }
 
-  operacion= operacion.toUpperCase()  
+  operacion= operacion.toUpperCase()
   if (operacion === "VENTA" || operacion === "VENDER" || operacion === "COMPRA" || operacion === "COMPRAR") {
     conditions.push(Prisma.sql`AND LOWER("enVenta") = 'si'`)
   } else if (operacion === "ALQUILER" || operacion === "ALQUILAR" || operacion === "RENTA" || operacion === "RENTAR") {
