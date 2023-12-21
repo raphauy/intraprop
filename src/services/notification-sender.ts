@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { getValue } from "./config-services";
 import { getPendingNotifications, updateNotificationSent } from "./notification-pedidos-services";
 
@@ -32,7 +33,14 @@ export async function sendPendingNotifications() {
                 .then((data) => {
                     console.log("******************************")
                     console.log("notification updated")
-                    console.log(data)                    
+                    if (data.json) {
+                        const jsonObject= JSON.parse(data.json)
+                        const number= jsonObject.number
+                        const inmobiliaria= jsonObject.inmobiliaria
+                        // now Montevideo time
+                        const now= format(new Date(), "yyyy-MM-dd HH:mm:ss")
+                        console.log(`pedido ${number} sent to ${inmobiliaria} at ${now}`)
+                    }                    
                     console.log("******************************")
                 })
                 .catch(error => {

@@ -47,7 +47,7 @@ export async function POST(request: Request, { params }: Props ) {
             group: group as string,
         }
         // sleep an aleatory time between 0 and 1 seconds
-        const sleepTime= Math.floor(Math.random() * 1000)
+        const sleepTime= Math.floor(Math.random() * 2000)
         console.log("sleepTime: ", sleepTime + " ms")
         await new Promise(resolve => setTimeout(resolve, sleepTime))
 
