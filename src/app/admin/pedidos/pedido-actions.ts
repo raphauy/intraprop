@@ -20,7 +20,7 @@ export async function createOrUpdatePedidoAction(id: string | null, data: Pedido
   
   await new Promise(resolve => setTimeout(resolve, 2000))
 
-  await createCoincidencesProperties(updated.id)
+  //await createCoincidencesProperties(updated.id)
 
   revalidatePath("/admin/pedidos")
   revalidatePath("/admin/tablero")

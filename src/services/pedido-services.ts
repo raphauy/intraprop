@@ -157,7 +157,7 @@ export type PedidoWithCoincidences = Pedido & {
   coincidences: CoincidenceWithProperty[]
 }
 
-export async function getPedidosPending(): Promise<PedidoWithCoincidences[]> {
+export async function getPedidos(status: string): Promise<PedidoWithCoincidences[]> {
   const found = await prisma.pedido.findMany({
     orderBy: {
       createdAt: "desc"
@@ -170,7 +170,7 @@ export async function getPedidosPending(): Promise<PedidoWithCoincidences[]> {
       }
     },
     where: {
-      status: "coincidences_created",
+      status, 
     },
   })
   

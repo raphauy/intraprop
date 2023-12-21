@@ -28,22 +28,22 @@ export function PedidoForm({ id, closeDialog }: Props) {
 
   const onSubmit = async (data: PedidoFormValues) => {
     setLoading(true)
-    // createOrUpdatePedidoAction(id ? id : null, data)
-    // .then((data) => {
-    //   toast({ title: id ? "Pedido actualizado" : "Pedido creado" })
-    //   closeDialog()
-    //   router.push(`/admin/tablero?id=${data?.id}`)
-    // })
-    // .catch((error) => {
-    //   toast({
-    //     title: "Error",
-    //     description: error.message,
-    //     variant: "destructive",
-    //   })
-    // })
-    // .finally(() => {
-    //   setLoading(false);
-    // })
+    createOrUpdatePedidoAction(id ? id : null, data)
+    .then((data) => {
+      toast({ title: id ? "Pedido actualizado" : "Pedido creado" })
+      closeDialog()
+      router.push(`/admin/tablero?id=${data?.id}`)
+    })
+    .catch((error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      })
+    })
+    .finally(() => {
+      setLoading(false);
+    })
 };
 
   useEffect(() => {

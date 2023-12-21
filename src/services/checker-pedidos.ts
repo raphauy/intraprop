@@ -4,15 +4,25 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import OpenAI from "openai";
 import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
-import { CoincidenceWithProperty, getPedidosChecked, getPedidosPending, updateCoincidencesNumbers, updatePedidoStatus } from "./pedido-services";
+import { CoincidenceWithProperty, getPedidosChecked, getPedidos, updateCoincidencesNumbers, updatePedidoStatus, createCoincidencesProperties } from "./pedido-services";
 import { createNotificationPedido } from "./notification-pedidos-services";
 import { sendPendingNotifications } from "./notification-sender";
 import { getValue } from "./config-services";
 
 
+export async function processPendingPedidos() {
+    const pedidosPending= await getPedidos("pending")
+    for (const pedido of pedidosPending) {
+        console.log("processing pedido: ", pedido.number)
+        
+        await createCoincidencesProperties(pedido.id)
+    }
+
+}
+
 export async function checkPendingCoincidences() {
 
-    const pedidosPending= await getPedidosPending()
+    const pedidosPending= await getPedidos("coincidences_created")
     for (const pedido of pedidosPending) {
         const pendingCoincidences= pedido.coincidences.filter(coincidence => {
             return coincidence.state === "pending"
@@ -38,7 +48,7 @@ export async function checkScore(coincidence: Coincidence) {
 }
 
 export async function checkDistanceOkCoincidences() {
-    const pedidosPending= await getPedidosPending()
+    const pedidosPending= await getPedidos("coincidences_created")
     for (const pedido of pedidosPending) {
         const coincidences= pedido.coincidences.filter(coincidence => {
             return coincidence.state === "distance_ok"
@@ -104,7 +114,7 @@ function getValorInmueble(coincidence: CoincidenceWithProperty, operacion: strin
 }
 
 export async function checkBudgetOkCoincidences() {
-    const pedidosPending= await getPedidosPending()
+    const pedidosPending= await getPedidos("coincidences_created")
     for (const pedido of pedidosPending) {
         const coincidences= pedido.coincidences.filter(coincidence => {
             return coincidence.state === "budget_ok"
@@ -241,7 +251,7 @@ function parseCustom(valueString: string): number | null {
 }
 
 export async function checkCoincidencesFinished() {
-    const pedidosPending= await getPedidosPending()
+    const pedidosPending= await getPedidos("coincidences_created")
     for (const pedido of pedidosPending) {
         // check if all coincidences are in a final state: checked, distance_banned, budget_banned, zone_banned
         // if so, update pedido state to checked and update numbers
@@ -249,12 +259,10 @@ export async function checkCoincidencesFinished() {
             return coincidence.state !== "checked" && coincidence.state !== "distance_banned" && coincidence.state !== "budget_banned" && coincidence.state !== "zone_banned"
         })
         console.log("pending coincidences: ", coincidences.length)
-        if (coincidences.length === 0) {
-            if (pedido.status === "coincidences_created") {
-                console.log("updating pedido state to checked")
-                await updatePedidoStatus(pedido.id, "checked")
-                await updateCoincidencesNumbers(pedido.id)    
-            }
+        if (pedido.status === "coincidences_created" && coincidences.length === 0) {
+            console.log("updating pedido state to checked")
+            await updatePedidoStatus(pedido.id, "checked")
+            await updateCoincidencesNumbers(pedido.id)    
         }
     }
 }
@@ -279,12 +287,11 @@ export async function createNotifications() {
 
                 const filteredCoincidences= coincidencesChecked.filter(coincidence => coincidence.property.inmobiliariaId === inmobiliariaId)
                 console.log("createNotificationPedido: ")
-                console.log(filteredCoincidences)
-                
+                console.log(filteredCoincidences)                
               
                 await createNotificationPedido(pedido, filteredCoincidences)
-                await updatePedidoStatus(pedido.id, "notifications_created")                
             }
+            await updatePedidoStatus(pedido.id, "notifications_created")                
         }
     }
 }
@@ -310,6 +317,7 @@ export async function checkPedidos() {
     
     await printPendingPedidos()
 
+    await processPendingPedidos()
     await checkPendingCoincidences()
     await checkDistanceOkCoincidences()
     await checkBudgetOkCoincidences()
@@ -323,7 +331,7 @@ export async function checkPedidos() {
 }
 
 async function printPendingPedidos() {
-    let pedidos= await getPedidosPending()
+    let pedidos= await getPedidos("coincidences_created")
     pedidos.forEach(pedido => {
         console.log("pedido: ", pedido.text)
         pedido.coincidences.forEach(coincidence => {
