@@ -86,6 +86,14 @@ export const columns: ColumnDef<InmobiliariaDAO>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const data = row.original;      
+      return (
+        <div className="break-all">
+          {data.celulares}
+        </div>
+      );
+    }
   },
 
   {

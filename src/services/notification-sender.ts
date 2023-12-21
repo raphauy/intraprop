@@ -29,8 +29,11 @@ export async function sendPendingNotifications() {
             
             if (response.status === 200) {
                 updateNotificationSent(notification.id)
-                .then(() => {
+                .then((data) => {
+                    console.log("******************************")
                     console.log("notification updated")
+                    console.log(data)                    
+                    console.log("******************************")
                 })
                 .catch(error => {
                     console.log("error: ", error)
