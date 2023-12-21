@@ -304,7 +304,7 @@ async function updateCoincidence(coincidenceId: string, newState: string) {
 
 
 export async function checkPedidos() {
-    console.log("--------------------------------------------")
+    console.log("\n")
     const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
     console.log(nowMontevideo)
     
