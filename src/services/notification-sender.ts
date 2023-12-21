@@ -13,8 +13,6 @@ export async function sendPendingNotifications() {
     const notifications= await getPendingNotifications()
 
     for (const notification of notifications) {
-        console.log("celulares: ", notification.celulares)
-        console.log("----------------------")
         const json= notification.json
         const url= notificationsEndpoint
         await fetch(url, {
