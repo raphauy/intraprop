@@ -18,7 +18,7 @@ export async function createOrUpdatePedidoAction(id: string | null, data: Pedido
 
   if (!updated) throw new Error("Error al crear el pedido")
   
-  await new Promise(resolve => setTimeout(resolve, 4000))
+  await new Promise(resolve => setTimeout(resolve, 2000))
 
   await createCoincidencesProperties(updated.id)
 
