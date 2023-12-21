@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { PedidoDAO, PedidoFormValues, createPedido, updatePedido, getPedidoDAO, deletePedido, runThread, createCoincidencesProperties } from "@/services/pedido-services"
+import { PedidoDAO, PedidoFormValues, createPedido, updatePedido, getPedidoDAO, deletePedido, runThread, createCoincidencesProperties, removeCoincidences } from "@/services/pedido-services"
 import { createPedidoWithFunctions, updatePedidoWithFunctions } from "@/services/openai-services"
 
 export async function getPedidoDAOAction(id: string): Promise<PedidoDAO | null> {
@@ -47,6 +47,7 @@ export async function runThreadAction(id: string): Promise<boolean> {
 
   await new Promise(resolve => setTimeout(resolve, 4000))
 
+  await removeCoincidences(updated.id)
   await createCoincidencesProperties(updated.id)
 
   console.log("revalidating...");

@@ -321,14 +321,14 @@ export async function updateCoincidence(id: string, data: CoincidenceFormValues)
   return updated
 }
 
-export async function deleteCoincidence(id: string) {
-  const deleted = await prisma.coincidence.delete({
-    where: {
-      id
-    },
-  })
-  return deleted
-}
+// export async function deleteCoincidence(id: string) {
+//   const deleted = await prisma.coincidence.delete({
+//     where: {
+//       id
+//     },
+//   })
+//   return deleted
+// }
     
 
 export async function getPendingCoincidences(state: string) {

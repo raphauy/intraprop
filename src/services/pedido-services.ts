@@ -490,11 +490,12 @@ function cleanJsonString(jsonString: string) {
 
 export async function createCoincidencesProperties(pedidoId: string) {
   const pedido= await getPedidoDAO(pedidoId)
-  console.log("pedido (createCoincidencesProperties):")  
-  console.log(pedido)
+  console.log(`creating coincidences for pedido ${pedido.number}:`)
 
-  await removeCoincidences(pedidoId)
-  
+  const coincidencesCount= pedido.cantCoincidencias ? pedido.cantCoincidencias : 0
+  if (coincidencesCount > 0) {
+    console.log("Alert!!! coincidencesCount > 0 on createCoincidencesProperties")    
+  }
 
   const caracteristicas= pedido.caracteristicas
   if (!caracteristicas) {
@@ -555,7 +556,7 @@ function parseDormitorios(dormitorios: string | undefined): number {
   return numeros.length > 0 ? Math.min(...numeros) : 0
 }
 
-async function removeCoincidences(pedidoId: string) {
+export async function removeCoincidences(pedidoId: string) {
   const coincidences = await getCoincidencesDAO(pedidoId);
   console.log("cant coincidences:", coincidences.length);
   
