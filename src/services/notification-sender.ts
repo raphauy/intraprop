@@ -4,13 +4,15 @@ import { getPendingNotifications, updateNotificationSent } from "./notification-
 
 
 export async function sendPendingNotifications() {   
-    console.log("starting sender")
     const notificationsEndpoint= await getValue("NOTIFICATIONS_ENDPOINT")
     if(!notificationsEndpoint) {
         console.log("NOTIFICATIONS_ENDPOINT endpoint not found")
         return
     }
     const notifications= await getPendingNotifications()
+
+    if (notifications.length > 0) 
+        console.log(`starting sender with ${notifications.length} notifications`)
 
     for (const notification of notifications) {
         const json= notification.json

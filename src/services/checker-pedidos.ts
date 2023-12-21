@@ -325,7 +325,6 @@ export async function checkPedidos() {
 
 async function printPendingPedidos() {
     let pedidos= await getPedidosPending()
-    console.log("pedidos pendientes: ", pedidos.length)    
     pedidos.forEach(pedido => {
         console.log("pedido: ", pedido.text)
         pedido.coincidences.forEach(coincidence => {
@@ -333,7 +332,6 @@ async function printPendingPedidos() {
         })
     })
     pedidos= await getPedidosChecked()
-    console.log("pedidos checked: ", pedidos.length)
     pedidos.forEach(pedido => {
         console.log("pedido: ", pedido.text)
         pedido.coincidences.forEach(coincidence => {
