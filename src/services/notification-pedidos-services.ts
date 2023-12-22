@@ -86,13 +86,14 @@ export async function getPendingNotifications() {
   return notifications
 }
 
-export async function updateNotificationSent(id: string) {
+export async function updateNotificationStatus(id: string, status: string, error: string | null) {
   const updated = await prisma.notificationPedido.update({
     where: {
       id
     },
     data: {
-      status: "sent",
+      status,
+      error,
       sentAt: new Date()
     },
   })
