@@ -58,9 +58,6 @@ export async function createNotificationPedido(pedido: Pedido, coincidences: Coi
     coincidencias: coincidencesJSON
   }
 
-  console.log("json: ")
-  console.log(json)  
-
   const notification= await prisma.notificationPedido.create({
     data: {
       status: "pending",
@@ -81,6 +78,9 @@ export async function getPendingNotifications() {
     where: {
       status: "pending"
     },
+    orderBy: {
+      createdAt: "asc"
+    }
   })
 
   return notifications

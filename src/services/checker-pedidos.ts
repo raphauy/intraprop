@@ -4,10 +4,10 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import OpenAI from "openai";
 import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
-import { CoincidenceWithProperty, getPedidosChecked, getPedidos, updateCoincidencesNumbers, updatePedidoStatus, createCoincidencesProperties } from "./pedido-services";
-import { createNotificationPedido } from "./notification-pedidos-services";
-import { sendPendingNotifications } from "./notification-sender";
 import { getValue } from "./config-services";
+import { createNotificationPedido } from "./notification-pedidos-services";
+import { sendPendingNotificationsV2 } from "./notification-sender";
+import { CoincidenceWithProperty, createCoincidencesProperties, getPedidos, getPedidosChecked, updateCoincidencesNumbers, updatePedidoStatus } from "./pedido-services";
 
 
 export async function processPendingPedidos() {
@@ -286,9 +286,8 @@ export async function createNotifications() {
             for (const inmobiliariaId of uniqueInmobiliariesIds) {
 
                 const filteredCoincidences= coincidencesChecked.filter(coincidence => coincidence.property.inmobiliariaId === inmobiliariaId)
-                console.log("createNotificationPedido: ")
-                console.log(filteredCoincidences)                
-              
+
+                console.log("creating notification for inmobiliaria: ", inmobiliariaId, " - coincidences: ", filteredCoincidences.length)                
                 await createNotificationPedido(pedido, filteredCoincidences)
             }
             await updatePedidoStatus(pedido.id, "notifications_created")                
@@ -323,7 +322,7 @@ export async function checkPedidos() {
     await checkBudgetOkCoincidences()
     await checkCoincidencesFinished()
     await createNotifications()
-    await sendPendingNotifications()
+    await sendPendingNotificationsV2()
 
 //    await printPendingPedidos()
 

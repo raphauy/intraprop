@@ -160,7 +160,7 @@ export type PedidoWithCoincidences = Pedido & {
 export async function getPedidos(status: string): Promise<PedidoWithCoincidences[]> {
   const found = await prisma.pedido.findMany({
     orderBy: {
-      createdAt: "desc"
+      createdAt: "asc"
     },
     include: {
       coincidences: {
@@ -180,7 +180,7 @@ export async function getPedidos(status: string): Promise<PedidoWithCoincidences
 export async function getPedidosChecked(): Promise<PedidoWithCoincidences[]> {
   const found = await prisma.pedido.findMany({
     orderBy: {
-      createdAt: "desc"
+      createdAt: "asc"
     },
     include: {
       coincidences: {
@@ -660,7 +660,6 @@ export async function similaritySearchV3(tipo: string, operacion: string, caract
 
   if (dormitorios > 0) conditions.push(Prisma.sql`AND "dormitorios"::NUMERIC >= ${dormitorios}`)
   
-  console.log("conditions:", conditions)
   const conditionsStr = conditions.map((condition) => {
     return condition.strings.reduce((acc, str, index) => {
       // Añade la parte fija de la condición

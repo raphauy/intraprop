@@ -6,7 +6,6 @@ import { prisma } from "@/lib/db";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { createNotification } from "./notification-services";
-import { sendPendingNotifications } from "./notification-sender";
 import { getValue } from "./config-services";
 
 
@@ -265,10 +264,11 @@ export async function checkCoincidences() {
     const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
     console.log(nowMontevideo)    
 
-    await checkDistance()
-    await checkBudgetPendings()
-    await checkZonePendings()
-    await sendPendingNotifications()
+    // deprecated
+    // await checkDistance()
+    // await checkBudgetPendings()
+    // await checkZonePendings()
+    // await sendPendingNotifications()
 }
 
 checkCoincidences()
