@@ -31,7 +31,7 @@ export async function POST(request: Request ) {
         // sleep 2 seconds
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        return NextResponse.json({ data: "ACK" }, { status: 429 })
+        return NextResponse.json({ data: "ACK" }, { status: 200 })
 
     } catch (error) {
         console.log("error: ", error)        

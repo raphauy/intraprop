@@ -32,6 +32,7 @@ export type PedidoDAO = {
   cantCoincidencias?:  number
 	createdAt:  Date
 	updatedAt:  Date
+  status: string
 }
 
 export const pedidoFormSchema = z.object({
@@ -490,7 +491,13 @@ function cleanJsonString(jsonString: string) {
 
 export async function createCoincidencesProperties(pedidoId: string) {
   const pedido= await getPedidoDAO(pedidoId)
+  const status= pedido.status
+  if (status !== "pending") {
+    console.log(`pedido ${pedido.number} is not pending. status: ${status}`)
+    return null
+  }
   console.log(`creating coincidences for pedido ${pedido.number}:`)
+  await updatePedidoStatus(pedidoId, "creating_coincidences")
 
   const coincidencesCount= pedido.cantCoincidencias ? pedido.cantCoincidencias : 0
   if (coincidencesCount > 0) {

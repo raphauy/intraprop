@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import OpenAI from "openai";
 import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
-import { getValue } from "./config-services";
+import { getValue, setValue } from "./config-services";
 import { createNotificationPedido } from "./notification-pedidos-services";
 import { sendPendingNotificationsV2 } from "./notification-sender";
 import { CoincidenceWithProperty, createCoincidencesProperties, getPedidos, getPedidosChecked, updateCoincidencesNumbers, updatePedidoStatus } from "./pedido-services";
@@ -313,6 +313,22 @@ export async function checkPedidos() {
     console.log("\n")
     const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
     console.log(nowMontevideo)
+
+    const PROCESS_BLOCKED= await getValue("PROCESS_BLOCKED")
+    let processBlocked= false
+    if(PROCESS_BLOCKED) processBlocked= PROCESS_BLOCKED === "true"
+    else {
+        console.log("PROCESS_BLOCKED not found, config this variable to process pedidos")
+        return
+    }
+    
+    if (processBlocked) {
+        console.log("process is blocked")
+        return
+    } else {
+        await setValue("PROCESS_BLOCKED", "true")
+    }
+  
     
     await printPendingPedidos()
 
@@ -324,7 +340,7 @@ export async function checkPedidos() {
     await createNotifications()
     await sendPendingNotificationsV2()
 
-//    await printPendingPedidos()
+    await setValue("PROCESS_BLOCKED", "false")
 
     console.log("--------------------------------------------")
 }

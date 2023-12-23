@@ -5,10 +5,13 @@ import { columns } from "./config-columns";
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function UsersPage() {
-  const data = await getConfigsDAO()
+  let data = await getConfigsDAO()
 
   const user= await getCurrentUser()
   const isRapha= user?.email === "rapha.uy@rapha.uy"
+  if (!isRapha) {
+    data= data.filter((item) => item.name !== "PROCESS_BLOCKED")
+  }
 
   return (
     <div className="w-full">
