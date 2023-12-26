@@ -124,6 +124,11 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
 }
 
 export async function getAllPedidosDAO(): Promise<PedidoDAO[]> {
+  const PEDIDOS_RESULTS= await getValue("PEDIDOS_RESULTS")
+  let pedidosResults= 100
+  if(PEDIDOS_RESULTS) pedidosResults= parseInt(PEDIDOS_RESULTS)
+  else console.log("PEDIDOS_RESULTS not found")
+
   const found = await prisma.pedido.findMany({
     orderBy: {
       createdAt: "desc"
@@ -135,6 +140,7 @@ export async function getAllPedidosDAO(): Promise<PedidoDAO[]> {
         }
       }   
     },
+    take: pedidosResults
   })
 
   return found as PedidoDAO[]
