@@ -653,7 +653,7 @@ export async function similaritySearchV3(tipo: string, operacion: string, caract
     const isCasa= tipo.includes("casa")
     const isApartamento= tipo.includes("apartamento") || tipo.includes("apto") || tipo.includes("departamento") || tipo.includes("depto")
     if (isCasa && isApartamento){
-      conditions.push(Prisma.sql`AND (LOWER("tipo") = 'casa' OR LOWER("tipo") = 'apartamento')`)
+      conditions.push(Prisma.sql`AND (LOWER("tipo") = 'casa' OR LOWER("tipo") = 'apartamento' OR LOWER("tipo") = 'departamento')`)
     } else if (isCasa) {
       conditions.push(Prisma.sql`AND LOWER("tipo") = 'casa'`)
     } else if (isApartamento) {
