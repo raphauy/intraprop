@@ -43,7 +43,7 @@ export const functions= [
         },
         zona: {
           type: "string",
-          description: "barrio, departamento o ciudad",
+          description: "barrio, departamento o ciudad, puede ser un barrio o varios barrios, este campo se debe llenar con los barrios que aparezcan en el texto del pedido. Si ponen abstracciones como 'zonas varias' por ejemplo se debe llenar con n/d",
         },
         dormitorios: {
           type: "string",

@@ -92,7 +92,8 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                                     coincidencia.state === "checked" ? "" : 
                                                     coincidencia.state === "distance_banned" ? "": 
                                                     coincidencia.state === "zone_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>: 
-                                                    coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>: 
+                                                    coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>:
+                                                    coincidencia.state === "inmo_limit_reached" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>:
                                                     "pending"
                                                     }
                                             </div>

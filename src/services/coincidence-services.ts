@@ -170,6 +170,19 @@ export async function getCoincidencesDAO(pedidoId: string, state?: string) {
   return ordered as CoincidenceDAO[]
 }
 
+export async function getAmountOfCoincidencesOfInmobiliaria(pedidoId: string, inmobiliariaId: string,  state?: string) {
+  const found = await prisma.coincidence.count({
+    where: {
+      pedidoId,
+      property: {
+        inmobiliariaId,
+      },
+      ...(state ? { state } : {}),
+    }
+  })
+  return found  
+}
+
 export async function getTotalCoincidencesByInmo(inmobiliariaId: string) {
   const found = await prisma.coincidence.count({
     where: {
@@ -194,16 +207,17 @@ export async function getTotalCoincidencesWithNotificationByInmo(inmobiliariaId:
 }
 
 export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId: string) {
+  // order by score desc and number asc
   const found = await prisma.coincidence.findMany({
-    orderBy: {
-      id: 'asc'
-    },
+    orderBy: [
+      { score: 'desc' },
+      { number: 'asc' }
+    ],
     where: {
       pedidoId,
       property: {
         inmobiliariaId,
       },
-      //state: "checked"
     },
     include: {
       property: {
@@ -229,7 +243,7 @@ export async function getCoincidencesDAOByInmo(pedidoId: string, inmobiliariaId:
           precioAlquilerUYU: true,
           url: true,
           inmobiliaria: true
-        },        
+        },
       },
       notificationPedidos: true
     }    

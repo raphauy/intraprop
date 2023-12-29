@@ -90,7 +90,7 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                     <TableCell><p className={cn("dos-lineas", coincidencia.state === "zone_banned" && "text-red-400")}>{zona}</p></TableCell>
                                     <TableCell>
                                         <Link href={`/${coincidencia.property.inmobiliariaSlug}/tablero?id=${coincidencia.pedidoId}`} target="_blank">
-                                            <Button size="sm" variant="link" className="flex flex-col items-start px-0">
+                                            <Button size="sm" variant="link" className={cn("flex flex-col items-start px-0", coincidencia.state === "inmo_limit_reached" && "text-red-400")}>
                                                 <p className="whitespace-nowrap">{coincidencia.property.inmobiliariaName}</p>
                                                 { coincidencia.number !== 0 && <p>#{coincidencia.number} </p> }
                                             </Button>
@@ -102,6 +102,7 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                                     {minScoreAlta <= score && <p>Alta 💚</p>}
                                                     {minScoreMedia <= score && score < minScoreAlta && <p>Media 💛</p>}
                                                     {score < minScoreMedia && <p>Baja 🧡</p>}
+                                                    {coincidencia.score}
                                                     {coincidencia.notificationPedido && <HoverNotification coincidence={coincidencia} />}
                                             </div>
                                             <div className="w-fit">{
@@ -109,6 +110,7 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                                 coincidencia.state === "distance_banned" ? <p className="flex items-center gap-1"> {coincidencia.score > 0 ? coincidencia.score : 0}</p>: 
                                                 coincidencia.state === "zone_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>: 
                                                 coincidencia.state === "budget_banned" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>: 
+                                                coincidencia.state === "inmo_limit_reached" ? <p className="flex items-center gap-1"><Ban className="text-red-400" /></p>:
                                                 "pending"
                                                 }
                                             </div>

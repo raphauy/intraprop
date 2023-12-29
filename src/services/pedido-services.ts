@@ -164,15 +164,19 @@ export type PedidoWithCoincidences = Pedido & {
   coincidences: CoincidenceWithProperty[]
 }
 
+// this function return pedidos ordered by createdAt asc and coincidences ordered by score desc
 export async function getPedidos(status: string): Promise<PedidoWithCoincidences[]> {
   const found = await prisma.pedido.findMany({
     orderBy: {
       createdAt: "asc"
-    },
+    },    
     include: {
       coincidences: {
         include: {
           property: true
+        },
+        orderBy: {
+          score: "desc"
         }
       }
     },
@@ -416,14 +420,12 @@ export async function runThread(pedidoId: string) {
 
   const runId= run.id
   let status= run.status
-  console.log("run.status", status)    
   while (true) {
     run = await openai.beta.threads.runs.retrieve(
       createdThread.id,
       runId
     )
     status= run.status
-    console.log("run.status", status)    
     if (status === "completed" || status === "failed" || status === "cancelled" || status === "expired") {
       break
     }
@@ -693,11 +695,7 @@ export async function similaritySearchV3(tipo: string, operacion: string, caract
   WHERE TRUE ${Prisma.sql([conditionsStr])}
   ORDER BY distance
   LIMIT ${limit}`
-
-  result.map((item) => {
-    console.log(`${item.inmobiliariaId}: ${item.distance}`)    
-  })
-
+  
   return result
 }
 

@@ -72,14 +72,12 @@ export async function checkZone(coincidenceId: string) {
   
     const runId= run.id
     let status= run.status
-    console.log("run.status", status)    
     while (true) {
       run = await openai.beta.threads.runs.retrieve(
         createdThread.id,
         runId
       )
       status= run.status
-      console.log("run.status", status)    
       if (status === "completed" || status === "failed" || status === "cancelled" || status === "expired") {
         break
       }

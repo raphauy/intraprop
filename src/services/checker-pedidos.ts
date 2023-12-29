@@ -8,6 +8,7 @@ import { getValue, setValue } from "./config-services";
 import { createNotificationPedido } from "./notification-pedidos-services";
 import { sendPendingNotificationsV2 } from "./notification-sender";
 import { CoincidenceWithProperty, createCoincidencesProperties, getPedidos, getPedidosChecked, updateCoincidencesNumbers, updatePedidoStatus } from "./pedido-services";
+import { getAmountOfCoincidencesOfInmobiliaria } from "./coincidence-services";
 
 
 export async function processPendingPedidos() {
@@ -114,6 +115,11 @@ function getValorInmueble(coincidence: CoincidenceWithProperty, operacion: strin
 }
 
 export async function checkBudgetOkCoincidences() {
+    const INMO_LIMIT_RESULTS= await getValue("INMO_LIMIT_RESULTS")
+    let inmoLimit= 5
+    if(INMO_LIMIT_RESULTS) inmoLimit= parseInt(INMO_LIMIT_RESULTS)
+    else console.log("INMO_LIMIT_RESULTS not found")    
+  
     const pedidosPending= await getPedidos("coincidences_created")
     for (const pedido of pedidosPending) {
         const coincidences= pedido.coincidences.filter(coincidence => {
@@ -121,14 +127,26 @@ export async function checkBudgetOkCoincidences() {
         })
         console.log("budget_ok coincidences: ", coincidences.length)        
         for (const coincidence of coincidences) {
-            await checkZone(coincidence, pedido)
+            const pedidoId= pedido.id
+            const inmobiliariaId= coincidence.property.inmobiliariaId
+            if (inmobiliariaId === null) {
+                console.log("inmobiliariaId is null")
+                continue
+            }
+            const totalCoincidencesChecked= await getAmountOfCoincidencesOfInmobiliaria(pedidoId, inmobiliariaId, "checked")
+            console.log("totalCoincidencesChecked: ", totalCoincidencesChecked)
+            if (totalCoincidencesChecked >= inmoLimit) {
+                await updateCoincidence(coincidence.id, "inmo_limit_reached")                
+            } else {
+                await checkZone(coincidence, pedido)
+            }
         }
     }
 }
 
 export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pedido) {
     const zona= pedido.zona
-    if (zona && (zona === "" || zona.toUpperCase() === "N/D")) {
+    if (zona && (zona === "" || zona.toLowerCase() === "n/d")) {
         await updateCoincidence(coincidence.id, "checked")
         return
     }
@@ -170,14 +188,12 @@ export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pe
   
     const runId= run.id
     let status= run.status
-    console.log("run.status", status)    
     while (true) {
       run = await openai.beta.threads.runs.retrieve(
         createdThread.id,
         runId
       )
       status= run.status
-      console.log("run.status", status)    
       if (status === "completed" || status === "failed" || status === "cancelled" || status === "expired") {
         break
       }
@@ -256,7 +272,7 @@ export async function checkCoincidencesFinished() {
         // check if all coincidences are in a final state: checked, distance_banned, budget_banned, zone_banned
         // if so, update pedido state to checked and update numbers
         const coincidences= pedido.coincidences.filter(coincidence => {
-            return coincidence.state !== "checked" && coincidence.state !== "distance_banned" && coincidence.state !== "budget_banned" && coincidence.state !== "zone_banned"
+            return coincidence.state !== "checked" && coincidence.state !== "distance_banned" && coincidence.state !== "budget_banned" && coincidence.state !== "zone_banned" && coincidence.state !== "inmo_limit_reached"
         })
         console.log("pending coincidences: ", coincidences.length)
         if (pedido.status === "coincidences_created" && coincidences.length === 0) {
