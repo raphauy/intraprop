@@ -398,7 +398,6 @@ export async function runThread(pedidoId: string) {
   const pedidoDAO= await getPedidoDAO(pedidoId)
   const openai = new OpenAI();
 
-  console.log("creating thread")  
   const createdThread = await openai.beta.threads.create({
     messages: [
       {
@@ -658,7 +657,8 @@ export async function similaritySearchV3(tipo: string, operacion: string, caract
     } else if (isCasa) {
       conditions.push(Prisma.sql`AND LOWER("tipo") = 'casa'`)
     } else if (isApartamento) {
-      conditions.push(Prisma.sql`AND LOWER("tipo") = 'apartamento'`)
+      // this condition is for apartamento and departamento
+      conditions.push(Prisma.sql`AND (LOWER("tipo") = 'apartamento' OR LOWER("tipo") = 'departamento')`)
     } else {
       conditions.push(Prisma.sql`AND LOWER("tipo") = '${tipo}'`)
     }

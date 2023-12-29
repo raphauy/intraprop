@@ -3,8 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Property } from "@prisma/client"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Trash2 } from "lucide-react"
 import Link from "next/link"
+import { DeleteDialog } from "./(crud)/delete-dialog"
 
 export const columns: ColumnDef<Property>[] = [
   {
@@ -406,6 +407,24 @@ export const columns: ColumnDef<Property>[] = [
     },    
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const data= row.original
+
+      const eliminateTrigger= (<Trash2 className="text-red-400 hover:cursor-pointer"/>)
+      const title= "Eliminar Propiedad"
+      const description= `Desea eliminar la propiedad ${data.idPropiedad}?`
+ 
+      return (
+
+        <div className="flex items-center justify-end gap-2">
+          <DeleteDialog title={title} description={description} trigger={eliminateTrigger} id={data.id} />
+        </div>
+
+      )
     },
   },
 

@@ -25,7 +25,7 @@ export default async function AdminPage({ params }: Props) {
   const properties= await getPropertiesOfInmobiliaria(inmo.id)
   const totalProperties= properties.length
   const totalCasas= properties.filter((property) => property.tipo === "Casa").length
-  const totalApartamentos= properties.filter((property) => property.tipo === "Apartamento").length
+  const totalApartamentos= properties.filter((property) => property.tipo?.toLowerCase() === "apartamento" || property.tipo?.toLowerCase() === "departamento").length
 
   return (
     <div className="flex flex-col">

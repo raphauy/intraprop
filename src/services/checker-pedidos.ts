@@ -167,7 +167,6 @@ export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pe
 
     const openai = new OpenAI();
   
-    console.log("creating thread for check assistant")  
     const createdThread = await openai.beta.threads.create({
       messages: [
         {

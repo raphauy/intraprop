@@ -3,6 +3,8 @@ import { getInmobiliariaDAOByslug } from "@/services/inmobiliaria-services"
 import { getPropertiesOfInmobiliaria } from "@/services/property-services"
 import { columns } from "./columns"
 import { DataTable } from "./data-table"
+import { DeleteDialog } from "./(crud)/delete-all-dialog"
+import { Button } from "@/components/ui/button"
 
 interface Props {
   params: {
@@ -31,6 +33,10 @@ export default async function PropertiesPage({ params: { slug } }: Props) {
   const calefacciones: string[]= (Array.from(new Set(properties.map((p) => p.calefaccion))).filter((calefaccion) => calefaccion !== null && calefaccion !== "") as string[]).sort((a, b) => a.localeCompare(b))
   const amuebladas: string[]= (Array.from(new Set(properties.map((p) => p.amueblada))).filter((amueblada) => amueblada !== null && amueblada !== "") as string[]).sort((a, b) => a.localeCompare(b))
   const pisos: string[]= (Array.from(new Set(properties.map((p) => p.piso))).filter((piso) => piso !== null && piso !== "") as string[]).sort((a, b) => a.localeCompare(b))
+
+  const eliminateTrigger= (<Button variant="destructive" >Elimar todas las propiedades</Button>)
+  const title= "Eliminar Propiedades"
+  const description= `Seguro que desea eliminar todas las propiedades de la inmobiliaria ${inmo.name} (${properties.length} propiedades)?`
 
   return (
     <div className="w-full">
@@ -61,6 +67,11 @@ export default async function PropertiesPage({ params: { slug } }: Props) {
           pisos={pisos}
         />
       </div>
+
+      <div className="flex justify-end py-7">
+        <DeleteDialog title={title} description={description} trigger={eliminateTrigger} inmoId={inmo.id} />
+      </div>
+
     </div>
 )
 }

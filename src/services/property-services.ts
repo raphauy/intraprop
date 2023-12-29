@@ -86,6 +86,28 @@ export async function getProperty(id: string) {
   return found
 }
 
+export async function deleteProperty(id: string): Promise<Property> {
+  const deleted= await prisma.property.delete({
+    where: {
+      id
+    },
+  })
+
+  return deleted
+}
+
+export async function deleteAllPropertiesOfInmo(inmobiliariaId: string): Promise<boolean> {
+  const deleted= await prisma.property.deleteMany({
+    where: {
+      inmobiliariaId
+    },
+  })
+
+  if (!deleted) return false
+
+  return true
+}
+
 export async function getPropertiesCount(inmobiliariaId: string) {
 
   const found = await prisma.property.count({
