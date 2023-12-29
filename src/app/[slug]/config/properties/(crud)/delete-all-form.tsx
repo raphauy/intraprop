@@ -23,7 +23,7 @@ export default function DeleteForm({ inmoId, closeDialog }: Props) {
       closeDialog && closeDialog()
     })
     .catch((error) => {
-      toast({title: "Error al eliminar las propiedades" })
+      toast({title: error.message })
     })
     .finally(() => {
       setLoading(false)
