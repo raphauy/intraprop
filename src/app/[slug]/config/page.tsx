@@ -42,7 +42,7 @@ export default async function AdminPage({ params }: Props) {
                 <div className="text-2xl font-bold">{totalProperties}</div>
                 <div className="flex justify-between">
                     <p className="text-xs text-muted-foreground">
-                      {totalCasas}  casas
+                      {totalCasas} casas
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {totalApartamentos} apartamentos
