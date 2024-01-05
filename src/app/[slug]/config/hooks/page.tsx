@@ -13,11 +13,12 @@ export default async function HooksPage({ params }: Props) {
     const inmo= await getInmobiliariaDAOByslug(slug)
     const basePath= process.env.NEXTAUTH_URL || ""
     const updateEndpoint= `${basePath}/api/${inmo.id}/update`
+    const deleteEndpoint= `${basePath}/api/${inmo.id}/delete`
 
     return (
         <div className="mt-10 text-center">
             <p className="text-2xl font-bold mb-10">Endpoints para {inmo.name}</p>
-            <Hook updateEndpoint={updateEndpoint} />
+            <Hook updateEndpoint={updateEndpoint} deleteEndpoint={deleteEndpoint} />
         </div>
     )
 }

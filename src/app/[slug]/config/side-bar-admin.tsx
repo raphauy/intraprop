@@ -36,7 +36,7 @@ const data= [
   {
     href: "/config/hooks",
     icon: Music3,
-    text: "Hook Propiedades"
+    text: "Hooks"
   },
 ]
 
