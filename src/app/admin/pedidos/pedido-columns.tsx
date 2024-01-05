@@ -5,7 +5,7 @@ import { PedidoDAO } from "@/services/pedido-services";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import PedidoBox from "./pedido-box";
-import { DeletePedidoDialog, PedidoDialog } from "./pedido-dialogs";
+import { DeletePedidoDialog, PedidoDialog, PedidoDialogText } from "./pedido-dialogs";
 import RunButton from "./run-button";
 
 export const columns: ColumnDef<PedidoDAO>[] = [
@@ -165,7 +165,7 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       return (
         <div className="flex flex-col items-center gap-2">
           <RunButton pedido={data} />
-          <PedidoDialog id={data.id} />
+          <PedidoDialogText id={data.id} />
           <DeletePedidoDialog description={description} id={data.id} />
         </div>
       );

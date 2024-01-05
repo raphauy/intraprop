@@ -4,22 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { PedidoFormValues, pedidoFormSchema } from "@/services/pedido-services";
+import { PedidoFormValues } from "@/services/pedido-services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { createOrUpdatePedidoAction, deletePedidoAction, getPedidoDAOAction } from "./pedido-actions";
+import { createOrUpdatePedidoAction, deletePedidoAction, getPedidoDAOAction, updateTextAction } from "./pedido-actions";
+import { z } from "zod";
+
+const pedidoFormTextSchema = z.object({
+	text: z.string({required_error: "Text is required."}),
+})
 
 type Props = {
-  id?: string;
+  id: string;
   closeDialog: () => void;
 };
 
-export function PedidoForm({ id, closeDialog }: Props) {
+export function PedidoFormText({ id, closeDialog }: Props) {
   const form = useForm<PedidoFormValues>({
-    resolver: zodResolver(pedidoFormSchema),
+    resolver: zodResolver(pedidoFormTextSchema),
     defaultValues: {},
     mode: "onChange",
   });
@@ -28,9 +33,9 @@ export function PedidoForm({ id, closeDialog }: Props) {
 
   const onSubmit = async (data: PedidoFormValues) => {
     setLoading(true)
-    createOrUpdatePedidoAction(id ? id : null, data)
+    updateTextAction(id, data.text)
     .then((data) => {
-      toast({ title: id ? "Pedido actualizado" : "Pedido creado" })
+      toast({ title: "Texto actualizado" })
       closeDialog()
     })
     .catch((error) => {
@@ -46,22 +51,18 @@ export function PedidoForm({ id, closeDialog }: Props) {
 };
 
   useEffect(() => {
-    if (id) {
-      getPedidoDAOAction(id)
-      .then((data) => {
-        if (data) {
-          form.reset(data);
+    getPedidoDAOAction(id)
+    .then((data) => {
+      if (data) {
+        form.reset(data);
+      }
+      Object.keys(form.getValues()).forEach((key: any) => {
+        if (form.getValues(key) === null) {
+          form.setValue(key, "");
         }
-        Object.keys(form.getValues()).forEach((key: any) => {
-          if (form.getValues(key) === null) {
-            form.setValue(key, "");
-          }
-        });
       });
-    } else {
-      form.setValue("phone", "web-test")
-    }
-    
+    });
+  
   }, [form, id]);
 
   return (

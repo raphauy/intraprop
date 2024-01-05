@@ -363,6 +363,18 @@ export async function updatePedido(id: string, data: PedidoFormValues) {
   return updated
 }
 
+export async function updateText(id: string, text: string) {
+  const updated = await prisma.pedido.update({
+    where: {
+      id
+    },
+    data: {
+      text
+    }
+  })
+  return updated
+}
+
 export async function updatePedidoStatus(id: string, status: string) {
   const updated = await prisma.pedido.update({
     where: {

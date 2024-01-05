@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { PedidoDAO, PedidoFormValues, createPedido, updatePedido, getPedidoDAO, deletePedido, runThread, createCoincidencesProperties, removeCoincidences } from "@/services/pedido-services"
+import { PedidoDAO, PedidoFormValues, createPedido, updatePedido, getPedidoDAO, deletePedido, runThread, createCoincidencesProperties, removeCoincidences, updateText } from "@/services/pedido-services"
 import { createPedidoWithFunctions, updatePedidoWithFunctions } from "@/services/openai-services"
 
 export async function getPedidoDAOAction(id: string): Promise<PedidoDAO | null> {
@@ -24,6 +24,17 @@ export async function createOrUpdatePedidoAction(id: string | null, data: Pedido
   revalidatePath("/admin/tablero")
 
   return updated as PedidoDAO
+}
+
+export async function updateTextAction(id: string, text: string): Promise<PedidoDAO | null> {
+  const updated= await updateText(id, text)
+
+  if (!updated) throw new Error("Error al actualizar el pedido")
+
+  revalidatePath("/admin/pedidos")
+
+  return updated as PedidoDAO
+
 }
 
 export async function deletePedidoAction(id: string): Promise<PedidoDAO | null> {    

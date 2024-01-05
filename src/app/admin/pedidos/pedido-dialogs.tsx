@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PedidoForm, DeletePedidoForm } from "./pedido-forms";
+import { PedidoFormText } from "./pedido-forms-text";
 
 type Props = {
   id?: string;
@@ -39,6 +40,26 @@ export function PedidoDialog({ id }: Props) {
           <DialogTitle>{id ? "Actualizar" : "Crear"} Pedido</DialogTitle>
         </DialogHeader>
         <PedidoForm closeDialog={() => setOpen(false)} id={id} />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+type PropsText = {
+  id: string;
+};
+
+export function PedidoDialogText({ id }: PropsText) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{id ? updateTrigger : addTrigger}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{id ? "Actualizar" : "Crear"} Pedido</DialogTitle>
+        </DialogHeader>
+        <PedidoFormText closeDialog={() => setOpen(false)} id={id} />
       </DialogContent>
     </Dialog>
   );
