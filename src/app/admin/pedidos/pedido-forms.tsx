@@ -32,7 +32,6 @@ export function PedidoForm({ id, closeDialog }: Props) {
     .then((data) => {
       toast({ title: id ? "Pedido actualizado" : "Pedido creado" })
       closeDialog()
-      router.push(`/admin/tablero?id=${data?.id}`)
     })
     .catch((error) => {
       toast({
@@ -48,7 +47,8 @@ export function PedidoForm({ id, closeDialog }: Props) {
 
   useEffect(() => {
     if (id) {
-      getPedidoDAOAction(id).then((data) => {
+      getPedidoDAOAction(id)
+      .then((data) => {
         if (data) {
           form.reset(data);
         }
@@ -58,8 +58,10 @@ export function PedidoForm({ id, closeDialog }: Props) {
           }
         });
       });
+    } else {
+      form.setValue("phone", "web-test")
     }
-    form.setValue("phone", "web-test")
+    
   }, [form, id]);
 
   return (
