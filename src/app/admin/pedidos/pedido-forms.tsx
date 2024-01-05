@@ -59,7 +59,7 @@ export function PedidoForm({ id, closeDialog }: Props) {
         });
       });
     } else {
-      form.setValue("phone", "web-test")
+      //form.setValue("phone", "web-test")
     }
     
   }, [form, id]);
