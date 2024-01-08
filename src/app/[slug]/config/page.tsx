@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTotalCoincidencesByInmo, getTotalCoincidencesWithNotificationByInmo } from "@/services/coincidence-services";
 import { getInmobiliariaDAOByslug, getTotalProperiesByInmobiliaria } from "@/services/inmobiliaria-services";
-import { getPedidosDAO } from "@/services/pedido-services";
+import { getPedidosDAO, getTotalCountPedidos } from "@/services/pedido-services";
 import { getPropertiesOfInmobiliaria } from "@/services/property-services";
 import { getUsersDAOBySlug } from "@/services/user-services";
 import { Home, PackageOpen, User } from "lucide-react";
@@ -17,7 +17,7 @@ export default async function AdminPage({ params }: Props) {
   const slug= params.slug
 
   const inmo= await getInmobiliariaDAOByslug(slug)
-  const pedidos= await getPedidosDAO("ALL")
+  const totalPedidosCount= await getTotalCountPedidos()
   const totalCoincidences= await getTotalCoincidencesByInmo(inmo.id)
   const totalNotifications= await getTotalCoincidencesWithNotificationByInmo(inmo.id)
   const users= await getUsersDAOBySlug(slug)
@@ -61,7 +61,7 @@ export default async function AdminPage({ params }: Props) {
               <PackageOpen className="text-gray-500" size={20} />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{pedidos.length}</div>
+              <div className="text-2xl font-bold">{totalPedidosCount}</div>
               <div className="flex justify-between">
                 <p className="text-xs text-muted-foreground">
                   {totalCoincidences} coincidencias

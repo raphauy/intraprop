@@ -123,6 +123,32 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
   return res
 }
 
+export async function getTotalCountPedidos(): Promise<number> {
+  const found = await prisma.pedido.count({
+    where: {
+      status: {
+        not: "discarded"
+      },      
+      caracteristicas: {
+        not: null,
+      },
+      AND: [
+        {
+          caracteristicas: {
+            not: ""
+          }
+        },
+        {
+          caracteristicas: {
+            not: "N/D"
+          }
+        }
+      ],
+    },
+  })
+  return found
+}
+
 export async function getAllPedidosDAO(): Promise<PedidoDAO[]> {
   const PEDIDOS_RESULTS= await getValue("PEDIDOS_RESULTS")
   let pedidosResults= 100
