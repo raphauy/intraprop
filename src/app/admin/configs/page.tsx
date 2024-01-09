@@ -8,8 +8,8 @@ export default async function UsersPage() {
   let data = await getConfigsDAO()
 
   const user= await getCurrentUser()
-  const isRapha= user?.email === "rapha.uy@rapha.uy"
-  if (!isRapha) {
+  const isSuperAdmin= user?.email === "rapha.uy@rapha.uy" || user?.email === "gilberto@osomdigital.com"
+  if (!isSuperAdmin) {
     data= data.filter((item) => item.name !== "PROCESS_BLOCKED")
   }
 
@@ -18,7 +18,7 @@ export default async function UsersPage() {
       <p className="text-center font-bold text-2xl my-5">Configuración</p>
       <div className="flex justify-end mx-auto my-2">
         {
-          isRapha && <ConfigDialog />
+          isSuperAdmin && <ConfigDialog />
         }
       </div>
 
