@@ -1,10 +1,11 @@
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { formatPresupuesto } from "@/lib/utils"
 import { PedidoDAO } from "@/services/pedido-services"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { Info, Target } from "lucide-react"
+import { Info, MessageCircle, Target } from "lucide-react"
 
 type Props= {
     pedido: PedidoDAO
@@ -21,6 +22,18 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
                 <div className="flex justify-between">
                     <div className="flex gap-10">
                         <CardTitle>Pedido {numberFormatted}</CardTitle>
+                        <TooltipProvider delayDuration={0}>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <MessageCircle  size={20} />
+                                </TooltipTrigger>
+                                <TooltipContent className="w-72">
+                                    <p className="mb-5 text-lg font-bold">Texto original del pedido:</p>
+                                    <p className="text-sm whitespace-pre-wrap">{pedido.text}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+
                         <HoverCard>
                             <HoverCardTrigger><Info size={20}/></HoverCardTrigger>
                             <HoverCardContent className="w-72">
