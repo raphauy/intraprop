@@ -14,7 +14,7 @@ type Props= {
 }
 
 export default function PedidoBox({pedido, cantCoincidencias}: Props) {
-    const numberFormatted= pedido.number.toString().padStart(4, "0")
+    const numberFormatted= pedido.number.toString().padStart(5, "0")
     const formattedDate= format(pedido.createdAt, "dd MMMM, yyyy - HH:mm 'h'", { locale: es })
 
     return (
@@ -22,7 +22,7 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
             <CardHeader className="px-4">
                 <div className="flex justify-between">
                     <div className="flex gap-10 items-start">
-                        <CardTitle>Pedido {numberFormatted}</CardTitle>
+                        <CardTitle>Pedido #{numberFormatted}</CardTitle>
                         <TooltipProvider delayDuration={0}>
                             <Popover>
                                 <PopoverTrigger>
