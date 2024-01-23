@@ -27,6 +27,7 @@ export default async function Menu() {
         )
 
     const inmobiliariaId= user.inmobiliariaId
+    if (!inmobiliariaId) return null
     const inmo= await getInmobiliariaDAO(inmobiliariaId)
 
     return (

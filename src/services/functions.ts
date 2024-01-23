@@ -1,11 +1,12 @@
 import { getValue } from "./config-services";
+import { sendWapMessage } from "./osomService";
 import { PedidoFormValues, getPedidoDAO, updatePedido } from "./pedido-services";
 
 export const functions= [
   {
     name: "registrarPedido",
     description:
-      "Registra un pedido de búsqueda de propiedades. Se debe invocar esta función para registrar un pedido.",
+      "Registra un pedido de búsqueda de propiedades. Se debe invocar esta función para registrar un pedido. Importante: No debes inferir ni inventar información, si ésta no se encuentra en el texto debes llenar el campo correspondiente con N/D.",
     parameters: {
       type: "object",
       properties: {
@@ -23,7 +24,7 @@ export const functions= [
         },
         operacion: {
           type: "string",
-          description: "alquiler o venta. Si no se puede encontrar la operación en el texto del pedido se debe llenar este campo con N/D",
+          description: "alquiler o venta. Importante: no inferir este valor, solo poner alquiler o venta si el pedido trae expresamente esta información. Si no se puede encontrar palabras como alquiler o venta en el texto del pedido se debe llenar este campo con N/D",
         },
         presupuestoMin: {
           type: "number",
@@ -35,7 +36,8 @@ export const functions= [
         },
         presupuestoMoneda: {
           type: "string",
-          description: "USD, UYU, N/D. Notar que los pedidos son en Uruguay, si se utiliza la palabra pesos se refiere a UYU, si se utiliza la palabra dólares se refiere a USD. Si utiliza el símbolo $ se refiere a UYU. A veces no ponen la moneda, debes tratar de inferir la moneda teniendo en cuenta que las ventas generalmente son en USD y los alquileres en UYU.",
+          enum: ["USD", "UYU", "N/D"],
+          description: "Importante: Si no se puede encontrar la moneda en el texto del pedido se debe llenar este campo con N/D. Si pone solo un valor como 700 no se debe asumir que es 700 UYU ni 700 USD, se debe llenar este campo con N/D.",
         },
         gastosComunes: {
           type: "string",
@@ -76,6 +78,10 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
   console.log("dormitorios: ", dormitorios)
   console.log("caracteristicas: ", caracteristicas)
 
+  if (operacion.toUpperCase().includes("COMPRA")) operacion= "VENTA"
+
+  presupuestoMinOrig= corregirPresupuesto(presupuestoMinOrig, operacion, presupuestoMoneda)
+  presupuestoMaxOrig= corregirPresupuesto(presupuestoMaxOrig, operacion, presupuestoMoneda)  
 
   if (pedidoId) {
     const BUDGET_PERC_MIN= await getValue("BUDGET_PERC_MIN")
@@ -136,7 +142,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
 
     if (isPedido) {
       const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
-      const notDiscard= formattedCaracteristicas && ((operacion && operacion.toUpperCase() !== "N/D") || (tipo && tipo.toUpperCase() !== "N/D"))
+      const pauseCheck= checkPause(pedido.group || "-", tipo, operacion, zona, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda)
       pedidoForm= {
         text: pedido.text,
         phone: pedido.phone as string,
@@ -150,8 +156,12 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
         zona: zona,
         dormitorios: dormitorios,
         caracteristicas: formattedCaracteristicas,
-        contacto: notDiscard ? contacto : "status: discarded",
-        status: notDiscard ? "pending" : "discarded",
+        contacto: pauseCheck.msgToUser,
+        status: pauseCheck.status,
+      }
+      if (pauseCheck.status === "paused") {
+        console.log(pauseCheck.msgToUser)        
+        sendWapMessage(pedido.phone as string, pauseCheck.msgToUser)
       }
     } else {
       console.log("Pedido is " + intencion + ", discarding.")      
@@ -208,6 +218,71 @@ function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: num
   return formattedCaracteristicas
 }
 
+type PauseData= {
+  status: "paused" | "pending"
+  msgToUser: string
+}
+// check if we have all required fields
+// required fields: tipo, operacion, zona
+// if we have all required fields, return "pending"
+// if we don't have all required fields, return "paused"
+// if the status is paused, return the message to the user with the fields that are missing
+function checkPause(grupo: string, tipo: string, operacion: string, zona: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string): PauseData {
+  console.log("checkPause: ")
+  console.log("\tgrupo: ", grupo)
+  console.log("\ttipo: ", tipo)
+  console.log("\toperacion: ", operacion)
+  console.log("\tzona: ", zona)
+  console.log("\tpresupuestoMin: ", presupuestoMin)
+  console.log("\tpresupuestoMax: ", presupuestoMax)
+  console.log("\tpresupuestoMoneda: ", presupuestoMoneda)
+  
+  let partial= ""
+  if (!tipo || tipo.toUpperCase() === "N/D") {
+    partial+= "tipo: (casa, apartamento, local, etc.)\n"
+  }
+  if (!operacion || operacion.toUpperCase() === "N/D") {
+    partial+= "operación: (ALQUILER o VENTA)\n"
+  }
+  if (!zona || zona.toUpperCase() === "N/D") {
+    partial+= "zona: (Pocitos, La Tahona, etc)\n"
+  }
+  if (!presupuestoMin && !presupuestoMax) {
+    partial+= "presupuesto: (valor o rango, UYU o USD)\n"
+  } else if (!presupuestoMoneda || presupuestoMoneda.toUpperCase() === "N/D") {
+    partial+= "moneda: (UYU o USD)\n"
+  }
+  if (partial) {
+    const msgToUser= `Para poder procesar el pedido que acabas de ingresar en el grupo ${grupo}, por favor responde este mensaje con el siguiente texto completando la información: \n\n${partial}`
+    return {
+      status: "paused",
+      msgToUser,
+    }
+  } else {
+    return {
+      status: "pending",
+      msgToUser: "",
+    }
+  }
+}
+
+
+function corregirPresupuesto(presupuesto: number, operacion: string, presupuestoMoneda: string) {
+  if (presupuesto === 0)
+    return presupuesto
+
+  let res= presupuesto
+
+  if (operacion.toUpperCase() === "ALQUILER" && presupuestoMoneda.toUpperCase() === "UYU") {
+      if (presupuesto < 1000) res= presupuesto * 1000
+  }
+  
+  if (operacion.toUpperCase() === "VENTA" && presupuestoMoneda.toUpperCase() === "USD") {
+    if (presupuesto < 1000) res= presupuesto * 1000
+  }
+
+  return res  
+}
 
 
 export async function runFunction(name: string, args: any) {

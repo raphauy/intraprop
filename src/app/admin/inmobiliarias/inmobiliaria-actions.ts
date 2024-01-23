@@ -1,10 +1,14 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { InmobiliariaDAO, InmobiliariaFormValues, createInmobiliaria, updateInmobiliaria, getInmobiliariaDAO, deleteInmobiliaria } from "@/services/inmobiliaria-services"
+import { InmobiliariaDAO, InmobiliariaFormValues, createInmobiliaria, updateInmobiliaria, getInmobiliariaDAO, deleteInmobiliaria, getInmobiliariasDAO } from "@/services/inmobiliaria-services"
 
 export async function getInmobiliariaDAOAction(id: string): Promise<InmobiliariaDAO | null> {
   return getInmobiliariaDAO(id)
+}
+
+export async function getInmobiliariasDAOAction(): Promise<InmobiliariaDAO[] | null> {
+  return getInmobiliariasDAO()
 }
 
 export async function createOrUpdateInmobiliariaAction(id: string | null, data: InmobiliariaFormValues): Promise<InmobiliariaDAO | null> {       

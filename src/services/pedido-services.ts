@@ -378,6 +378,32 @@ export async function createPedido(data: PedidoFormValues) {
   return created
 }
 
+export async function addTextToPedido(id: string, text: string) {
+  const pedido= await getPedidoDAO(id)
+  const textToAdd= pedido.text.includes("---") ?  pedido.text + "\n" + text : pedido.text + "\n----------------\n" + text
+  const updated = await prisma.pedido.update({
+    where: {
+      id
+    },
+    data: {
+      text: textToAdd
+    }
+  })
+  return updated
+}
+
+export async function getPedidoPaused(phone: string) {
+  const found = await prisma.pedido.findFirst({
+    where: {
+      phone,
+      status: "paused"
+    },
+    orderBy: {
+      createdAt: "desc"
+    },
+  })
+  return found
+}
 
 export async function updatePedido(id: string, data: PedidoFormValues) {
   const updated = await prisma.pedido.update({

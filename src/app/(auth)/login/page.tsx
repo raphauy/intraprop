@@ -17,13 +17,13 @@ export default async function AuthenticationPage() {
   if (role === "admin")
     redirect("/admin/tablero")
   else if (role === "inmobiliaria") {
-    if (!user?.inmobiliariaId) redirect("/unauthorized?message=You are not authorized to access this page")
+    if (!user?.inmobiliariaId) redirect("/unauthorized?message=No estas autorizado para acceder a esta página")
 
     const inmo= await getInmobiliariaDAO(user.inmobiliariaId)
     redirect(`/${inmo.slug}/tablero`)
   }    
   else if (role === "user")
-    return redirect("/unauthorized?message=You are not authorized to access this page")
+    return redirect("/unauthorized?message=No estas autorizado para acceder a esta página. Debes pedir acceso a los administradores de Intraprop.")
 
     return (
       <div className="flex flex-col justify-center space-y-6 w-[380px] mt-10 bg-background text-muted-foreground p-1 rounded-xl">

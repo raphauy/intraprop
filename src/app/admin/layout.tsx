@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: Props) {
   }
 
   if (currentUser?.role !== "admin") {
-    return redirect("/unauthorized?message=You are not authorized to access this page")
+    return redirect("/unauthorized?message=No estas autorizado para acceder a esta página")
   }
 
   return (

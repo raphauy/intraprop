@@ -21,7 +21,7 @@ export default async function TableroLayout({ children, params }: Props) {
   }
 
   if (currentUser?.role !== "admin" && currentUser?.role !== "inmobiliaria") {
-    return redirect("/unauthorized?message=You are not authorized to access this page")
+    return redirect("/unauthorized?message=No estas autorizado para acceder a esta página")
   }
 
   const slug= params.slug

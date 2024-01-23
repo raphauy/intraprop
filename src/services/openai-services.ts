@@ -27,6 +27,7 @@ export async function createPedidoWithFunctions(text: string, phone: string, nam
     pedidoId: created.id,
     text,
   }
+  // Todo
   await runFunctions(JSON.stringify(textToPenAI))
 
   return created
@@ -74,7 +75,6 @@ export async function runFunctions(text: string) {
         function_call: "auto",
     })
 
-    // log the response
     response.choices.forEach((choice) => {
         const response: ResponseType = choice.message as ResponseType
         if (response.function_call) {

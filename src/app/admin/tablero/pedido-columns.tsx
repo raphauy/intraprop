@@ -132,7 +132,11 @@ export const columns: ColumnDef<PedidoDAO>[] = [
 
       return (
         <Link href={`tablero?id=${data.id}`} prefetch={false}>
-          <Badge className={cn("bg-white text-muted-foreground text-base px-2 rounded-full hover:cursor-pointer w-6 h-6 flex items-center justify-center", cantCoincidencias > 0 && "bg-green-500 text-white")}>
+          <Badge 
+            className={cn("bg-white text-muted-foreground text-base px-2 rounded-full hover:cursor-pointer w-6 h-6 flex items-center justify-center", 
+            cantCoincidencias > 0 && "bg-green-500 text-white", 
+            data.status === "paused" && "bg-yellow-500 text-white")}
+          >
             {cantCoincidencias}
           </Badge>
         </Link>

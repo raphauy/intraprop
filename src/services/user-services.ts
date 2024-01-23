@@ -9,6 +9,7 @@ export type UserDAO = {
 	role:  string
 	emailVerified?:  Date
 	image?:  string
+  inmobiliariaId?: string
   inmobiliariaName?: string 
 }
 

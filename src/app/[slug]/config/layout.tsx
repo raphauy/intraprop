@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: Props) {
   } else if (currentUser?.role === "inmobiliaria") {
     //sidebar = <SideBarInmobiliaria />
   } else {
-    return redirect("/unauthorized?message=You are not authorized to access this page")
+    return redirect("/unauthorized?message=No estas autorizado para acceder a esta página")
   }
     
 

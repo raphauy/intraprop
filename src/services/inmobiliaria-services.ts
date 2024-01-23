@@ -46,6 +46,8 @@ export async function getTotalProperiesByInmobiliaria(inmobiliariaId: string) {
 }
   
 export async function getInmobiliariaDAO(id: string) {
+  if (!id) throw new Error("id is required")
+  
   const found = await prisma.inmobiliaria.findUnique({
     where: {
       id

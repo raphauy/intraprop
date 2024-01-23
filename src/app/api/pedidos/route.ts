@@ -1,7 +1,5 @@
 import { createOrUpdatePedidoAction } from "@/app/admin/pedidos/pedido-actions";
 import { getLast10Pedidos } from "@/services/pedido-services";
-import { updateEmbedding } from "@/services/property-services";
-import { createOrUpdatePropertyWithPrisma } from "@/services/propertyUpdateService";
 import { NextResponse } from "next/server";
 
 type Props = {
@@ -46,10 +44,6 @@ export async function POST(request: Request, { params }: Props ) {
             name: name as string,
             group: group as string,
         }
-        // sleep an aleatory time between 0 and 1 seconds
-        // const sleepTime= Math.floor(Math.random() * 2000)
-        // console.log("sleepTime: ", sleepTime + " ms")
-        // await new Promise(resolve => setTimeout(resolve, sleepTime))
 
         const updated= await createOrUpdatePedidoAction(null, dataPedido)
 

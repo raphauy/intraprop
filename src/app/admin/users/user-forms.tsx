@@ -15,12 +15,23 @@ import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader } from "lucide-react";
+import { Check, CheckIcon, Loader } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { InmobiliariaDAO } from "@/services/inmobiliaria-services";
+import { getInmobiliariaDAOAction, getInmobiliariasDAOAction } from "../inmobiliarias/inmobiliaria-actions";
+
+export const roles= [
+  "admin",
+  "inmobiliaria",
+]
 
 type Props = {
   id?: string;
@@ -34,10 +45,16 @@ export function UserForm({ id, closeDialog }: Props) {
     mode: "onChange",
   });
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState("admin")
+  const [inmoName, setInmoName] = useState("")
+  const [inmobiliarias, setInmobiliarias] = useState<InmobiliariaDAO[]>([])
 
   const onSubmit = async (data: UserFormValues) => {
     setLoading(true);
     try {
+      if (form.getValues("role") === "admin") {
+        data.inmobiliariaId = undefined
+      }
       await createOrUpdateUserAction(id ? id : null, data);
       toast({ title: id ? "User updated" : "User created" });
       closeDialog();
@@ -53,15 +70,41 @@ export function UserForm({ id, closeDialog }: Props) {
   };
 
   useEffect(() => {
+    getInmobiliariasDAOAction()
+    .then((data) => {
+      if (data) {
+        setInmobiliarias(data)
+      }
+    })
+
     if (id) {
       getUserDAOAction(id).then((data) => {
+        
         if (data) {
           form.reset(data);
+          data.inmobiliariaName && setInmoName(data.inmobiliariaName)
+          data.name && form.setValue("name", data.name);
+          data.inmobiliariaId && form.setValue("inmobiliariaId", data.inmobiliariaId);
+          form.setValue("role", data.role);
+          setRole(data.role)
         }
       });
+    } else {
+      console.log("setting role")      
+      setRole("admin")
+      form.setValue("role", "admin");
     }
-    form.setValue("role", "admin");    
+    
   }, [form, id]);
+
+  function handleRoleChange(value: string) {
+    setRole(value)
+    form.setValue("role", value);
+    if (value === "admin") {
+      form.setValue("inmobiliariaId", undefined);
+      setInmoName("")
+    }
+  }
 
   return (
     <div className="p-4 bg-white rounded-md">
@@ -94,6 +137,64 @@ export function UserForm({ id, closeDialog }: Props) {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Rol</FormLabel>
+                <Select onValueChange={handleRoleChange} defaultValue={field.value+""}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue className="text-muted-foreground">{role}</SelectValue>
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {roles.map(role => (
+                        <SelectItem key={role} value={role}>{role}</SelectItem>                      
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
+                <FormDescription>el rol inmobiliaria debe tener una inmbobiliaria asociada</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {
+            role === "inmobiliaria" &&
+            <FormField
+              control={form.control}
+              name="inmobiliariaId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cliente</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        {
+                          id ? 
+                          <SelectValue className="text-muted-foreground" placeholder={inmoName} /> :
+                          <SelectValue className="text-muted-foreground" placeholder="Selecciona un Cliente" />
+                        }
+                        
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {inmobiliarias.map(inmo => (
+                        <SelectItem key={inmo.id} value={inmo.id}>{inmo.name}</SelectItem>
+                      ))
+                      }
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          }
+
 
           <div className="flex justify-end">
             <Button
