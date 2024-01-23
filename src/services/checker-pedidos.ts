@@ -325,11 +325,11 @@ async function updateCoincidence(coincidenceId: string, newState: string) {
 
 
 export async function checkPedidos() {
+    let processBlocked= false
     const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
     console.log(nowMontevideo)
 
     const PROCESS_BLOCKED= await getValue("PROCESS_BLOCKED")
-    let processBlocked= false
     if(PROCESS_BLOCKED) processBlocked= PROCESS_BLOCKED === "true"
     else {
         console.log("PROCESS_BLOCKED not found, config this variable to process pedidos")
@@ -342,7 +342,6 @@ export async function checkPedidos() {
     } else {
         await setValue("PROCESS_BLOCKED", "true")
     }
-  
     
     await printPendingPedidos()
 
@@ -358,6 +357,60 @@ export async function checkPedidos() {
 
     console.log("--------------------------------------------")
 }
+
+// export async function checkPedidos() {
+//     let processBlocked= false
+//     try {            
+//         const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
+//         console.log(nowMontevideo)
+
+//         const PROCESS_BLOCKED= await getValue("PROCESS_BLOCKED")
+//         if(PROCESS_BLOCKED) processBlocked= PROCESS_BLOCKED === "true"
+//         else {
+//             console.log("PROCESS_BLOCKED not found, config this variable to process pedidos")
+//             return
+//         }
+        
+//         if (processBlocked) {
+//             console.log("process is blocked")
+//             return
+//         } else {
+//             await setValue("PROCESS_BLOCKED", "true")
+//         }
+        
+//         await printPendingPedidos()
+
+//         await processPendingPedidos()
+//         await checkPendingCoincidences()
+//         await checkDistanceOkCoincidences()
+//         await checkBudgetOkCoincidences()
+//         await checkCoincidencesFinished()
+//         await createNotifications()
+//         await sendPendingNotificationsV2()
+
+//     } catch (error) {
+//         console.log("error: ", error)
+//     } finally {
+//         if (processBlocked) {
+//             let atempts= 1
+//             while (atempts <= 10) {
+//                 try {
+//                     await setValue("PROCESS_BLOCKED", "false")
+//                     console.log("PROCESS_BLOCKED set to false");            
+//                     break            
+//                 } catch (error) {
+//                     atempts++
+//                     //sleep 5 seconds
+//                     console.log(`attempt ${atempts} to set PROCESS_BLOCKED to false`)        
+//                     await new Promise(resolve => setTimeout(resolve, 5000))
+//                 }
+//             }    
+//         }
+//     }
+
+
+//     console.log("--------------------------------------------")
+// }
 
 async function printPendingPedidos() {
     let pedidos= await getPedidos("coincidences_created")

@@ -254,7 +254,7 @@ function checkPause(nombre: string, grupo: string, tipo: string, operacion: stri
     partial+= "moneda: (UYU o USD)\n"
   }
   if (partial) {
-    const msgToUser= `${nombre}Para poder procesar el pedido que acabas de ingresar en el grupo ${grupo}, por favor responde este mensaje con el siguiente texto completando la información: \n\n${partial}`
+    const msgToUser= `${nombre}Te escribimos desde Intraprop porque acabas de hacer un pedido en el grupo ${grupo}, para poder procesarlo y buscar coincidencias en las propiedades de los colegas, por favor respondé este mensaje con el siguiente texto completando la información: \n\n${partial}`
     return {
       status: "paused",
       msgToUser,
