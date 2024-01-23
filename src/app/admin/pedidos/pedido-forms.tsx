@@ -67,12 +67,31 @@ export function PedidoForm({ id, closeDialog }: Props) {
     
   }, [form, id]);
 
+  function setPerson(name: string, phone: string) {
+    form.setValue("name", name)
+    form.setValue("phone", phone)    
+  }
+
   return (
     <div className="p-4 rounded-md">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 
           <div className="flex gap-2">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nombre..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="phone"
@@ -103,16 +122,16 @@ export function PedidoForm({ id, closeDialog }: Props) {
           </div>
 
           <div className="flex gap-4">
-            <div onClick={() => form.setValue("phone", "59895983155")} className="cursor-pointer underline">
+            <div onClick={() => setPerson("Morti", "59895983155")} className="cursor-pointer underline">
               Morti
             </div>
-            <div onClick={() => form.setValue("phone", "59894197353")} className="cursor-pointer underline">
+            <div onClick={() => setPerson("Joaco", "59894197353")} className="cursor-pointer underline">
               Joaco
             </div>
-            <div onClick={() => form.setValue("phone", "59895923142")} className="cursor-pointer underline">
+            <div onClick={() => setPerson("Gilberto", "59895923142")} className="cursor-pointer underline">
               Gilberto
             </div>
-            <div onClick={() => form.setValue("phone", "59898353507")} className="cursor-pointer underline">
+            <div onClick={() => setPerson("RC", "59898353507")} className="cursor-pointer underline">
               RC
             </div>
           </div>

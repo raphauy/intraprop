@@ -43,7 +43,7 @@
     "inquirer": "^9.2.12",
     "langchain": "^0.0.145",
     "lucide-react": "^0.292.0",
-    "next": "14.0.2",
+    "next": "14.1.0",
     "next-auth": "^4.24.4",
     "next-themes": "^0.2.1",
     "nodemailer": "^6.9.7",

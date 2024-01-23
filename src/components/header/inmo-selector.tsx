@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
-import { Check, ChevronsUpDown, LayoutDashboard, PlusCircle, Search } from "lucide-react"
+import { Check, ChevronsRight, ChevronsUpDown, LayoutDashboard, PlusCircle, Search } from "lucide-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Separator } from "../ui/separator"
 import { useEffect, useMemo, useState } from "react"
@@ -80,33 +80,38 @@ export function InmoSelector({ selectors }: Props) {
               
               <CommandEmpty>inmobiliaria no encontrada</CommandEmpty>
               <CommandGroup>
-                {filteredValues.map((line) => (
-                  <CommandItem
-                    key={line.slug}
-                    onSelect={(currentValue) => {
-                      if (currentValue === value) {
-                        setValue("")
-                      } else {
-                        setValue(currentValue)
-                        let restOfPath = path.split('/').slice(2).join('/') 
-                        
-                        if (path.startsWith("/admin")) restOfPath = "tablero"
+                {filteredValues.map((inmo, index) => {
+                  if (index >= 10) return null
+                  return (
+                    <CommandItem
+                      key={inmo.slug}
+                      onSelect={(currentValue) => {
+                        if (currentValue === value) {
+                          setValue("")
+                        } else {
+                          setValue(currentValue)
+                          let restOfPath = path.split('/').slice(2).join('/') 
+                          
+                          if (path.startsWith("/admin")) restOfPath = "tablero"
 
-                        router.push(`/${line.slug}/${restOfPath}?${search}`)
-                      }
-                      setSearchValue("")
-                      setOpen(false)
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value.toLowerCase() === line.name.toLowerCase() ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {line.name}
-                  </CommandItem>
-                ))}
+                          router.push(`/${inmo.slug}/${restOfPath}?${search}`)
+                        }
+                        setSearchValue("")
+                        setOpen(false)
+                      }}
+                    >
+                      <Check className={cn("mr-2 h-4 w-4", value.toLowerCase() === inmo.name.toLowerCase() ? "opacity-100" : "opacity-0")}/>
+                      {inmo.name}
+                    </CommandItem>
+                )})}
+
+                {filteredValues.length - 10 > 0 &&
+                  <div className="flex items-center mt-5 font-bold">
+                    <ChevronsRight className="mr-2 ml-1 h-5 w-5"/>
+                    <p className="text-sm">Hay {filteredValues.length - 10} inmobiliarias más</p>
+                  </div>
+                }
+
                   <Separator className="my-2" />
 
                   <CommandItem className="mb-2 cursor-pointer font-bold dark:text-white"
