@@ -131,7 +131,7 @@ export function PedidoForm({ id, closeDialog }: Props) {
             <div onClick={() => setPerson("Gilberto", "59895923142")} className="cursor-pointer underline">
               Gilberto
             </div>
-            <div onClick={() => setPerson("RC", "59898353507")} className="cursor-pointer underline">
+            <div onClick={() => setPerson("Raphael", "59898353507")} className="cursor-pointer underline">
               RC
             </div>
           </div>

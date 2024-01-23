@@ -142,7 +142,8 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
 
     if (isPedido) {
       const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
-      const pauseCheck= checkPause(pedido.group || "-", tipo, operacion, zona, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda)
+      const name= pedido.name ? "Hola " + pedido.name + "! " : ""
+      const pauseCheck= checkPause(name, pedido.group || "-", tipo, operacion, zona, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda)
       pedidoForm= {
         text: pedido.text,
         phone: pedido.phone as string,
@@ -227,7 +228,7 @@ type PauseData= {
 // if we have all required fields, return "pending"
 // if we don't have all required fields, return "paused"
 // if the status is paused, return the message to the user with the fields that are missing
-function checkPause(grupo: string, tipo: string, operacion: string, zona: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string): PauseData {
+function checkPause(nombre: string, grupo: string, tipo: string, operacion: string, zona: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string): PauseData {
   console.log("checkPause: ")
   console.log("\tgrupo: ", grupo)
   console.log("\ttipo: ", tipo)
@@ -253,7 +254,7 @@ function checkPause(grupo: string, tipo: string, operacion: string, zona: string
     partial+= "moneda: (UYU o USD)\n"
   }
   if (partial) {
-    const msgToUser= `Para poder procesar el pedido que acabas de ingresar en el grupo ${grupo}, por favor responde este mensaje con el siguiente texto completando la información: \n\n${partial}`
+    const msgToUser= `${nombre}Para poder procesar el pedido que acabas de ingresar en el grupo ${grupo}, por favor responde este mensaje con el siguiente texto completando la información: \n\n${partial}`
     return {
       status: "paused",
       msgToUser,
