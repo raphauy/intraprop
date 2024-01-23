@@ -24,7 +24,7 @@ export type InmobiliariaFormValues = z.infer<typeof inmobiliariaFormSchema>
 export async function getInmobiliariasDAO() {
   const found = await prisma.inmobiliaria.findMany({
     orderBy: {
-      id: 'asc'
+      createdAt: "desc"
     },
   })
   return found as InmobiliariaDAO[]
