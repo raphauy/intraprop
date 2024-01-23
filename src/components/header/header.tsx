@@ -10,6 +10,8 @@ interface Props {
   
 export default async function Header({ children }: Props) {
     const session= await getSession()
+    const nextURL= process.env.NEXTAUTH_URL || ""
+    const env= nextURL.includes("localhost") ? "LOCALHOST" : nextURL.includes("osomserver.raphauy.dev") ? "PRE-PRODUCTION" : ""
 
     return (
         <div className="w-full">
@@ -21,6 +23,7 @@ export default async function Header({ children }: Props) {
                     {session && children}
                 </div>
                 
+                { env && <p className="font-bold border border-white rounded-md py-1 px-2 shadow-md shadow-white">{env}</p> }
                 <div>
                     <ThemeToggle />
                 </div>
