@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { createOrUpdatePedidoAction, deletePedidoAction, getPedidoDAOAction } from "./pedido-actions";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   id?: string;
@@ -20,7 +21,9 @@ type Props = {
 export function PedidoForm({ id, closeDialog }: Props) {
   const form = useForm<PedidoFormValues>({
     resolver: zodResolver(pedidoFormSchema),
-    defaultValues: {},
+    defaultValues: {
+      group: "Grupo Test",
+    },
     mode: "onChange",
   });
   const [loading, setLoading] = useState(false);
@@ -59,7 +62,7 @@ export function PedidoForm({ id, closeDialog }: Props) {
         });
       });
     } else {
-      form.setValue("phone", "web-test")
+      //form.setValue("phone", "web-test")
     }
     
   }, [form, id]);
@@ -68,6 +71,53 @@ export function PedidoForm({ id, closeDialog }: Props) {
     <div className="p-4 rounded-md">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+
+          <div className="flex gap-2">
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Phone..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="group"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Grupo</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Phone..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <div onClick={() => form.setValue("phone", "59895983155")} className="cursor-pointer underline">
+              Morti
+            </div>
+            <div onClick={() => form.setValue("phone", "59894197353")} className="cursor-pointer underline">
+              Joaco
+            </div>
+            <div onClick={() => form.setValue("phone", "59895923142")} className="cursor-pointer underline">
+              Gilberto
+            </div>
+            <div onClick={() => form.setValue("phone", "59898353507")} className="cursor-pointer underline">
+              RC
+            </div>
+          </div>
+
+
           <FormField
             control={form.control}
             name="text"
