@@ -160,15 +160,18 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
         contacto: pauseCheck.msgToUser,
         status: pauseCheck.status,
       }
+      console.log("Pedido is " + intencion + ", processing.")
       if (pauseCheck.status === "paused") {
         console.log("Pausing pedido " + pedido.number + " from " + pedido.phone + ", name: " + pedido.name);
         
         console.log(pauseCheck.msgToUser)        
         sendWapMessage(pedido.phone as string, pauseCheck.msgToUser)
       }
+    } else {
+      console.log("Pedido is " + intencion + ", discarding.")
     }
 
-    console.log("Pedido is " + intencion + ", discarding.")      
+
 
     const updated= await updatePedido(pedidoId, pedidoForm)
     if (!updated) {
