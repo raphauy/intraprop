@@ -27,14 +27,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "text is required" }, { status: 400 })
         }
 
-        console.log("phone: ", phone)
-        console.log("text: ", text)
+        console.log("usermessage API, phone: ", phone)
+        console.log("usermessage API, text: ", text)
 
         const pedido= await getPedidoPaused(phone)
         if (!pedido) {
-            console.log("there is no pedido paused for phone: ", phone)            
+            console.log("usermessage API, there is no pedido paused for phone: ", phone)            
         } else {
-            console.log("pedido paused: ", pedido)
+            console.log("usermessage API, pedido updated: #", pedido.number)
             const updated= await addTextToPedido(pedido.id, text)
             await updatePedidoWithFunctions(updated.id)
         }
