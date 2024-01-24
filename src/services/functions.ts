@@ -125,7 +125,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
     const presupuesto= (presupuestoMinOrig === presupuestoMaxOrig ? (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY') : "-") + "" : 
         (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY')+"-" : "") + (presupuestoMaxOrig ? presupuestoMaxOrig.toLocaleString('es-UY') : "inf")) + " " + (presupuestoMoneda ? presupuestoMoneda : "")
 
-    const isPedido= intencion && intencion.toUpperCase() === "PEDIDO"
+    const isPedido= intencion.toUpperCase() === "PEDIDO"
     const pedido= await getPedidoDAO(pedidoId)
 
     if (!pedido) {
@@ -161,12 +161,14 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
         status: pauseCheck.status,
       }
       if (pauseCheck.status === "paused") {
+        console.log("Pausing pedido " + pedido.number + " from " + pedido.phone + ", name: " + pedido.name);
+        
         console.log(pauseCheck.msgToUser)        
         sendWapMessage(pedido.phone as string, pauseCheck.msgToUser)
       }
-    } else {
-      console.log("Pedido is " + intencion + ", discarding.")      
     }
+
+    console.log("Pedido is " + intencion + ", discarding.")      
 
     const updated= await updatePedido(pedidoId, pedidoForm)
     if (!updated) {
