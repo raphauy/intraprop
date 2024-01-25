@@ -24,6 +24,7 @@ export const functions= [
         },
         operacion: {
           type: "string",
+          enum: ["ALQUILER", "VENTA", "ALQUILER/VENTA"],
           description: "alquiler o venta. Importante: no inferir este valor, solo poner alquiler o venta si el pedido trae expresamente esta información. Si no se puede encontrar palabras como alquiler o venta en el texto del pedido se debe llenar este campo con N/D",
         },
         presupuestoMin: {
@@ -77,6 +78,8 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
   console.log("zona: ", zona)
   console.log("dormitorios: ", dormitorios)
   console.log("caracteristicas: ", caracteristicas)
+
+  if (operacion.toUpperCase().includes("ALQUILER")) operacion= "ALQUILER"
 
   if (operacion.toUpperCase().includes("COMPRA")) operacion= "VENTA"
 
@@ -166,6 +169,11 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
         
         console.log(pauseCheck.msgToUser)        
         sendWapMessage(pedido.phone as string, pauseCheck.msgToUser)
+      } else {
+        const previousStatus= pedido.status
+        if (previousStatus === "paused") {
+          console.log("Pedido #" + pedido.number + " was paused, resuming. (send final message)")
+        }
       }
     } else {
       console.log("Pedido #" + pedido.number + " is" + intencion + ", discarding.")
