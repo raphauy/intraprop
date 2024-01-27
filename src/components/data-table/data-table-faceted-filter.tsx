@@ -113,7 +113,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     >
                       <Check className={cn("h-4 w-4")} />
                     </div>
-                    <span>{option}</span>
+                    <span>{option === "notifications_created" ? "finished" : option}</span>
                     {facets?.get(option) && (
                       <span className="flex items-center justify-center w-4 h-4 ml-auto font-mono text-xs">
                         {facets.get(option)}

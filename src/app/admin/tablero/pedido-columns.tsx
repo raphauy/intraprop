@@ -29,7 +29,7 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const data = row.original
       const numberFormatted= formatPedidoNumber(data.number)
 
-      return (<p className="">{numberFormatted}</p>)
+      return (<p className="w-fit">{numberFormatted}</p>)
     },
   },
 
@@ -51,9 +51,9 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const data = row.original
 
       return (
-        <Link href={`tablero?id=${data.id}`} prefetch={false}>
+        <Link href={`tablero?id=${data.id}`} prefetch={false} className="w-fit">
           <Button size="sm" variant="link" className="p-0 text-left text-muted-foreground">
-            <div className="w-[110px]">
+            <div className="">
               <p className="">{data.operacion?.toUpperCase()}</p>
               <p className="whitespace-nowrap">{data.tipo}</p>
             </div>
@@ -67,7 +67,7 @@ export const columns: ColumnDef<PedidoDAO>[] = [
   },
 
   {
-    accessorKey: "tipo",
+    accessorKey: "presupuesto",
     header: ({ column }) => {
       return (
         <Button
@@ -75,17 +75,28 @@ export const columns: ColumnDef<PedidoDAO>[] = [
           className="pl-0 dark:text-white"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Tipo
+          $
           <ArrowUpDown className="w-4 h-4 ml-1" />
         </Button>
       );
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+    cell: ({ row }) => {
+      const data = row.original
+
+      return (
+        <Link href={`tablero?id=${data.id}`} prefetch={false} className="w-fit">
+          <Button size="sm" variant="link" className="p-0 text-left text-muted-foreground">
+            <div className="">
+              <p className="">{data.presupuesto}</p>
+            </div>
+          </Button>
+        </Link>
+      )
     },
   },
+
   {
-    accessorKey: "createdAt",
+    accessorKey: "status",
     header: ({ column }) => {
       return (
         <Button
@@ -105,15 +116,18 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const dateFormatted= isToday ? "hoy" : format(data.createdAt, "MMM dd", { locale: es })      
 
       return (
-      <div className="w-12">
-        <p className="">{hourFormatted}</p>
+      <div className="w-fit">
+        <p className="whitespace-nowrap">{hourFormatted}</p>
         <p className="whitespace-nowrap">{dateFormatted}</p>
       </div>
       )
     },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
-    accessorKey: "cantCoincidencias",
+    accessorKey: "tipo",
     header: ({ column }) => {
       return (
         <Button
@@ -141,6 +155,9 @@ export const columns: ColumnDef<PedidoDAO>[] = [
           </Badge>
         </Link>
       )
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
     },
   },
 ];

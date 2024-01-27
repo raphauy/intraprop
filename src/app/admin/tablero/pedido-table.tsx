@@ -33,11 +33,12 @@ import { PedidoDialog } from "./pedido-dialogs";
 
 interface DataTableToolbarProps<TData> {
   table: TanstackTable<TData>
+  estados: string[]
   operaciones: string[]
   tipos: string[]
 }
 
-export function DataTableToolbar<TData>({table, operaciones, tipos}: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({table, estados, operaciones, tipos}: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
@@ -51,10 +52,17 @@ export function DataTableToolbar<TData>({table, operaciones, tipos}: DataTableTo
 
 
       <div className="flex gap-1 items-center overflow-auto">
+        {table.getColumn("status") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("status")}
+            title="Estado"
+            options={estados}
+          />
+        )}
         {table.getColumn("operacion") && (
           <DataTableFacetedFilter
             column={table.getColumn("operacion")}
-            title="Operación"
+            title="Op"
             options={operaciones}
           />
         )}
@@ -84,11 +92,12 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   columnsOff?: string[];
   subject: string;
+  estados: string[]
   operaciones: string[]
   tipos: string[]
 }
 
-export function DataTable<TData, TValue>({columns, data, columnsOff, subject, operaciones, tipos}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({columns, data, columnsOff, subject, estados, operaciones, tipos}: DataTableProps<TData, TValue>) {
   const searchParams= useSearchParams()
   const actualId= searchParams.get("id")
 
@@ -131,7 +140,7 @@ export function DataTable<TData, TValue>({columns, data, columnsOff, subject, op
 
   return (
     <div className="w-full mt-3 space-y-1 dark:text-white">
-      <DataTableToolbar table={table} operaciones={operaciones} tipos={tipos} />
+      <DataTableToolbar table={table} operaciones={operaciones} tipos={tipos} estados={estados} />
       <div className="border rounded-md">
         <Table>
           <TableHeader>
