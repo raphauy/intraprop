@@ -1,6 +1,5 @@
 "use client";
 
-import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -30,6 +29,7 @@ import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import { PedidoDialog } from "./pedido-dialogs";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 
 interface DataTableToolbarProps<TData> {
   table: TanstackTable<TData>

@@ -74,14 +74,14 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
                         </div>
                         <div className="flex justify-between">
                             <p><span className="font-bold">Zona:</span> {pedido.zona?.toLowerCase()}</p>
-                            {pedido.status !== "paused" && <p className="font-bold">{pedido.status === "notifications_created" ? "finished" : pedido.status === "coincidences_created" ? "processing" : pedido.status}</p>}
+                            {pedido.status !== "paused" && <p className="font-bold">{pedido.status === "notifications_created" ? "exitoso" : pedido.status === "no_coincidences" ? "sin coincidencias" : pedido.status === "pending" ? "pendiente" : pedido.status}</p>}
                             {
                                 pedido.status === "paused" &&
                                 <Popover>
                                     <PopoverTrigger>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <p className="font-bold">paused</p>
+                                                <p className="font-bold">pausado</p>
                                             </TooltipTrigger>
                                             <TooltipContent className="w-72 text-left">
                                                 <p className="mb-5 text-lg font-bold">Mensaje enviado al usuario:</p>
