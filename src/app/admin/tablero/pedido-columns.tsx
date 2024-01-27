@@ -113,12 +113,12 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const data = row.original
       const hourFormatted= format(data.createdAt, "HH:mm 'h'", { locale: es })
       const isToday= format(data.createdAt, "dd/MM/yyyy", { locale: es }) === format(new Date(), "dd/MM/yyyy", { locale: es })
-      const dateFormatted= isToday ? "hoy" : format(data.createdAt, "MMM dd", { locale: es })      
+      const dateFormatted= format(data.createdAt, "MMM dd", { locale: es })      
 
       return (
       <div className="w-fit">
+        {!isToday && <p className="whitespace-nowrap">{dateFormatted}</p>}
         <p className="whitespace-nowrap">{hourFormatted}</p>
-        <p className="whitespace-nowrap">{dateFormatted}</p>
       </div>
       )
     },
