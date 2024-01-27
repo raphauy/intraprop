@@ -29,11 +29,12 @@ export default async function TableroLayout({ children, params }: Props) {
   const data = await getPedidosDAO(slug);
   const operaciones= await getOperaciones()
   const tipos= await getTipos()
+  const estados= ["pending", "notifications_created", "no_coincidences", "paused"]
 
   return (
     <div className="mx-1 flex flex-col w-full gap-2 lg:items-start xl:gap-4 lg:flex-row sm:items-center">
       <div className="sm:w-full lg:w-[450px] mt-3">
-        <DataTable columns={columns} data={data} subject="Pedido" columnsOff={["tipo"]} operaciones={operaciones} tipos={tipos} />
+        <DataTable columns={columns} data={data} subject="Pedido" columnsOff={["tipo"]} operaciones={operaciones} tipos={tipos} estados={estados} />
       </div>
       <div className="flex-1 w-full">
         <Suspense fallback={<Loader className="animate-spin w-full mt-10" size="2rem" />}>
