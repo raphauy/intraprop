@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
           
 
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <div className="relative flex flex-col min-h-screen text-muted-foreground w-fit">
+              <div className="relative flex flex-col min-h-screen text-muted-foreground w-fit min-w-full">
                 <div className="sm:px-1 md:px-2 xl:px-3 bg-intraprop-color text-white border-b border-b-white border-intraprop-color/50 w-full">
                   <Header><Menu /></Header> 
                 </div>

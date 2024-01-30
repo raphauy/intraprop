@@ -115,7 +115,7 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                                 }
                                             </div>
                                         </div>
-                                        <Link href={coincidencia.property.url} target="_blank" className="">
+                                        <Link href={coincidencia.property.url} target="_blank" className="hidden md:block">
                                             <Button size="sm" variant="link"><ExternalLink /></Button>
                                         </Link>
                                     </TableCell>
