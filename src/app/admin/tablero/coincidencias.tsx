@@ -71,7 +71,7 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                 const zona= getZona(coincidencia)
                                 return (
                                 <TableRow key={coincidencia.id} className={cn( coincidenceId === coincidencia.id && "bg-green-100")}>
-                                    <TableCell>{coincidencia.property.idPropiedad}</TableCell>
+                                    <TableCell className="px-0">{coincidencia.property.idPropiedad}</TableCell>
                                     <TableCell>
                                         <div>
                                             <p className="font-bold">{coincidencia.property.tipo}</p>
@@ -91,7 +91,7 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                     <TableCell>
                                         <Link href={`/${coincidencia.property.inmobiliariaSlug}/tablero?id=${coincidencia.pedidoId}`} target="_blank">
                                             <Button size="sm" variant="link" className={cn("flex flex-col items-start px-0", coincidencia.state === "inmo_limit_reached" && "text-red-400")}>
-                                                <p className="whitespace-nowrap">{coincidencia.property.inmobiliariaName}</p>
+                                                <p className="line-clamp-2 text-left">{coincidencia.property.inmobiliariaName}</p>
                                                 { coincidencia.number !== 0 && <p>#{coincidencia.number} </p> }
                                             </Button>
                                         </Link>

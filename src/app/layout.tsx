@@ -31,17 +31,17 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
+        <body className={cn("min-h-screen bg-background font-sans antialiased w-full", fontSans.variable)}>
             <SessionProvider session={session}>
           
 
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <div className="relative flex flex-col min-h-screen text-muted-foreground">
-                <div className="sm:px-1 md:px-2 xl:px-3 bg-intraprop-color text-white border-b border-b-white border-intraprop-color/50">
+              <div className="relative flex flex-col min-h-screen text-muted-foreground w-fit">
+                <div className="sm:px-1 md:px-2 xl:px-3 bg-intraprop-color text-white border-b border-b-white border-intraprop-color/50 w-full">
                   <Header><Menu /></Header> 
                 </div>
 
-                <div className="sm:px-1 md:px-2 xl:px-3 flex flex-col items-center flex-1">
+                <div className="sm:px-1 md:px-2 xl:px-3 flex flex-col items-center flex-1 w-full">
                   {children}
                   <Toaster />
                   <p className="text-xs text-center py-3 text-gray-400">

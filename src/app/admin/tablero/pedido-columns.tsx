@@ -29,7 +29,7 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const data = row.original
       const numberFormatted= formatPedidoNumber(data.number)
 
-      return (<p className="w-fit">{numberFormatted}</p>)
+      return (<p className="">{numberFormatted}</p>)
     },
   },
 
