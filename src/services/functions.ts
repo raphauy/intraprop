@@ -24,7 +24,7 @@ export const functions= [
         },
         operacion: {
           type: "string",
-          enum: ["ALQUILER", "VENTA", "ALQUILER/VENTA"],
+          enum: ["N/D, ALQUILER", "VENTA", "ALQUILER/VENTA"],
           description: "alquiler o venta. Importante: no inferir este valor, solo poner alquiler o venta si el pedido trae expresamente esta información. Si no se puede encontrar palabras como alquiler o venta en el texto del pedido se debe llenar este campo con N/D",
         },
         presupuestoMin: {
