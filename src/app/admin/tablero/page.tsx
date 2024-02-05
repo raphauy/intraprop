@@ -24,6 +24,7 @@ export default async function TableroPage({ searchParams }: Props) {
   }
   const pedido= await getPedidoDAO(id)
   const coincidencias= await getCoincidencesDAO(id)
+  const coincidenciasOver60= coincidencias.filter((coincidence) => coincidence.score >= 60)
   const coincidencesSent= coincidencias.filter((coincidence) => coincidence.state === "checked")
 
   return (
@@ -32,7 +33,7 @@ export default async function TableroPage({ searchParams }: Props) {
       pedido && <PedidoBox pedido={pedido} cantCoincidencias={coincidencesSent.length} />
     }
     {
-      pedido && <Coincidencias coincidencias={coincidencias} operacion={pedido.operacion || ""} coincidenceId={coincidenceId} presupuestoLog={pedido.presupuestoLog} />
+      pedido && <Coincidencias coincidencias={coincidenciasOver60} operacion={pedido.operacion || ""} coincidenceId={coincidenceId} presupuestoLog={pedido.presupuestoLog} />
     }
     
   </main>
