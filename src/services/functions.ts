@@ -16,7 +16,7 @@ export const functions= [
         },
         intencion: {
           type: "string",
-          description: "Este campo tiene tres valores posibles PEDIDO, OFERTA y NINGUNO. Se debe identificar la intención del texto que puede ser un pedido de propiedad o una oferta de propiedad. Generalmente las ofertas dicen cosas como 'comparto', 'compartimos' o ponen links. Generalmente los pedidos dicen cosas como 'busco', 'necesito', 'estoy buscando', etc. Si no se puede identificar la intención se debe llenar este campo con NINGUNO.",
+          description: "Este campo tiene tres valores posibles PEDIDO, OFERTA y NINGUNO. Se debe identificar la intención del texto que puede ser un pedido de propiedad o una oferta de propiedad. Generalmente las ofertas dicen cosas como 'comparto', 'compartimos' o ponen links, importante: si tiene un link es una OFERTA. Generalmente los pedidos dicen cosas como 'busco', 'necesito', 'estoy buscando', etc. Si no se puede identificar la intención se debe llenar este campo con NINGUNO.",
         },
         tipo: {
           type: "string",
@@ -79,9 +79,9 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
   console.log("dormitorios: ", dormitorios)
   console.log("caracteristicas: ", caracteristicas)
 
-  if (operacion.toUpperCase().includes("ALQUILER")) operacion= "ALQUILER"
+  if (operacion && operacion.toUpperCase().includes("ALQUILER")) operacion= "ALQUILER"
 
-  if (operacion.toUpperCase().includes("COMPRA")) operacion= "VENTA"
+  if (operacion && operacion.toUpperCase().includes("COMPRA")) operacion= "VENTA"
 
   presupuestoMinOrig= corregirPresupuesto(presupuestoMinOrig, operacion, presupuestoMoneda)
   presupuestoMaxOrig= corregirPresupuesto(presupuestoMaxOrig, operacion, presupuestoMoneda)  
@@ -128,7 +128,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
     const presupuesto= (presupuestoMinOrig === presupuestoMaxOrig ? (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY') : "-") + "" : 
         (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY')+"-" : "") + (presupuestoMaxOrig ? presupuestoMaxOrig.toLocaleString('es-UY') : "inf")) + " " + (presupuestoMoneda ? presupuestoMoneda : "")
 
-    const isPedido= intencion.toUpperCase() === "PEDIDO"
+    const isPedido= intencion && intencion.toUpperCase() === "PEDIDO"
     const pedido= await getPedidoDAO(pedidoId)
 
     if (!pedido) {
@@ -289,11 +289,11 @@ function corregirPresupuesto(presupuesto: number, operacion: string, presupuesto
 
   let res= presupuesto
 
-  if (operacion.toUpperCase() === "ALQUILER" && presupuestoMoneda.toUpperCase() === "UYU") {
+  if (operacion && operacion.toUpperCase() === "ALQUILER" && presupuestoMoneda.toUpperCase() === "UYU") {
       if (presupuesto < 1000) res= presupuesto * 1000
   }
   
-  if (operacion.toUpperCase() === "VENTA" && presupuestoMoneda.toUpperCase() === "USD") {
+  if (operacion && operacion.toUpperCase() === "VENTA" && presupuestoMoneda.toUpperCase() === "USD") {
     if (presupuesto < 1000) res= presupuesto * 1000
   }
 
