@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { Coincidence, Pedido } from "@prisma/client";
-import { format } from "date-fns";
+import { addMinutes, format, isAfter, parseISO } from "date-fns";
+import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 import { es } from "date-fns/locale";
 import OpenAI from "openai";
 import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
@@ -9,6 +10,7 @@ import { createNotificationPedido } from "./notification-pedidos-services";
 import { sendPendingNotificationsV2 } from "./notification-sender";
 import { CoincidenceWithProperty, createCoincidencesProperties, getPedidos, getPedidosChecked, updateCoincidencesNumbers, updatePedidoStatus } from "./pedido-services";
 import { getAmountOfCoincidencesOfInmobiliaria } from "./coincidence-services";
+import { sendWapMessage } from "./osomService";
 
 
 export async function processPendingPedidos() {
@@ -324,57 +326,51 @@ async function updateCoincidence(coincidenceId: string, newState: string) {
 }
 
 
-// export async function checkPedidos() {
-//     let processBlocked= false
-//     const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
-//     console.log(nowMontevideo)
 
-//     const PROCESS_BLOCKED= await getValue("PROCESS_BLOCKED")
-//     if(PROCESS_BLOCKED) processBlocked= PROCESS_BLOCKED === "true"
-//     else {
-//         console.log("PROCESS_BLOCKED not found, config this variable to process pedidos")
-//         return
-//     }
-    
-//     if (processBlocked) {
-//         console.log("process is blocked")
-//         return
-//     } else {
-//         await setValue("PROCESS_BLOCKED", "true")
-//     }
-    
-//     await printPendingPedidos()
-
-//     await processPendingPedidos()
-//     await checkPendingCoincidences()
-//     await checkDistanceOkCoincidences()
-//     await checkBudgetOkCoincidences()
-//     await checkCoincidencesFinished()
-//     await createNotifications()
-//     await sendPendingNotificationsV2()
-
-//     await setValue("PROCESS_BLOCKED", "false")
-
-//     console.log("--------------------------------------------")
-// }
+const timeZone = 'America/Montevideo';
 
 export async function checkPedidos() {
     let processBlocked= false
-    const nowMontevideo= format(new Date(), "yyyy-MM-dd HH:mm:ss", { locale: es })
+    const nowMontevideo = format(utcToZonedTime(new Date(), timeZone), "yyyy-MM-dd'T'HH:mm:ss", { locale: es });
     console.log(nowMontevideo)
 
-    const PROCESS_BLOCKED= await getValue("PROCESS_BLOCKED")
-    if(PROCESS_BLOCKED) processBlocked= PROCESS_BLOCKED === "true"
-    else {
-        console.log("PROCESS_BLOCKED not found, config this variable to process pedidos")
-        return
+    const processBlockedValue= await getValue("PROCESS_BLOCKED")
+    if (processBlockedValue) {
+        const [blocked, timestamp] = processBlockedValue.split("->")
+        processBlocked = blocked === "true"
+        // Si el proceso está bloqueado, verifica si ha pasado más de 30 minutos
+        if (processBlocked) {
+            const blockedDate = parseISO(timestamp)            
+            const blockedDateInMontevideo = utcToZonedTime(blockedDate, timeZone)
+
+            const tenMinutesLater = addMinutes(blockedDateInMontevideo, 10)
+            const now= utcToZonedTime(new Date(), timeZone)
+            if (isAfter(now, tenMinutesLater)) {
+                const message= "El proceso ha estado bloqueado por más de 30 min. Desbloqueando..."
+                console.log(message);
+                processBlocked = false; // Asume que el bloqueo ha caducado
+                sendWapMessage("59898353507", message)
+            } else {
+                console.log(`Process is blocked. Time to force unblock: ${format(tenMinutesLater, "yyyy-MM-dd'T'HH:mm:ss", { locale: es })}`)                
+            }
+        }
+    } else {
+        console.log("PROCESS_BLOCKED not found, config this variable to process pedidos");
+        return;
     }
+
+    // const PROCESS_BLOCKED= await getValue("PROCESS_BLOCKED")
+    // if(PROCESS_BLOCKED) processBlocked= PROCESS_BLOCKED === "true"
+    // else {
+    //     console.log("PROCESS_BLOCKED not found, config this variable to process pedidos")
+    //     return
+    // }
     
     if (processBlocked) {
-        console.log("process is blocked")
+        //console.log("process is blocked")
         return
     } else {
-        await setValue("PROCESS_BLOCKED", "true")
+        await setValue("PROCESS_BLOCKED", `true->${nowMontevideo}`);
     }
 
     try {            
