@@ -1,5 +1,5 @@
 import { createOrUpdatePedidoAction } from "@/app/admin/pedidos/pedido-actions";
-import { getLast10Pedidos } from "@/services/pedido-services";
+import { getLast100Pedidos } from "@/services/pedido-services";
 import { NextResponse } from "next/server";
 
 type Props = {
@@ -29,17 +29,19 @@ export async function POST(request: Request, { params }: Props ) {
         if (!text) return NextResponse.json({ error: "text is required" }, { status: 400 })
         if (!phone) return NextResponse.json({ error: "phone is required" }, { status: 400 })
 
-        const last10Pedidos= await getLast10Pedidos()
+        const last100Pedidos= await getLast100Pedidos()
+        console.log(`checking last pedidos: ${last100Pedidos.length}`);
+        
         // check texts of the las 10 pedidos, if there is the same text as text, return
-        for (const pedido of last10Pedidos) {
-            if (pedido.text === text) {
+        for (const pedido of last100Pedidos) {
+            if (pedido.text === text.trim()) {
                 console.log("Pedido already exists")
                 return NextResponse.json({ error: "error: " + "Pedido already exists."}, { status: 400 })
             }
         }
 
         const dataPedido= {
-            text: text,
+            text: text.trim() as string,
             phone: phone as string,
             name: name as string,
             group: group as string,

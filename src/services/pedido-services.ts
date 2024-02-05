@@ -298,14 +298,21 @@ export async function getLastPedidoDAO(): Promise<PedidoDAO | null> {
   return res
 }
 
-export async function getLast10Pedidos(){
+// get the las 100 pedidos of this day
+export async function getLast100Pedidos(){
+  
   const found = await prisma.pedido.findMany({
+    where: {
+      createdAt: {
+        gte: new Date(new Date().setHours(0, 0, 0, 0))
+      }
+    },
     orderBy: {
       createdAt: "desc"
     },
     take: 100
   })
-  
+    
   return found
 }
 
