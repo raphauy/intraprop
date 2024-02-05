@@ -173,12 +173,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
         const previousStatus= pedido.status
         if (previousStatus === "paused") {
           console.log("Pedido #" + pedido.number + " was paused, resuming. (send final message)")
-          const finalMessage= `Muchas gracias por tu respuesta, nos ayuda a mejorar el proceso de pedidos entre colegas.
-
-Te dejamos un tip 😉 para tu próximo pedido. Un buen pedido para que sea fácil de interpretar por la inteligencia artificial y los colegas, sería usando el siguiente formato de pedido:
-          
-👉 Tipo de Operación •⁠ ⁠ 👉 Tipo de Propiedad •⁠ ⁠ 👉 Zona •⁠ ⁠ 👉 Dormitorios •⁠ 👉 Precio ($ o USD) •⁠ 👉 Status (pozo, a estrenar, usado) •⁠ 👉 Comentarios generales • 👉 Nombre •
-`
+          const finalMessage= getFinalMessage()
           sendWapMessage(pedido.phone as string, finalMessage)
         }
       }
@@ -314,4 +309,29 @@ export async function runFunction(name: string, args: any) {
     default:
       return null;
   }
+}
+
+
+function getFinalMessage() {
+  return `Muchas gracias por tu respuesta, nos ayuda a mejorar el proceso de pedidos entre colegas.
+
+Te dejamos un tip 😉 para tu próximo pedido. Un buen pedido para que sea fácil de interpretar por la inteligencia artificial y los colegas, sería usando el siguiente formato de pedido:
+
+👉 Tipo de Operación 
+•⁠
+👉 Tipo de Propiedad 
+•⁠
+👉 Zona 
+•⁠
+👉 Dormitorios 
+•⁠ 
+👉 Precio ($ o USD) 
+•⁠ 
+👉 Status (pozo, a estrenar, usado) 
+•⁠ 
+👉 Comentarios generales 
+• 
+👉 Nombre 
+•
+`
 }
