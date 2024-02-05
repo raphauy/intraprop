@@ -45,6 +45,7 @@ export async function createNotificationPedido(pedido: Pedido, coincidences: Coi
     number: formatPedidoNumber(pedido.number),
     celulares: inmobiliaria.celulares,
     phone: pedido.phone,
+    text: pedido.text,
     name: pedido.name,
     group: pedido.group,
     tablero: `${basePath}/${inmobiliaria.slug}/tablero?id=${pedido.id}`,    
