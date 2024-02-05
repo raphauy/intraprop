@@ -303,7 +303,7 @@ export async function getLast10Pedidos(){
     orderBy: {
       createdAt: "desc"
     },
-    take: 10
+    take: 100
   })
   
   return found
