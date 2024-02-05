@@ -13,7 +13,7 @@ export async function POST(request: Request ) {
         console.log("celulares: ", notification.celulares)
         console.log("tablero", notification.tablero)
         console.log("name", notification.name)
-        console.log("\ttext: ", notification.text)
+        console.log("text: ", notification.text)
         console.log("group", notification.group)
         const coincidences= notification.coincidencias
         console.log("coincidences: ")

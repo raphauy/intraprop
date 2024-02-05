@@ -37,12 +37,12 @@ export const functions= [
         },
         presupuestoMoneda: {
           type: "string",
-          enum: ["USD", "UYU", ""],
-          description: "Genaralmente los alquileres son en UYU y las VENTAS son en USD. Importante: Si no se puede encontrar la moneda en el texto del pedido se debe dejar este campo vacío. Si pone solo un valor como 700 no se debe asumir que es 700 UYU ni 700 USD, se debe dejar este campo vacío. Si es una operación de VENTA puedes asumir que son USD",
+          enum: ["USD", "UYU", "N/D"],
+          description: "Moneda de la operación que puede ser USD, UYU o N/D, este último para cuando no se especifica la moneda. Importante: Si no se puede encontrar la moneda en el texto del pedido se debe llenar este campo con N/D.",
         },
         gastosComunes: {
           type: "string",
-          description: "Valor y moneda de los gastos comunes. Por ejemplo: 100 USD, 1000 UYU. Este dato generalmente no está y cuando está es para un alquiler. Si no está se debe llenar este campo con N/D",
+          description: "Valor y moneda de los gastos comunes. Por ejemplo: 100 USD, 1000 UYU. Este dato se utiliza eventualmente para un alquiler. Si no está se debe llenar este campo con N/D",
         },
         zona: {
           type: "string",

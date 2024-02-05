@@ -343,15 +343,15 @@ export async function checkPedidos() {
             const blockedDate = parseISO(timestamp)            
             const blockedDateInMontevideo = utcToZonedTime(blockedDate, timeZone)
 
-            const tenMinutesLater = addMinutes(blockedDateInMontevideo, 10)
+            const twentyMinutesLater = addMinutes(blockedDateInMontevideo, 20)
             const now= utcToZonedTime(new Date(), timeZone)
-            if (isAfter(now, tenMinutesLater)) {
-                const message= "El proceso ha estado bloqueado por más de 30 min. Desbloqueando..."
+            if (isAfter(now, twentyMinutesLater)) {
+                const message= "El proceso ha estado bloqueado por más de 20 min. Desbloqueando..."
                 console.log(message);
                 processBlocked = false; // Asume que el bloqueo ha caducado
                 sendWapMessage("59898353507", message)
             } else {
-                console.log(`Process is blocked. Time to force unblock: ${format(tenMinutesLater, "yyyy-MM-dd'T'HH:mm:ss", { locale: es })}`)                
+                console.log(`Process is blocked. Time to force unblock: ${format(twentyMinutesLater, "yyyy-MM-dd'T'HH:mm:ss", { locale: es })}`)                
             }
         }
     } else {
