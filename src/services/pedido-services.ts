@@ -329,6 +329,7 @@ export async function getLastPedidoDAO(): Promise<PedidoDAO | null> {
     return null
   }
 
+  // @ts-ignore
   const res: PedidoDAO = found as PedidoDAO
   res.cantCoincidencias = found.coincidences.length
 
