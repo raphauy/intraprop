@@ -204,6 +204,7 @@ export async function getAllPedidosDAO(): Promise<PedidoDAO[]> {
     take: pedidosResults
   })
 
+  //@ts-ignore
   return found as PedidoDAO[]
  
   // const res: PedidoDAO[] = []
