@@ -123,13 +123,14 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),    
   });
   React.useEffect(() => {
     columnsOff &&
       columnsOff.forEach((colName) => {
-        table.getColumn(colName)?.toggleVisibility(false);
+        table.getColumn(colName)?.toggleVisibility(false);        
       });
+      table.setPageSize(20);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

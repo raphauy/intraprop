@@ -114,17 +114,32 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
     // cambiar presupuestoMoneda cuando sea venta y la moneda sea UYU
     if (isVenta && presupuestoMoneda && presupuestoMoneda.toUpperCase() === "UYU") {
       presupuestoMoneda= "USD"
-      presupuestoMinOrig= Math.round(presupuestoMinOrig / cotizacion)
-      presupuestoMaxOrig= Math.round(presupuestoMaxOrig / cotizacion)
+      // presupuestoMinOrig= Math.round(presupuestoMinOrig / cotizacion)
+      // presupuestoMaxOrig= Math.round(presupuestoMaxOrig / cotizacion)  
     }
 
 
+    let percMinStr= ""
     let presupuestoMin= undefined
-    if (presupuestoMinOrig) presupuestoMin= Math.round((presupuestoMinOrig * (1-budgetPercMin)) * 100) / 100
+    // si el presupuestoMin es 0, se le asigna el valor de presupuestoMax menos el 35%
+    if (presupuestoMinOrig === 0) {
+      const BUDGET_PERC_FOR_ZERO_ON_MIN= await getValue("BUDGET_PERC_FOR_ZERO_ON_MIN")
+      let budgetPercForZeroOnMin= 35
+      if(BUDGET_PERC_FOR_ZERO_ON_MIN) budgetPercForZeroOnMin= parseFloat(BUDGET_PERC_FOR_ZERO_ON_MIN)
+      else console.log("budgetPercForZeroOnMin not found")
+    
+      presupuestoMin= presupuestoMaxOrig * (1 - budgetPercForZeroOnMin / 100)
+      console.log(`presupuestoMin is 0, correcting. New value: ${presupuestoMin}`)    
+      percMinStr= `${BUDGET_PERC_FOR_ZERO_ON_MIN}`
+    } else {
+      if (presupuestoMinOrig) presupuestoMin= Math.round((presupuestoMinOrig * (1-budgetPercMin)) * 100) / 100
+      percMinStr= `${BUDGET_PERC_MIN}`
+    }
+
     let presupuestoMax= undefined
     if (presupuestoMaxOrig) presupuestoMax= Math.round((presupuestoMaxOrig * (1+budgetPercMax)) * 100) / 100
 
-    const presupuestoLog= `Rango buscado: (${presupuestoMin ? presupuestoMin.toLocaleString('es-UY') : "0"}, ${presupuestoMax ? presupuestoMax.toLocaleString('es-UY') : "inf"}) ${presupuestoMoneda}, (-${budgetPercMin*100}%, +${budgetPercMax*100}%)`
+    const presupuestoLog= `Rango buscado: (${presupuestoMin ? presupuestoMin.toLocaleString('es-UY') : "0"}, ${presupuestoMax ? presupuestoMax.toLocaleString('es-UY') : "inf"}) ${presupuestoMoneda}, (-${percMinStr}%, +${budgetPercMax*100}%)`
     const presupuesto= (presupuestoMinOrig === presupuestoMaxOrig ? (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY') : "-") + "" : 
         (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY')+"-" : "") + (presupuestoMaxOrig ? presupuestoMaxOrig.toLocaleString('es-UY') : "inf")) + " " + (presupuestoMoneda ? presupuestoMoneda : "")
 
@@ -200,6 +215,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
 }
 
 function getCaracteristicas(tipo: string, operacion: string, presupuestoMin: number, presupuestoMax: number, presupuestoMoneda: string, gastosComunes: string, zona: string, dormitorios: string, caracteristicas: string) {
+
   let formattedCaracteristicas= ""
   if (tipo && tipo.toUpperCase() !== "N/D") {
     formattedCaracteristicas= tipo
