@@ -286,6 +286,7 @@ export async function getPedidoDAO(id: string) {
     throw new Error("Pedido not found")
   }
 
+  // @ts-ignore
   const res: PedidoDAO = found as PedidoDAO
   res.cantCoincidencias = found.coincidences.length
 
