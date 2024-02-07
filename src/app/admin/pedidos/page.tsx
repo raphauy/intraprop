@@ -1,4 +1,4 @@
-import { getAllPedidosDAO, getPedidosDAO } from "@/services/pedido-services";
+import { getAllPedidosDAO } from "@/services/pedido-services";
 import { PedidoDialog } from "./pedido-dialogs";
 import { DataTable } from "./pedido-table";
 import { columns } from "./pedido-columns";
