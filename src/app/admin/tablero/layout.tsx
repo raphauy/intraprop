@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { getOperaciones, getPedidosDAO, getPedidosDAOV2, getTipos } from "@/services/pedido-services";
+import { getOperaciones, getPedidosDAOV2, getTipos } from "@/services/pedido-services";
 import { redirect } from "next/navigation";
 import { columns } from "./pedido-columns";
 import { DataTable } from "./pedido-table";

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTotalCoincidencesByInmo, getTotalCoincidencesWithNotificationByInmo } from "@/services/coincidence-services";
 import { getInmobiliariaDAOByslug, getTotalProperiesByInmobiliaria } from "@/services/inmobiliaria-services";
-import { getPedidosDAO, getTotalCountPedidos } from "@/services/pedido-services";
+import { getTotalCountPedidos } from "@/services/pedido-services";
 import { getPropertiesOfInmobiliaria } from "@/services/property-services";
 import { getUsersDAOBySlug } from "@/services/user-services";
 import { Home, PackageOpen, User } from "lucide-react";
