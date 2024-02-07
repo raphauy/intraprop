@@ -56,74 +56,62 @@ export const pedidoFormSchema = z.object({
 })
 export type PedidoFormValues = z.infer<typeof pedidoFormSchema>
 
-// export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
+export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
 
-//   const PEDIDOS_RESULTS= await getValue("PEDIDOS_RESULTS")
-//   let pedidosResults= 100
-//   if(PEDIDOS_RESULTS) pedidosResults= parseInt(PEDIDOS_RESULTS)
-//   else console.log("PEDIDOS_RESULTS not found")
+  const PEDIDOS_RESULTS= await getValue("PEDIDOS_RESULTS")
+  let pedidosResults= 100
+  if(PEDIDOS_RESULTS) pedidosResults= parseInt(PEDIDOS_RESULTS)
+  else console.log("PEDIDOS_RESULTS not found")
 
-//   let inmobiliariaId= ""
-//   console.log("slug:", slug);
+  let inmobiliariaId= ""
+  console.log("slug:", slug);
   
-//   if (slug && slug !== "ALL") {
-//     const inmo= await getInmobiliariaDAOByslug(slug)
-//     console.log("setting inmobiliariaId:", inmo.id)
+  if (slug && slug !== "ALL") {
+    const inmo= await getInmobiliariaDAOByslug(slug)
+    console.log("setting inmobiliariaId:", inmo.id)
     
-//     inmobiliariaId= inmo.id
-//   }
-//   const found = await prisma.pedido.findMany({
-//     orderBy: {
-//       createdAt: "desc"
-//     },
-//     include: {
-//       coincidences: {
-//         include: {
-//           property: true
-//         }
-//       }   
-//     },
-//     where: {
-//       status: {
-//         not: "discarded"
-//       },      
-//       caracteristicas: {
-//         not: null,
-//       },
-//       AND: [
-//         {
-//           caracteristicas: {
-//             not: ""
-//           }
-//         },
-//         {
-//           caracteristicas: {
-//             not: "N/D"
-//           }
-//         }
-//       ],
-//     },
-//     take: pedidosResults
-//   })
+    inmobiliariaId= inmo.id
+  }
+  const found = await prisma.pedido.findMany({
+    orderBy: {
+      createdAt: "desc"
+    },
+    include: {
+      coincidences: {
+        include: {
+          property: {
+            select: {
+              inmobiliariaId: true            
+            }
+          }
+        }
+      }
+    },
+    where: {
+      status: {
+        not: "discarded"
+      },      
+    },
+    take: pedidosResults
+  })
  
-//   //TODO
-//   const res: PedidoDAO[] = []
-//   found.filter((item) => ((item.operacion !== null && item.operacion !== "" && item.operacion.toUpperCase() !== "N/D") || (item.tipo !== null && item.tipo !== "" && item.tipo.toUpperCase() !== "N/D")))
-//   .forEach((item) => {
-//     const pedido: PedidoDAO = item as PedidoDAO
-//     const cantCoincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
-//     pedido.cantCoincidencias = cantCoincidenciasChecked.length
-//     if (inmobiliariaId) {
-//       const coincidences = item.coincidences.filter((coincidence) => {
-//         return coincidence.property.inmobiliariaId === inmobiliariaId && coincidence.state === "checked"
-//       })
-//       pedido.cantCoincidencias = coincidences.length
-//     }
-//     res.push(pedido)
-//   })
+  const res: PedidoDAO[] = []
+  found.filter((item) => ((item.operacion !== null && item.operacion !== "" && item.operacion.toUpperCase() !== "N/D") || (item.tipo !== null && item.tipo !== "" && item.tipo.toUpperCase() !== "N/D")))
+  .forEach((item) => {
+    const pedido: PedidoDAO = item as PedidoDAO
+    const cantCoincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
+    pedido.cantCoincidencias = cantCoincidenciasChecked.length
+    if (inmobiliariaId) {
+      const coincidences = item.coincidences.filter((coincidence) => {
+        return coincidence.property.inmobiliariaId === inmobiliariaId && coincidence.state === "checked"
+      })
+      pedido.cantCoincidencias = coincidences.length
+    }
+    res.push(pedido)
+  })
   
-//   return res
-// }
+  return res
+}
 
 export async function getPedidosDAOV2(slug: string): Promise<PedidoDAO[]> {
 
@@ -153,8 +141,6 @@ export async function getPedidosDAOV2(slug: string): Promise<PedidoDAO[]> {
     take: pedidosResults
   })
  
-  //TODO
-  
   return found as PedidoDAO[]
 }
 

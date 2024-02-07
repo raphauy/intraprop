@@ -1,3 +1,4 @@
+import { detectarMoneda } from "@/lib/utils";
 import { getValue } from "./config-services";
 import { sendWapMessage } from "./osomService";
 import { PedidoFormValues, getPedidoDAO, updatePedido } from "./pedido-services";
@@ -83,19 +84,17 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
 
   if (operacion && operacion.toUpperCase().includes("COMPRA")) operacion= "VENTA"
 
-  presupuestoMinOrig= corregirPresupuesto(presupuestoMinOrig, operacion, presupuestoMoneda)
-  presupuestoMaxOrig= corregirPresupuesto(presupuestoMaxOrig, operacion, presupuestoMoneda)  
-
   if (pedidoId) {
-    const BUDGET_PERC_MIN= await getValue("BUDGET_PERC_MIN")
-    let budgetPercMin= 0.85
-    if(BUDGET_PERC_MIN) budgetPercMin= parseFloat(BUDGET_PERC_MIN) / 100
-    else console.log("BUDGET_PERC_MIN not found")
+    const pedido= await getPedidoDAO(pedidoId)
+    if (!pedido) {
+      console.log("Pedido not found")
+      return
+    }
 
-    const BUDGET_PERC_MAX= await getValue("BUDGET_PERC_MAX")
-    let budgetPercMax= 1.1
-    if(BUDGET_PERC_MAX) budgetPercMax= parseFloat(BUDGET_PERC_MAX) / 100
-    else console.log("BUDGET_PERC_MAX not found")
+    presupuestoMoneda= await detectarMoneda(pedido.text)
+
+    presupuestoMinOrig= corregirPresupuesto(presupuestoMinOrig, operacion, presupuestoMoneda)
+    presupuestoMaxOrig= corregirPresupuesto(presupuestoMaxOrig, operacion, presupuestoMoneda)    
 
     const COTIZACION= await getValue("COTIZACION")
     let cotizacion= 40
@@ -114,10 +113,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
     // cambiar presupuestoMoneda cuando sea venta y la moneda sea UYU
     if (isVenta && presupuestoMoneda && presupuestoMoneda.toUpperCase() === "UYU") {
       presupuestoMoneda= "USD"
-      // presupuestoMinOrig= Math.round(presupuestoMinOrig / cotizacion)
-      // presupuestoMaxOrig= Math.round(presupuestoMaxOrig / cotizacion)  
     }
-
 
     let percMinStr= ""
     let presupuestoMin= undefined
@@ -132,9 +128,19 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
       console.log(`presupuestoMin is 0, correcting. New value: ${presupuestoMin}`)    
       percMinStr= `${BUDGET_PERC_FOR_ZERO_ON_MIN}`
     } else {
+      const BUDGET_PERC_MIN= await getValue("BUDGET_PERC_MIN")
+      let budgetPercMin= 0.85
+      if(BUDGET_PERC_MIN) budgetPercMin= parseFloat(BUDGET_PERC_MIN) / 100
+      else console.log("BUDGET_PERC_MIN not found")
+  
       if (presupuestoMinOrig) presupuestoMin= Math.round((presupuestoMinOrig * (1-budgetPercMin)) * 100) / 100
       percMinStr= `${BUDGET_PERC_MIN}`
     }
+
+    const BUDGET_PERC_MAX= await getValue("BUDGET_PERC_MAX")
+    let budgetPercMax= 1.1
+    if(BUDGET_PERC_MAX) budgetPercMax= parseFloat(BUDGET_PERC_MAX) / 100
+    else console.log("BUDGET_PERC_MAX not found")
 
     let presupuestoMax= undefined
     if (presupuestoMaxOrig) presupuestoMax= Math.round((presupuestoMaxOrig * (1+budgetPercMax)) * 100) / 100
@@ -144,12 +150,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
         (presupuestoMinOrig ? presupuestoMinOrig.toLocaleString('es-UY')+"-" : "") + (presupuestoMaxOrig ? presupuestoMaxOrig.toLocaleString('es-UY') : "inf")) + " " + (presupuestoMoneda ? presupuestoMoneda : "")
 
     const isPedido= intencion && intencion.toUpperCase() === "PEDIDO"
-    const pedido= await getPedidoDAO(pedidoId)
-
-    if (!pedido) {
-      console.log("Pedido not found")
-      return
-    } 
+    // const pedido= await getPedidoDAO(pedidoId)
 
     let pedidoForm: PedidoFormValues= {
       text: pedido.text,
@@ -309,7 +310,7 @@ function corregirPresupuesto(presupuesto: number, operacion: string, presupuesto
       if (presupuesto < 1000) res= presupuesto * 1000
   }
   
-  if (operacion && operacion.toUpperCase() === "VENTA" && presupuestoMoneda.toUpperCase() === "USD") {
+  if (operacion && operacion.toUpperCase() === "VENTA") {
     if (presupuesto < 1000) res= presupuesto * 1000
   }
 

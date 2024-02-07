@@ -1,3 +1,4 @@
+import { getValue } from "@/services/config-services";
 import { type ClassValue, clsx } from "clsx"
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -79,3 +80,39 @@ export function formatDateTimeWithSeconds(date: Date) {
   const isToday= format(date, "dd/MM/yyyy", { locale: es }) === format(new Date(), "dd/MM/yyyy", { locale: es })
   return isToday ? format(date, "'hoy' HH:mm:ss", { locale: es }) : format(date, "dd/MM/yyyy HH:mm:ss", { locale: es })
 }
+
+export async function detectarMoneda(texto: string): Promise<"USD" | "UYU" | "N/D"> {
+
+  const PATRON_USD= await getValue("PATRON_USD")
+  let patronUSD= "USD,DÓLARES,DOLARES,DOL,DOLRES,U$S"
+  if(PATRON_USD) patronUSD= PATRON_USD
+  else console.log("PATRON_USD not found")
+
+  const PATRON_UYU= await getValue("PATRON_UYU")
+  let patronUYU= "UYU,PESOS,$"
+  if(PATRON_UYU) patronUYU= PATRON_UYU
+  else console.log("PATRON_UYU not found")
+
+  // Función para escapar caracteres especiales en los patrones
+  const escaparCaracteres = (texto: string) => texto.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+  // Convertimos las listas de opciones en expresiones regulares, escapando caracteres especiales
+  const regexUSD = new RegExp(patronUSD.split(',').map(escaparCaracteres).join('|'), 'i');
+  const regexUYU = new RegExp(patronUYU.split(',').map(escaparCaracteres).join('|'), 'i');
+
+  // Normalizamos el texto
+  const textoNormalizado = texto.toUpperCase();
+
+  // Buscamos los patrones en el texto
+  if (regexUSD.test(textoNormalizado)) {
+      return "USD";
+  }
+
+  if (regexUYU.test(textoNormalizado)) {
+      return "UYU";
+  }
+
+  // Si no se encuentra ningún patrón, devolvemos "N/D"
+  return "N/D";
+}
+

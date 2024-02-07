@@ -1,10 +1,10 @@
-import { columns } from "@/app/admin/tablero/pedido-columns";
 import { DataTable } from "@/app/admin/tablero/pedido-table";
 import { getCurrentUser } from "@/lib/auth";
-import { getOperaciones, getPedidosDAOV2, getTipos } from "@/services/pedido-services";
+import { getOperaciones, getPedidosDAO, getPedidosDAOV2, getTipos } from "@/services/pedido-services";
 import { Loader } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { columns } from "./pedido-columns";
 
 interface Props {
   children: React.ReactNode;
@@ -26,8 +26,8 @@ export default async function TableroLayout({ children, params }: Props) {
 
   const slug= params.slug
   console.log(slug)  
-  //const data = await getPedidosDAO(slug);
-  const data = await getPedidosDAOV2(slug)
+  const data = await getPedidosDAO(slug);
+  //const data = await getPedidosDAOV2(slug)
   const operaciones= await getOperaciones()
   const tipos= await getTipos()
   const estados= ["pending", "notifications_created", "no_coincidences", "paused"]
