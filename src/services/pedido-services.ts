@@ -204,7 +204,6 @@ export async function getAllPedidosDAO(): Promise<PedidoDAO[]> {
     take: pedidosResults
   })
 
-  //@ts-ignore
   return found as PedidoDAO[]
  
   // const res: PedidoDAO[] = []
@@ -286,7 +285,6 @@ export async function getPedidoDAO(id: string) {
     throw new Error("Pedido not found")
   }
 
-  // @ts-ignore
   const res: PedidoDAO = found as PedidoDAO
   res.cantCoincidencias = found.coincidences.length
 
@@ -329,7 +327,6 @@ export async function getLastPedidoDAO(): Promise<PedidoDAO | null> {
     return null
   }
 
-  // @ts-ignore
   const res: PedidoDAO = found as PedidoDAO
   res.cantCoincidencias = found.coincidences.length
 
