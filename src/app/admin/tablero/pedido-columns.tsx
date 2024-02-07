@@ -12,17 +12,10 @@ import Link from "next/link";
 
 export const columns: ColumnDef<PedidoDAO>[] = [
   {
-    accessorKey: "number",
+    accessorKey: "tipo",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          className="pl-0 dark:text-white"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          #
-          <ArrowUpDown className="w-4 h-4 ml-1" />
-        </Button>
+        <p>#</p>
       );
     },
     cell: ({ row }) => {
@@ -30,6 +23,9 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const numberFormatted= formatPedidoNumber(data.number)
 
       return (<p className="">{numberFormatted}</p>)
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
     },
   },
 
@@ -67,17 +63,10 @@ export const columns: ColumnDef<PedidoDAO>[] = [
   },
 
   {
-    accessorKey: "presupuesto",
+    accessorKey: "status",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          className="pl-0 dark:text-white"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          $
-          <ArrowUpDown className="w-4 h-4 ml-1" />
-        </Button>
+        <p>$</p>
       );
     },
     cell: ({ row }) => {
@@ -93,10 +82,13 @@ export const columns: ColumnDef<PedidoDAO>[] = [
         </Link>
       )
     },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
 
   {
-    accessorKey: "status",
+    accessorKey: "createdAt",
     header: ({ column }) => {
       return (
         <Button
@@ -122,12 +114,9 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       </div>
       )
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
   },
   {
-    accessorKey: "tipo",
+    accessorKey: "coincidencesChecked",
     header: ({ column }) => {
       return (
         <Button
@@ -155,9 +144,6 @@ export const columns: ColumnDef<PedidoDAO>[] = [
           </Badge>
         </Link>
       )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
     },
   },
 ];
