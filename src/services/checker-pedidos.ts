@@ -8,7 +8,7 @@ import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.m
 import { getValue, setValue } from "./config-services";
 import { createNotificationPedido } from "./notification-pedidos-services";
 import { sendPendingNotificationsV2 } from "./notification-sender";
-import { CoincidenceWithProperty, createCoincidencesProperties, getPedidos, getPedidosChecked, updateCoincidencesNumbers, updatePedidoStatus } from "./pedido-services";
+import { CoincidenceWithProperty, createCoincidencesProperties, getPedidos, getPedidosChecked, updateCoincidencesNumbers, updatePedidoCoincidencesCreated, updatePedidoStatus } from "./pedido-services";
 import { getAmountOfCoincidencesOfInmobiliaria } from "./coincidence-services";
 import { sendWapMessage } from "./osomService";
 
@@ -301,14 +301,17 @@ export async function createNotifications() {
             const inmobiliariesIds= coincidencesChecked.map(coincidence => coincidence.property.inmobiliariaId)
             const uniqueInmobiliariesIds= Array.from(new Set(inmobiliariesIds))
             console.log("uniqueInmobiliariesIds: ", uniqueInmobiliariesIds)
+            let totalCoincidencesChecked= 0
             for (const inmobiliariaId of uniqueInmobiliariesIds) {
 
                 const filteredCoincidences= coincidencesChecked.filter(coincidence => coincidence.property.inmobiliariaId === inmobiliariaId)
 
                 console.log("creating notification for inmobiliaria: ", inmobiliariaId, " - coincidences: ", filteredCoincidences.length)                
                 await createNotificationPedido(pedido, filteredCoincidences)
+                totalCoincidencesChecked+= filteredCoincidences.length
             }
-            await updatePedidoStatus(pedido.id, "notifications_created")                
+            //await updatePedidoStatus(pedido.id, "notifications_created")                
+            await updatePedidoCoincidencesCreated(pedido.id, totalCoincidencesChecked)
         }
     }
 }

@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { getOperaciones, getPedidosDAO, getTipos } from "@/services/pedido-services";
+import { getOperaciones, getPedidosDAO, getPedidosDAOV2, getTipos } from "@/services/pedido-services";
 import { redirect } from "next/navigation";
 import { columns } from "./pedido-columns";
 import { DataTable } from "./pedido-table";
@@ -19,7 +19,8 @@ export default async function TableroLayout({ children }: Props) {
     return redirect("/unauthorized?message=No estas autorizado para acceder a esta página")
   }
 
-  const data = await getPedidosDAO("ALL");
+  //const data = await getPedidosDAO("ALL")
+  const data = await getPedidosDAOV2("ALL")
   const operaciones= await getOperaciones()
   const tipos= await getTipos()
   const estados= ["pending", "notifications_created", "no_coincidences", "paused"]

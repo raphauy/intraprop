@@ -147,6 +147,7 @@ model Pedido {
   coincidences      Coincidence[]
   notifications     NotificationPedido[]
   status            String      @default("")
+  coincidencesChecked Int?     @default(0)
 }
 
 model Coincidence {

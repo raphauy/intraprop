@@ -33,6 +33,7 @@ export type PedidoDAO = {
 	createdAt:  Date
 	updatedAt:  Date
   status: string
+  coincidencesChecked: number
 }
 
 export const pedidoFormSchema = z.object({
@@ -105,6 +106,7 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
     take: pedidosResults
   })
  
+  //TODO
   const res: PedidoDAO[] = []
   found.filter((item) => ((item.operacion !== null && item.operacion !== "" && item.operacion.toUpperCase() !== "N/D") || (item.tipo !== null && item.tipo !== "" && item.tipo.toUpperCase() !== "N/D")))
   .forEach((item) => {
@@ -121,6 +123,39 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
   })
   
   return res
+}
+
+export async function getPedidosDAOV2(slug: string): Promise<PedidoDAO[]> {
+
+  const PEDIDOS_RESULTS= await getValue("PEDIDOS_RESULTS")
+  let pedidosResults= 100
+  if(PEDIDOS_RESULTS) pedidosResults= parseInt(PEDIDOS_RESULTS)
+  else console.log("PEDIDOS_RESULTS not found")
+
+  let inmobiliariaId= ""
+  console.log("slug:", slug);
+  
+  if (slug && slug !== "ALL") {
+    const inmo= await getInmobiliariaDAOByslug(slug)
+    console.log("setting inmobiliariaId:", inmo.id)
+    
+    inmobiliariaId= inmo.id
+  }
+  const found = await prisma.pedido.findMany({
+    orderBy: {
+      createdAt: "desc"
+    },
+    where: {
+      status: {
+        not: "discarded"
+      },      
+    },
+    take: pedidosResults
+  })
+ 
+  //TODO
+  
+  return found as PedidoDAO[]
 }
 
 export async function getTotalCountPedidos(): Promise<number> {
@@ -443,6 +478,21 @@ export async function updatePedidoStatus(id: string, status: string) {
       status
     }
   })
+  return updated
+}
+
+//todo
+export async function updatePedidoCoincidencesCreated(id: string, coincidencesChecked: number) {
+  const updated = await prisma.pedido.update({
+    where: {
+      id
+    },
+    data: {
+      coincidencesChecked,
+      status: "notifications_created"
+    }
+  })
+
   return updated
 }
 
