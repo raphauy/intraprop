@@ -133,6 +133,8 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const data = row.original
       const coincidencesChecked= data.coincidencesChecked || 0
 
+      if (data.cantCoincidencias === 0) return null
+
       return (
         <Link href={`tablero?id=${data.id}`} prefetch={false}>
           <Badge 

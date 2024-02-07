@@ -17,6 +17,8 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
     const numberFormatted= pedido.number.toString().padStart(5, "0")
     const formattedDate= format(pedido.createdAt, "dd MMMM, yyyy - HH:mm 'h'", { locale: es })
 
+    let isExitoso= pedido.status === "notifications_created" && cantCoincidencias > 0
+
     return (
         <TooltipProvider delayDuration={0}>
             <Card>
@@ -74,7 +76,7 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
                         </div>
                         <div className="flex justify-between">
                             <p><span className="font-bold">Zona:</span> {pedido.zona?.toLowerCase()}</p>
-                            {pedido.status !== "paused" && <p className="font-bold">{pedido.status === "notifications_created" ? "exitoso" : pedido.status === "no_coincidences" ? "sin coincidencias" : pedido.status === "pending" ? "pendiente" : pedido.status}</p>}
+                            {pedido.status !== "paused" && <p className="font-bold">{isExitoso ? "exitoso" : (pedido.status === "no_coincidences" || cantCoincidencias === 0) ? "sin coincidencias" : pedido.status === "pending" ? "pendiente" : pedido.status}</p>}
                             {
                                 pedido.status === "paused" &&
                                 <Popover>
