@@ -99,15 +99,28 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
   found.filter((item) => ((item.operacion !== null && item.operacion !== "" && item.operacion.toUpperCase() !== "N/D") || (item.tipo !== null && item.tipo !== "" && item.tipo.toUpperCase() !== "N/D")))
   .forEach((item) => {
     const pedido: PedidoDAO = item as PedidoDAO
-    const cantCoincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
-    pedido.cantCoincidencias = cantCoincidenciasChecked.length
+    const coincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
+    pedido.cantCoincidencias = coincidenciasChecked.length
+    console.log(`inmo ${inmobiliariaId} checked coincidences:`, coincidenciasChecked.length);
+    
     if (inmobiliariaId) {
       const coincidences = item.coincidences.filter((coincidence) => {
         return coincidence.property.inmobiliariaId === inmobiliariaId && coincidence.state === "checked"
       })
       pedido.cantCoincidencias = coincidences.length
+      const status= coincidences.length > 0 ? "notifications_created" : pedido.status === "paused" ? "paused" : "no_coincidences"
+      
+      const newPedido= {
+        ...pedido,
+        status
+      }
+      res.push(newPedido)
+
+      
+      console.log(`status: ${status}`);
+    } else {
+      res.push(pedido)    
     }
-    res.push(pedido)
   })
   
   return res

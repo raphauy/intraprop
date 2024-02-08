@@ -133,7 +133,7 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const data = row.original
       const coincidencesChecked= data.coincidencesChecked || 0
 
-      if (data.cantCoincidencias === 0) return null
+      if (data.cantCoincidencias === 0 && data.status !== "paused") return null
 
       return (
         <Link href={`tablero?id=${data.id}`} prefetch={false}>
@@ -142,7 +142,7 @@ export const columns: ColumnDef<PedidoDAO>[] = [
             coincidencesChecked > 0 && "bg-green-500 text-white", 
             data.status === "paused" && "bg-yellow-500 text-white")}
           >
-            {data.cantCoincidencias}
+            {data.cantCoincidencias ? data.cantCoincidencias : "P"}
           </Badge>
         </Link>
       )
