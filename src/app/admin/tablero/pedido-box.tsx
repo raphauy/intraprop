@@ -76,7 +76,7 @@ export default function PedidoBox({pedido, cantCoincidencias}: Props) {
                         </div>
                         <div className="flex justify-between">
                             <p><span className="font-bold">Zona:</span> {pedido.zona?.toLowerCase()}</p>
-                            {pedido.status !== "paused" && <p className="font-bold">{isExitoso ? "exitoso" : (pedido.status === "no_coincidences" || cantCoincidencias === 0) ? "sin coincidencias" : pedido.status === "pending" ? "pendiente" : pedido.status}</p>}
+                            {pedido.status !== "paused" && <p className="font-bold">{isExitoso ? "exitoso" : pedido.status === "pending" ? "pendiente" : (pedido.status === "no_coincidences" || cantCoincidencias === 0) ? "sin coincidencias" : pedido.status}</p>}
                             {
                                 pedido.status === "paused" &&
                                 <Popover>
