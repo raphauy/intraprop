@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { BellRing, Building, ChevronRightSquare, Clipboard, LayoutDashboard, Music3, PackageOpen, Settings, User } from "lucide-react";
+import { BellRing, Building, ChevronRightSquare, Clipboard, LayoutDashboard, Music3, PackageOpen, Ruler, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -38,12 +38,17 @@ const data= [
     text: "Notificaciones"
   },
   {
-    href: "divider", icon: User
-  },  
-  {
     href: "/admin/users",
     icon: User,
     text: "Usuarios"
+  },
+  {
+    href: "divider", icon: User
+  },  
+  {
+    href: "/admin/stats",
+    icon: Ruler,
+    text: "Estadísticas"
   },
   {
     href: "divider", icon: User
