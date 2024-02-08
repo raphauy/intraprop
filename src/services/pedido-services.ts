@@ -101,7 +101,6 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
     const pedido: PedidoDAO = item as PedidoDAO
     const coincidenciasChecked= item.coincidences.filter((coincidence) => {return coincidence.state === "checked"})
     pedido.cantCoincidencias = coincidenciasChecked.length
-    console.log(`inmo ${inmobiliariaId} checked coincidences:`, coincidenciasChecked.length);
     
     if (inmobiliariaId) {
       const coincidences = item.coincidences.filter((coincidence) => {
@@ -114,10 +113,7 @@ export async function getPedidosDAO(slug: string): Promise<PedidoDAO[]> {
         ...pedido,
         status
       }
-      res.push(newPedido)
-
-      
-      console.log(`status: ${status}`);
+      res.push(newPedido)      
     } else {
       res.push(pedido)    
     }
