@@ -142,6 +142,12 @@ export async function checkBudgetOkCoincidences() {
             } else {
                 await checkZone(coincidence, pedido)
             }
+
+            // todo test it
+            const nowMontevideo = format(utcToZonedTime(new Date(), timeZone), "yyyy-MM-dd'T'HH:mm:ss", { locale: es });
+            console.log(`updating PROCESS_BLOCKED to true->${nowMontevideo}...`)
+            await setValue("PROCESS_BLOCKED", `true->${nowMontevideo}`);
+
         }
     }
 }
@@ -185,6 +191,7 @@ export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pe
         assistant_id: OPENAI_ASSISTANT_ID,
         //model: "gpt-3.5-turbo-1106",
         model: "gpt-4-1106-preview",
+        // model: "gpt-4-turbo-preview",
       }
     )
   
@@ -193,7 +200,7 @@ export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pe
     while (true) {
       run = await openai.beta.threads.runs.retrieve(
         createdThread.id,
-        runId
+        runId,
       )
       status= run.status
       if (status === "completed" || status === "failed" || status === "cancelled" || status === "expired") {
