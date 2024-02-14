@@ -153,91 +153,97 @@ export async function checkBudgetOkCoincidences() {
 }
 
 export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pedido) {
-    const zona= pedido.zona
-    if (zona && (zona === "" || zona.toLowerCase() === "n/d")) {
-        await updateCoincidence(coincidence.id, "checked")
-        return
-    }
-    
-    const OPENAI_ASSISTANT_ID= process.env.OPENAI_ZONE_ASSISTANT_ID
-    if (!OPENAI_ASSISTANT_ID) {
-        console.log("OPENAI_ZONE_ASSISTANT_ID is not defined")
-        return
-    }
-  
-    const zonaInmueble= getZonaInmueble(coincidence)
-    
-    const text= `
-    zona pedido: ${pedido.zona}
-    zona inmueble: ${zonaInmueble}
-    `
-    console.log("consulta: ", text)
-
-    const openai = new OpenAI();
-  
-    const createdThread = await openai.beta.threads.create({
-      messages: [
-        {
-          "role": "user",
-          "content": text,
+    try {
+        const zona= pedido.zona
+        if (zona && (zona === "" || zona.toLowerCase() === "n/d")) {
+            await updateCoincidence(coincidence.id, "checked")
+            return
         }
-      ]
-    })
-  
-    console.log("creating run for check zone")
-    let run = await openai.beta.threads.runs.create(
-      createdThread.id, 
-      { 
-        assistant_id: OPENAI_ASSISTANT_ID,
-        //model: "gpt-3.5-turbo-1106",
-        model: "gpt-4-1106-preview",
-        // model: "gpt-4-turbo-preview",
-      }
-    )
-  
-    const runId= run.id
-    let status= run.status
-    while (true) {
-      run = await openai.beta.threads.runs.retrieve(
-        createdThread.id,
-        runId,
-      )
-      status= run.status
-      if (status === "completed" || status === "failed" || status === "cancelled" || status === "expired") {
-        break
-      }
-      const timeToSleep= 1
-      console.log("sleeping...")
-      await new Promise(resolve => setTimeout(resolve, timeToSleep * 1000))
-    }
-  
-    if (status === "failed" || status === "cancelled" || status === "expired") {
-        console.log("run is not 'completed'")
-        return
-    }
-  
-    const threadMessages = await openai.beta.threads.messages.list(run.thread_id)
-    const updates = threadMessages.data.map(async (message: ThreadMessage) => {
-        if (message.role === "assistant" && message.content[0].type === "text") {
-            const respuesta = message.content[0].text.value
+        
+        const OPENAI_ASSISTANT_ID= process.env.OPENAI_ZONE_ASSISTANT_ID
+        if (!OPENAI_ASSISTANT_ID) {
+            console.log("OPENAI_ZONE_ASSISTANT_ID is not defined")
+            return
+        }
+    
+        const zonaInmueble= getZonaInmueble(coincidence)
+        
+        const text= `
+        zona pedido: ${pedido.zona}
+        zona inmueble: ${zonaInmueble}
+        `
+        console.log("consulta: ", text)
 
-            console.log("respuesta", respuesta)         
-            
-            let newStatus= "zone_banned"
-            if (respuesta === "SI") {
-                newStatus= "checked"
+        const openai = new OpenAI();
+    
+        const createdThread = await openai.beta.threads.create({
+        messages: [
+            {
+            "role": "user",
+            "content": text,
             }
+        ]
+        })
 
-            await updateCoincidence(coincidence.id, newStatus)
+            
+        console.log("creating run for check zone")
+        let run = await openai.beta.threads.runs.create(
+        createdThread.id, 
+        { 
+            assistant_id: OPENAI_ASSISTANT_ID,
+            //model: "gpt-3.5-turbo-1106",
+            model: "gpt-4-1106-preview",
+            // model: "gpt-4-turbo-preview",
         }
-      })
-      
-      const results = await Promise.all(updates)      
-      const successfulUpdates = results.filter(result => result !== null)
-      
-      return successfulUpdates.length > 0
+        )
     
+        const runId= run.id
+        let status= run.status
+        while (true) {
+        run = await openai.beta.threads.runs.retrieve(
+            createdThread.id,
+            runId,
+        )
+        status= run.status
+        if (status === "completed" || status === "failed" || status === "cancelled" || status === "expired") {
+            break
+        }
+        const timeToSleep= 1
+        console.log("sleeping...")
+        await new Promise(resolve => setTimeout(resolve, timeToSleep * 1000))
+        }
+    
+        if (status === "failed" || status === "cancelled" || status === "expired") {
+            console.log("run is not 'completed'")
+            return
+        }
+    
+        const threadMessages = await openai.beta.threads.messages.list(run.thread_id)
+        const updates = threadMessages.data.map(async (message: ThreadMessage) => {
+            if (message.role === "assistant" && message.content[0].type === "text") {
+                const respuesta = message.content[0].text.value
+
+                console.log("respuesta", respuesta)         
+                
+                let newStatus= "zone_banned"
+                if (respuesta === "SI") {
+                    newStatus= "checked"
+                }
+
+                await updateCoincidence(coincidence.id, newStatus)
+            }
+        })
+        
+        const results = await Promise.all(updates)      
+        const successfulUpdates = results.filter(result => result !== null)
+        
+        return successfulUpdates.length > 0
+
+    } catch (error) {
+        console.log("error: ", error)                
+    }    
 }
+
 function getZonaInmueble(coincidence: CoincidenceWithProperty): string {
     // property.zona !== null && property.zona !== "" && (textToEmbed += ` en ${property.zona},`) 
     const zona= coincidence.property.zona 
