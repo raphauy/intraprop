@@ -109,9 +109,9 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
       presupuestoMaxOrig= Math.round(presupuestoMaxOrig * cotizacion)
     }
 
-    const isVenta= operacion && operacion.toUpperCase() === "VENTA"
+    const isVenta= operacion && (operacion.toUpperCase().includes("VENTA") || operacion.toUpperCase().includes("COMPRA"))
     // cambiar presupuestoMoneda cuando sea venta y la moneda sea UYU
-    if (isVenta && presupuestoMoneda && presupuestoMoneda.toUpperCase() === "UYU") {
+    if (isVenta) {
       presupuestoMoneda= "USD"
     }
 
