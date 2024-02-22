@@ -1,6 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 import { BellRing, Building, ChevronRightSquare, Clipboard, LayoutDashboard, Music3, PackageOpen, Ruler, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -79,6 +80,9 @@ export default function SideBar() {
   const commonClasses= "flex gap-2 items-center py-1 mx-2 rounded hover:bg-gray-200 dark:hover:text-black"
   const selectedClasses= "font-bold text-osom-color dark:border-r-white"
 
+  const buildDate = process.env.NEXT_PUBLIC_BUILD_DATE
+
+  const formattedDate= buildDate ? "1." + format(new Date(buildDate), "MM.dd") : "-"
   return (
     <div className="flex flex-col justify-between border-r border-r-osom-color/50">
       <section className="flex flex-col gap-3 py-4 mt-3 ">
@@ -108,7 +112,7 @@ export default function SideBar() {
       <section className="mb-4">
         {divider()}
         
-        <p className="hidden sm:block lg:w-36 ml-3 font-bold">Versión 1.02.05</p>                  
+        <p className="hidden sm:block lg:w-36 ml-3 font-bold">Versión: {formattedDate}</p>
       </section>
     </div>
   );

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NEXT_PUBLIC_BUILD_DATE=$(date) next build",
     "start": "next start -p 8056",
     "lint": "next lint",
     "seed": "tsx prisma/seed.ts",

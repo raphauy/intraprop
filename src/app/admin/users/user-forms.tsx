@@ -1,17 +1,7 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "@/components/ui/use-toast";
-import { useEffect, useState } from "react";
-import {
-  deleteUserAction,
-  createOrUpdateUserAction,
-  getUserDAOAction,
-} from "./user-actions";
-import { userFormSchema, UserFormValues } from "@/services/user-services";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import {
   Form,
   FormControl,
@@ -21,12 +11,28 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Check, CheckIcon, Loader } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 import { InmobiliariaDAO } from "@/services/inmobiliaria-services";
-import { getInmobiliariaDAOAction, getInmobiliariasDAOAction } from "../inmobiliarias/inmobiliaria-actions";
+import { UserFormValues, userFormSchema } from "@/services/user-services";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsRight, ChevronsUpDown, Loader, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { getInmobiliariasDAOAction } from "../inmobiliarias/inmobiliaria-actions";
+import {
+  createOrUpdateUserAction,
+  deleteUserAction,
+  getUserDAOAction,
+} from "./user-actions";
+
+export type ComboBoxData={
+  value: string,
+  label: string
+}
 
 export const roles= [
   "admin",
@@ -46,10 +52,31 @@ export function UserForm({ id, closeDialog }: Props) {
   });
   const [loading, setLoading] = useState(false);
   const [role, setRole] = useState("admin")
-  const [inmoName, setInmoName] = useState("")
   const [inmobiliarias, setInmobiliarias] = useState<InmobiliariaDAO[]>([])
 
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState("")
+  const [searchValue, setSearchValue] = useState("")
+  const [selectors, setSelectors] = useState<ComboBoxData[]>([])
+
+  const filteredValues = useMemo(() => {
+    if (!searchValue) return selectors
+    const lowerCaseSearchValue = searchValue.toLowerCase();
+    return selectors.filter((line) => 
+    line.label.toLowerCase().includes(lowerCaseSearchValue)
+    )
+  }, [selectors, searchValue])
+
+  const customFilter = (searchValue: string, itemValue: string) => {      
+    return itemValue.toLowerCase().includes(searchValue.toLowerCase()) ? searchValue.toLowerCase().length : 0
+  }      
+    
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value)
+  }
+
   const onSubmit = async (data: UserFormValues) => {
+
     setLoading(true);
     try {
       if (form.getValues("role") === "admin") {
@@ -74,6 +101,13 @@ export function UserForm({ id, closeDialog }: Props) {
     .then((data) => {
       if (data) {
         setInmobiliarias(data)
+        const initialSelectors= data.map(inmo => {
+          return {
+            value: inmo.id,
+            label: inmo.name
+          }
+        })
+        setSelectors(initialSelectors)
       }
     })
 
@@ -82,11 +116,11 @@ export function UserForm({ id, closeDialog }: Props) {
         
         if (data) {
           form.reset(data);
-          data.inmobiliariaName && setInmoName(data.inmobiliariaName)
-          data.name && form.setValue("name", data.name);
-          data.inmobiliariaId && form.setValue("inmobiliariaId", data.inmobiliariaId);
-          form.setValue("role", data.role);
+          data.name && form.setValue("name", data.name)
+          data.inmobiliariaId && form.setValue("inmobiliariaId", data.inmobiliariaId)
+          form.setValue("role", data.role)
           setRole(data.role)
+          data.inmobiliariaName && setValue(data.inmobiliariaName)
         }
       });
     } else {
@@ -102,7 +136,6 @@ export function UserForm({ id, closeDialog }: Props) {
     form.setValue("role", value);
     if (value === "admin") {
       form.setValue("inmobiliariaId", undefined);
-      setInmoName("")
     }
   }
 
@@ -170,24 +203,74 @@ export function UserForm({ id, closeDialog }: Props) {
               name="inmobiliariaId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cliente</FormLabel>
+                  <FormLabel>Inmobiliaria</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        {
-                          id ? 
-                          <SelectValue className="text-muted-foreground" placeholder={inmoName} /> :
-                          <SelectValue className="text-muted-foreground" placeholder="Selecciona un Cliente" />
-                        }
-                        
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {inmobiliarias.map(inmo => (
-                        <SelectItem key={inmo.id} value={inmo.id}>{inmo.name}</SelectItem>
-                      ))
-                      }
-                    </SelectContent>
+
+                    <div className="w-full px-1 ">
+                      <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            role="combobox"
+                            aria-expanded={open}
+                            className="justify-between w-full text-base whitespace-nowrap min-w-[230px]"
+                          >
+                            {value
+                              ? selectors.find(selector => selector.label.toLowerCase() === value.toLowerCase())?.label
+                              : "Seleccionar inmobiliaria"}
+                            <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                          </Button>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="min-w-[230px] p-0">
+                          <Command filter={customFilter} >
+                            <div className='flex items-center w-full gap-1 p-2 border border-gray-300 rounded-md shadow'>
+                                <Search className="w-4 h-4 mx-1 opacity-50 shrink-0" />
+                                <input placeholder="Buscar inmobiliaria..." onInput={handleInputChange} value={searchValue} className="w-full bg-transparent focus:outline-none"/>
+                            </div>
+                            
+                            <CommandEmpty>inmobiliaria no encontrada</CommandEmpty>
+                            <CommandGroup>
+                              {filteredValues.map((inmo, index) => {
+                                if (index >= 10) return null
+                                return (
+                                  <CommandItem
+                                    key={inmo.value}
+                                    onSelect={(currentValue) => {
+                                      if (currentValue === value) {
+                                        setValue("")
+                                      } else {
+                                        setValue(currentValue)
+                                        const inmoId= inmobiliarias.find(inmo => inmo.name.toLowerCase() === currentValue)?.id
+                                        
+                                        form.setValue("inmobiliariaId", inmoId)
+
+                                        // router.push(`/${inmo.slug}/${restOfPath}?${search}`)
+                                      }
+                                      setSearchValue("")
+                                      setOpen(false)
+                                    }}
+                                  >
+                                    <Check className={cn("mr-2 h-4 w-4", value.toLowerCase() === inmo.label.toLowerCase() ? "opacity-100" : "opacity-0")}/>
+                                    {inmo.label}
+                                  </CommandItem>
+                              )})}
+
+                              {filteredValues.length - 10 > 0 &&
+                                <div className="flex items-center mt-5 font-bold">
+                                  <ChevronsRight className="mr-2 ml-1 h-5 w-5"/>
+                                  <p className="text-sm">Hay {filteredValues.length - 10} inmobiliarias más</p>
+                                </div>
+                              }
+
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+
+
                   </Select>
                   <FormMessage />
                 </FormItem>
