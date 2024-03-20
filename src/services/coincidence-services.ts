@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/db"
+import { getServerSession } from "next-auth"
 import * as z from "zod"
-import { NotificationDAO } from "./notification-services"
 import { NotificationPedidoDAO } from "./notification-pedidos-services"
+import { WapShareData } from "@/app/admin/tablero/actions"
+import { format } from "date-fns"
 
 export type CoincidenceDAO = {
   id:  string
@@ -12,6 +14,7 @@ export type CoincidenceDAO = {
 	propertyId:  string
 	createdAt:  Date
   state: string
+  sharedBy: string
   property: {
     id: string
     idPropiedad: string
@@ -395,4 +398,47 @@ export async function getPendingCoincidences(state: string) {
   })
 
   return res as CoincidenceDAO[]
+}
+
+export async function getShareData(coincidenceId: string) {
+
+  const coincidence= await getCoincidenceDAO(coincidenceId)
+  if (!coincidence) {
+    throw new Error("Coincidence not found")
+  }
+
+  const pedido= await prisma.pedido.findUnique({
+    where: {
+      id: coincidence.pedidoId
+    }
+  })
+  if (!pedido) {
+    throw new Error("Pedido not found")
+  }
+
+  const res= {
+    pedidoName: pedido.name,
+    pedidoPhone: pedido.phone,
+    groupName: pedido.group,
+    inmoName: coincidence.property.inmobiliariaName,
+    url: coincidence.property.url
+  }
+
+  return res as WapShareData
+}
+
+export async function setSharedBy(coincidenceId: string, userName: string) {
+
+  const formattedDate= format(new Date(), "yyyy-MM-dd HH:mm")
+
+  const text= `Esta propiedad fue compartida por ${userName} el ${formattedDate}`
+  const updated = await prisma.coincidence.update({
+    where: {
+      id: coincidenceId
+    },
+    data: {
+      sharedBy: text
+    }
+  })
+  return updated
 }

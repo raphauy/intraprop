@@ -1,12 +1,10 @@
-import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { formatPresupuesto } from "@/lib/utils"
 import { PedidoDAO } from "@/services/pedido-services"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { Info, MessageCircle, Target } from "lucide-react"
+import { MessageCircle, Target } from "lucide-react"
 
 type Props= {
     pedido: PedidoDAO

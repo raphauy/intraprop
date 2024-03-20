@@ -1,13 +1,15 @@
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
-import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { Ban, BedSingle, BellRing, Car, CheckCircle2, Drumstick, ExternalLink, Eye, Waves } from "lucide-react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { CoincidenceDAO } from "@/services/coincidence-services"
-import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
 import { getZona } from "@/app/admin/tablero/coincidencias"
 import HoverNotification from "@/app/admin/tablero/hover-notification"
+import HoverShared from "@/app/admin/tablero/hover-shared"
+import { ShareDialog } from "@/app/admin/tablero/share-dialog"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
+import { CoincidenceDAO } from "@/services/coincidence-services"
 import { getValue } from "@/services/config-services"
+import { Ban, BedSingle, BellRing, Car, Drumstick, ExternalLink, Share2, Waves } from "lucide-react"
+import Link from "next/link"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
@@ -47,6 +49,7 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                         <TableHead className="flex items-center text-lg gap-1"><p>#</p><BellRing size={18} /></TableHead>
                         <TableHead>Coincidencia</TableHead>
                         <TableHead className="text-center">URL</TableHead>
+                        <TableHead className="text-center"><Share2 /></TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -103,6 +106,13 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                         <Link href={coincidencia.property.url} target="_blank">
                                             <Button size="sm" variant="link"><ExternalLink /></Button>
                                         </Link>
+                                    </TableCell>
+                                    <TableCell className="text-center text-green-400">
+                                        {
+                                            coincidencia.sharedBy ? 
+                                                <HoverShared text={coincidencia.sharedBy} /> :
+                                                <ShareDialog coincidenceId={coincidencia.id} showSwitch={false} />
+                                        }
                                     </TableCell>
                                 </TableRow>
                             )})

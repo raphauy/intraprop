@@ -1,13 +1,14 @@
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
-import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { Ban, BedSingle, BellRing, Car, CheckCircle2, Drumstick, ExternalLink, Eye, Waves } from "lucide-react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { CoincidenceDAO } from "@/services/coincidence-services"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn, distanceToPercentage, formatNumberWithDots } from "@/lib/utils"
-import { number } from "zod"
-import HoverNotification from "./hover-notification"
+import { CoincidenceDAO } from "@/services/coincidence-services"
 import { getValue } from "@/services/config-services"
+import { Ban, BedSingle, Car, Drumstick, ExternalLink, Share2, Waves } from "lucide-react"
+import Link from "next/link"
+import HoverNotification from "./hover-notification"
+import HoverShared from "./hover-shared"
+import { ShareDialog } from "./share-dialog"
 
 type Props = {
     coincidencias: CoincidenceDAO[]
@@ -51,6 +52,7 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                         <TableHead>Zona</TableHead>
                         <TableHead>Inmobiliaria</TableHead>
                         <TableHead>Coincidencia</TableHead>
+                        <TableHead className="text-center"><Share2 /></TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -118,6 +120,13 @@ export default async function Coincidencias({ coincidencias, operacion, coincide
                                         <Link href={coincidencia.property.url} target="_blank" className="hidden md:block">
                                             <Button size="sm" variant="link"><ExternalLink /></Button>
                                         </Link>
+                                    </TableCell>
+                                    <TableCell className="text-center text-green-400">
+                                        {
+                                            coincidencia.sharedBy ? 
+                                                <HoverShared text={coincidencia.sharedBy} /> :
+                                                <ShareDialog coincidenceId={coincidencia.id} showSwitch={true} />
+                                        }
                                     </TableCell>
                                 </TableRow>
                             )})

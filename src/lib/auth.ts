@@ -11,6 +11,7 @@ declare module "next-auth" {
       id: string
       role: string
       inmobiliariaId: string
+      phone: string
     } & DefaultSession["user"]
   }
 }
@@ -24,6 +25,8 @@ export const authOptions: NextAuthOptions = {
         id: user.id,
         //@ts-ignore
         role: user.role,
+        //@ts-ignore
+        phone: user.phone,
         //@ts-ignore
         inmobiliariaId: user.inmobiliariaId,
       },

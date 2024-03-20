@@ -39,6 +39,15 @@ export const columns: ColumnDef<UserDAO>[] = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const data = row.original
+      return (
+        <div>
+          <p>{data.email}</p>
+          <p className="text-xs text-gray-500">{data.phone}</p>
+        </div>
+      )
+    }    
   },
 
   {

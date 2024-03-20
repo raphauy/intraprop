@@ -121,6 +121,7 @@ export function UserForm({ id, closeDialog }: Props) {
           form.setValue("role", data.role)
           setRole(data.role)
           data.inmobiliariaName && setValue(data.inmobiliariaName)
+          data.phone && form.setValue("phone", data.phone)
         }
       });
     } else {
@@ -165,6 +166,20 @@ export function UserForm({ id, closeDialog }: Props) {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input placeholder="User's email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input placeholder="User's phone" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

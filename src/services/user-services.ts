@@ -6,6 +6,7 @@ export type UserDAO = {
   id:  string
 	name?:  string
 	email:  string
+  phone?:  string
 	role:  string
 	emailVerified?:  Date
 	image?:  string
@@ -16,6 +17,7 @@ export type UserDAO = {
 export const userFormSchema = z.object({
 	name: z.string().optional(),
 	email: z.string({required_error: "Email is required."}),
+  phone: z.string().optional(),
 	role: z.string({required_error: "Role is required."}),
 	image: z.string().optional(),
   inmobiliariaId: z.string().optional(),
@@ -42,6 +44,7 @@ function convert(user: any): UserDAO {
     id: user.id,
     name: user.name || "",
     email: user.email,
+    phone: user.phone || undefined,
     role: user.role,
     emailVerified: user.emailVerified || undefined,
     image: user.image || undefined,
@@ -90,6 +93,8 @@ export async function createUser(data: UserFormValues) {
 }
 
 export async function updateUser(id: string, data: UserFormValues) {
+  console.log("phone: ", data.phone);
+  
   const updated = await prisma.user.update({
     where: {
       id

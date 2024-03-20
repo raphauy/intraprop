@@ -13,7 +13,7 @@ export default async function UsersPage() {
       </div>
 
       <div className="container p-3 py-4 mx-auto border rounded-md text-muted-foreground dark:text-white">
-        <DataTable columns={columns} data={data} subject="User" columnsOff={["image"]}/>
+        <DataTable columns={columns} data={data} subject="User" />
       </div>
     </div>
   );
