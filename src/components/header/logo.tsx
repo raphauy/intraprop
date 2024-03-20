@@ -1,7 +1,5 @@
 "use client";
 
-import { fontNunito, fontRubik, fontSans  } from "@/lib/fonts";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
