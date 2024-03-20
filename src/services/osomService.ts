@@ -7,10 +7,10 @@ export async function sendWapMessage(phone: string, body: string): Promise<void>
 
   if (!OSOM_ENDPOINT) throw new Error("whatsappEndpoint not found")
 
-  // if (process.env.NODE_ENV === 'development') {
-  //   console.log("sendWapMessage: ", body)
-  //   return
-  // }
+  if (process.env.NODE_ENV === 'development') {
+    console.log("sendWapMessage: ", body)
+    return
+  }
 
   const headers = {
     'Content-Type': 'application/json',

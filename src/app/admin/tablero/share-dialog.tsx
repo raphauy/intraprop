@@ -34,7 +34,6 @@ export function ShareDialog({ coincidenceId, showSwitch }: Props) {
     setLoading(true)
     getShareDataAction(coincidenceId)
     .then((res) => {
-      console.log(res)
       if (!res) return setText("Error al cargar los datos")
       if (!user?.phone) return setText("No se puede compartir la propiedad porque no tenés un número de teléfono asociado a tu cuenta de Intraprop")
       setDestination(res.pedidoPhone)
@@ -62,7 +61,7 @@ ${res.url}
 
   function sendWap() {    
     setLoading(true)
-    setSharedByAction(coincidenceId, user?.name || "")
+    setSharedByAction(coincidenceId, user?.name || "", destination, text)
     .then(() => {
       toast({ title: "Propiedad compartida por WhatsApp" })
     })

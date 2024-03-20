@@ -5,19 +5,19 @@ export const fontSans = FontSans({
   variable: "--font-sans",
 })
 
-export const fontMono = FontMono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+// export const fontMono = FontMono({
+//   subsets: ["latin"],
+//   variable: "--font-mono",
+// })
 
-export const fontRubik = Rubik({
-  subsets: ["latin"],
-  variable: "--font-rubik",
-  weight: "500",
-})
+// export const fontRubik = Rubik({
+//   subsets: ["latin"],
+//   variable: "--font-rubik",
+//   weight: "500",
+// })
 
-export const fontNunito = Nunito({
-  subsets: ["latin"],
-  variable: "--font-nunito",
-  weight: "800",
-})
+// export const fontNunito = Nunito({
+//   subsets: ["latin"],
+//   variable: "--font-nunito",
+//   weight: "800",
+// })

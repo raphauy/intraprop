@@ -4,6 +4,7 @@ import * as z from "zod"
 import { NotificationPedidoDAO } from "./notification-pedidos-services"
 import { WapShareData } from "@/app/admin/tablero/actions"
 import { format } from "date-fns"
+import { sendWapMessage } from "./osomService"
 
 export type CoincidenceDAO = {
   id:  string
@@ -427,18 +428,25 @@ export async function getShareData(coincidenceId: string) {
   return res as WapShareData
 }
 
-export async function setSharedBy(coincidenceId: string, userName: string) {
+export async function setSharedBy(coincidenceId: string, userName: string, destination: string, text: string) {
 
   const formattedDate= format(new Date(), "yyyy-MM-dd HH:mm")
 
-  const text= `Esta propiedad fue compartida por ${userName} el ${formattedDate}`
+  const sharedBy= `Esta propiedad fue compartida por ${userName} el ${formattedDate}`
   const updated = await prisma.coincidence.update({
     where: {
       id: coincidenceId
     },
     data: {
-      sharedBy: text
+      sharedBy
     }
   })
+
+  console.log("sending wap message")
+  console.log("destination", destination)
+  
+  
+  await sendWapMessage(destination, text)
+
   return updated
 }
