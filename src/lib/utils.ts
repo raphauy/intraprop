@@ -1,9 +1,10 @@
-import { getValue } from "@/services/config-services";
+import { getValue } from "@/services/config-services"
 import { type ClassValue, clsx } from "clsx"
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
 import { twMerge } from "tailwind-merge"
- 
+import he from 'he'
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -114,5 +115,70 @@ export async function detectarMoneda(texto: string): Promise<"USD" | "UYU" | "N/
 
   // Si no se encuentra ningún patrón, devolvemos "N/D"
   return "N/D";
+}
+
+export function decodeAndCorrectText(str: string): string {
+  // Verifica si el input es undefined o null y devuelve una cadena vacía
+if (str === undefined || str === null) {
+  return ''
+}
+
+// Primero, decodifica las entidades HTML
+let decodedStr: string = he.decode(str)
+
+// Corrige la codificación incorrecta de tildes y eñes
+const replacements: { [key: string]: string } = {
+  'Ã¡': 'á', 'Ã©': 'é', 'Ã­': 'í', 'Ã³': 'ó', 'Ãº': 'ú',
+  'Ã±': 'ñ', 'Ã': 'Á', 'Ã‰': 'É', 'Ã': 'Í', 'Ã“': 'Ó',
+  'Ãš': 'Ú', 'Ã‘': 'Ñ',
+  // los correctos
+  'á': 'á', 'é': 'é', 'í': 'í', 'ó': 'ó', 'ú': 'ú', // Asegurar corrección si ya están correctos
+  'Á': 'Á', 'É': 'É', 'Í': 'Í', 'Ó': 'Ó', 'Ú': 'Ú',
+  'ñ': 'ñ', 'Ñ': 'Ñ'
+}
+
+Object.keys(replacements).forEach((key) => {
+  const value: string = replacements[key];
+  decodedStr = decodedStr.replace(new RegExp(key, 'g'), value);
+})
+
+// Manejar casos especiales como "cumplea{ tilde}os", "{ 'ia}"
+const specialReplacements: { [pattern: string]: string } = {
+  '\\{ tilde\\}': 'ñ',
+  '\\{ \'a\\}': 'á',
+  '\\{ \'e\\}': 'é',
+  '\\{ \'i\\}': 'í',
+  '\\{ \'o\\}': 'ó',
+  '\\{ \'u\\}': 'ú',
+  '\\{ \'n\\}': 'ñ',
+  // Versiones mayúsculas por si acaso también son necesarias
+  '\\{ \'A\\}': 'Á',
+  '\\{ \'E\\}': 'É',
+  '\\{ \'I\\}': 'Í',
+  '\\{ \'O\\}': 'Ó',
+  '\\{ \'U\\}': 'Ú',
+  '\\{ \'N\\}': 'Ñ',
+}
+
+Object.keys(specialReplacements).forEach((pattern) => {
+  const replacement: string = specialReplacements[pattern];
+  decodedStr = decodedStr.replace(new RegExp(pattern, 'g'), replacement);
+})
+
+const additionalReplacements: { [key: string]: string } = {
+  'est�': 'está',
+}
+
+Object.keys(additionalReplacements).forEach((key) => {
+  const value: string = additionalReplacements[key];
+  decodedStr = decodedStr.replace(new RegExp(key, 'g'), value);
+})
+
+// Luego, decodifica las secuencias de escape Unicode
+decodedStr = decodedStr.replace(/\\u([\dA-F]{4})/gi, (match, numStr) => {
+  return String.fromCharCode(parseInt(numStr, 16));
+});
+
+return decodedStr;
 }
 

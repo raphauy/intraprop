@@ -1,4 +1,4 @@
-import { detectarMoneda } from "@/lib/utils";
+import { decodeAndCorrectText, detectarMoneda } from "@/lib/utils";
 import { getValue } from "./config-services";
 import { sendWapMessage } from "./osomService";
 import { PedidoFormValues, getPedidoDAO, updatePedido } from "./pedido-services";
@@ -321,7 +321,20 @@ function corregirPresupuesto(presupuesto: number, operacion: string, presupuesto
 export async function runFunction(name: string, args: any) {
   switch (name) {
     case "registrarPedido":
-      return registrarPedido(args["pedidoId"], args["intencion"], args["tipo"], args["operacion"], args["presupuestoMin"], args["presupuestoMax"], args["presupuestoMoneda"], args["gastosComunes"], args["zona"], args["dormitorios"], args["caracteristicas"], args["contacto"])
+      return registrarPedido(
+        args["pedidoId"], 
+        args["intencion"], 
+        args["tipo"], 
+        args["operacion"], 
+        args["presupuestoMin"], 
+        args["presupuestoMax"], 
+        args["presupuestoMoneda"], 
+        args["gastosComunes"], 
+        args["zona"], 
+        args["dormitorios"], 
+        decodeAndCorrectText(args["caracteristicas"]),
+        args["contacto"]
+      )
 
     default:
       return null;
