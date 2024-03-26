@@ -167,6 +167,21 @@ Object.keys(specialReplacements).forEach((pattern) => {
 
 const additionalReplacements: { [key: string]: string } = {
   'est�': 'está',
+  'ma�ana': 'mañana',
+  'a�o': 'año',
+  'a�os': 'años',
+  'cumplea�os': 'cumpleaños',    
+  'Mart�n': 'Martín',
+  'Malv�n': 'Malvín',
+  'Juli�n': 'Julián',
+  'Ger�nimo': 'Gerónimo',
+  'Germ�n': 'Germán',
+  'Gast�n': 'Gastón',
+  'Est�vez': 'Estévez',
+  'M�nimo': 'Mínimo',
+  'M�ximo': 'Máximo',
+  'M�nica': 'Mónica',
+  'M�dico': 'Médico',
 }
 
 Object.keys(additionalReplacements).forEach((key) => {
@@ -181,4 +196,3 @@ decodedStr = decodedStr.replace(/\\u([\dA-F]{4})/gi, (match, numStr) => {
 
 return decodedStr;
 }
-
