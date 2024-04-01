@@ -40,11 +40,11 @@ export function ShareDialog({ coincidenceId, showSwitch }: Props) {
       setPedidoPhone(res.pedidoPhone)
 
       const text= `
-Hola ${res.pedidoName}, te escribimos de parte de ${user?.name} de *${res.inmoName}* por el pedido que hiciste en el grupo ${res.groupName}. 
+Hola Servicios Inmobiliarios, te escribe ${user?.name} de *${res.inmoName}* por el pedido que hiciste en el grupo ${res.groupName}. 
 
 Tenemos esta propiedad que creemos que te puede interesar. 
 
-Para contactarte con ${user?.name} podes escribirle a su WhatsApp ${user?.phone}.
+Para contactarme, escribime o llamame a: ${user?.phone}.
 
 ${res.url}
 `
