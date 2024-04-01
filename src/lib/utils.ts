@@ -179,9 +179,13 @@ const additionalReplacements: { [key: string]: string } = {
   'Gast�n': 'Gastón',
   'Est�vez': 'Estévez',
   'M�nimo': 'Mínimo',
+  'm�nimo': 'mínimo',
   'M�ximo': 'Máximo',
+  'm�ximo': 'máximo',
   'M�nica': 'Mónica',
   'M�dico': 'Médico',
+  'm�dico': 'médico',
+  'pr�stamo': 'préstamo',
 }
 
 Object.keys(additionalReplacements).forEach((key) => {
