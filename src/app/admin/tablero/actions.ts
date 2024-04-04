@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache"
 export type WapShareData= {
     pedidoName: string
     pedidoPhone: string
+    pedidoText: string
     groupName: string
     inmoName: string
     url: string

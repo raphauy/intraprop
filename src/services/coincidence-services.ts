@@ -420,6 +420,7 @@ export async function getShareData(coincidenceId: string) {
   const res= {
     pedidoName: pedido.name,
     pedidoPhone: pedido.phone,
+    pedidoText: pedido.text,
     groupName: pedido.group,
     inmoName: coincidence.property.inmobiliariaName,
     url: coincidence.property.url

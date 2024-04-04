@@ -40,7 +40,8 @@ export function ShareDialog({ coincidenceId, showSwitch }: Props) {
       setPedidoPhone(res.pedidoPhone)
 
       const text= `
-Hola Servicios Inmobiliarios, te escribe ${user?.name} de *${res.inmoName}* por el pedido que hiciste en el grupo ${res.groupName}. 
+Hola ${res.pedidoName}, te escribe ${user?.name} de *${res.inmoName}* por el pedido que hiciste en el grupo ${res.groupName}:
+"${res.pedidoText}"
 
 Tenemos esta propiedad que creemos que te puede interesar. 
 
