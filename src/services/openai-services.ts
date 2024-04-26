@@ -67,7 +67,8 @@ export async function runFunctions(text: string) {
 
     // check if the conversation requires a function call to be made
     const response = await openai.chat.completions.create({
-        model: "gpt-4-1106-preview",
+        // model: "gpt-4-1106-preview",
+        model: "gpt-4-turbo",
         messages,
         temperature: 0,
         stream: false,

@@ -192,8 +192,9 @@ export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pe
         { 
             assistant_id: OPENAI_ASSISTANT_ID,
             //model: "gpt-3.5-turbo-1106",
-            model: "gpt-4-1106-preview",
             // model: "gpt-4-turbo-preview",
+            // model: "gpt-4-1106-preview",
+            model: "gpt-4-turbo",
         }
         )
     
