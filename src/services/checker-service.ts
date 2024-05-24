@@ -66,8 +66,7 @@ export async function checkZone(coincidenceId: string) {
       createdThread.id, 
       { 
         assistant_id: OPENAI_ASSISTANT_ID,
-        // model: "gpt-4-1106-preview",
-        model: "gpt-4-turbo",
+        model: "gpt-4o",
       }
     )
   
