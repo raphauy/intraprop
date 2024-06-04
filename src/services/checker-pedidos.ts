@@ -4,7 +4,7 @@ import { addMinutes, format, isAfter, parseISO } from "date-fns";
 import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 import { es } from "date-fns/locale";
 import OpenAI from "openai";
-import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
+//import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
 import { getValue, setValue } from "./config-services";
 import { createNotificationPedido } from "./notification-pedidos-services";
 import { sendPendingNotificationsV2 } from "./notification-sender";
@@ -217,7 +217,7 @@ export async function checkZone(coincidence: CoincidenceWithProperty, pedido: Pe
         }
     
         const threadMessages = await openai.beta.threads.messages.list(run.thread_id)
-        const updates = threadMessages.data.map(async (message: ThreadMessage) => {
+        const updates = threadMessages.data.map(async (message: any) => {
             if (message.role === "assistant" && message.content[0].type === "text") {
                 const respuesta = message.content[0].text.value
 
