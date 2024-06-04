@@ -1,16 +1,16 @@
 import { prisma } from "@/lib/db";
 import { Coincidence, Pedido } from "@prisma/client";
 import { addMinutes, format, isAfter, parseISO } from "date-fns";
-import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
+import { utcToZonedTime } from 'date-fns-tz';
 import { es } from "date-fns/locale";
 import OpenAI from "openai";
 //import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
+import { getAmountOfCoincidencesOfInmobiliaria } from "./coincidence-services";
 import { getValue, setValue } from "./config-services";
 import { createNotificationPedido } from "./notification-pedidos-services";
 import { sendPendingNotificationsV2 } from "./notification-sender";
-import { CoincidenceWithProperty, createCoincidencesProperties, getPedidos, getPedidosChecked, updateCoincidencesNumbers, updatePedidoCoincidencesCreated, updatePedidoStatus } from "./pedido-services";
-import { getAmountOfCoincidencesOfInmobiliaria } from "./coincidence-services";
 import { sendWapMessage } from "./osomService";
+import { CoincidenceWithProperty, createCoincidencesProperties, getPedidos, getPedidosChecked, updateCoincidencesNumbers, updatePedidoCoincidencesCreated, updatePedidoStatus } from "./pedido-services";
 
 
 export async function processPendingPedidos() {
