@@ -1,7 +1,7 @@
 import * as z from "zod"
 import { prisma } from "@/lib/db"
 import OpenAI from "openai"
-import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs"
+//import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs"
 import { CoincidenceDAO, CoincidenceFormValues, getCoincidencesDAO } from "./coincidence-services"
 import { OpenAIEmbeddings } from "langchain/embeddings/openai"
 import pgvector from 'pgvector/utils';
@@ -554,7 +554,7 @@ export async function runThread(pedidoId: string) {
 
   const threadMessages = await openai.beta.threads.messages.list(run.thread_id)
   
-  const updates = threadMessages.data.map(async (message: ThreadMessage) => {
+  const updates = threadMessages.data.map(async (message: any) => {
     if (message.role === "assistant" && message.content[0].type === "text") {
       const openaiJson = message.content[0].text.value
       let jsonObject

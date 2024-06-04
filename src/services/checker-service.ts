@@ -1,12 +1,11 @@
-import OpenAI from "openai";
-import { CoincidenceDAO, getCoincidenceDAO, getPendingCoincidences } from "./coincidence-services";
-import { getPedidoDAO, updateCoincidencesNumbers } from "./pedido-services";
-import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
 import { prisma } from "@/lib/db";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import OpenAI from "openai";
+// import { ThreadMessage } from "openai/resources/beta/threads/messages/messages.mjs";
+import { CoincidenceDAO, getCoincidenceDAO, getPendingCoincidences } from "./coincidence-services";
 import { createNotification } from "./notification-services";
-import { getValue } from "./config-services";
+import { getPedidoDAO, updateCoincidencesNumbers } from "./pedido-services";
 
 
 
@@ -92,7 +91,7 @@ export async function checkZone(coincidenceId: string) {
     }
   
     const threadMessages = await openai.beta.threads.messages.list(run.thread_id)
-    const updates = threadMessages.data.map(async (message: ThreadMessage) => {
+    const updates = threadMessages.data.map(async (message: any) => {
         if (message.role === "assistant" && message.content[0].type === "text") {
             const respuesta = message.content[0].text.value
 
