@@ -174,7 +174,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
         presupuestoLog: presupuestoLog,
         presupuestoMoneda: presupuestoMoneda,
         zona: zona,
-        dormitorios: dormitorios,
+        dormitorios: dormitorios.toString(),
         caracteristicas: formattedCaracteristicas,
         contacto: pauseCheck.msgToUser,
         status: pauseCheck.status,
