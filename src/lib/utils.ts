@@ -200,3 +200,28 @@ decodedStr = decodedStr.replace(/\\u([\dA-F]{4})/gi, (match, numStr) => {
 
 return decodedStr;
 }
+
+export function getStatusLabel(option: string) {
+
+  let res= ""
+
+  switch (option) {
+    case "notifications_created":
+      res= "exitoso"
+      break;
+    case "no_coincidences":
+      res= "sin coincidencias"
+      break;
+      case "pending":
+      res= "pendiente"
+      break;
+    case "paused":
+      res= "pausado"
+      break;
+    default:
+      res= option
+      break;
+  }
+  
+  return res
+}

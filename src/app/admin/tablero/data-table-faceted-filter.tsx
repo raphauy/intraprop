@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
+import { cn, getStatusLabel } from "@/lib/utils"
 
 
 
@@ -70,7 +70,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         key={option}
                         className="px-1 font-normal rounded-sm whitespace-nowrap"
                       >
-                        {getText(option)}
+                        {getStatusLabel(option)}
                       </Badge>
                     ))
                 )}
@@ -113,7 +113,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     >
                       <Check className={cn("h-4 w-4")} />
                     </div>
-                    <span>{getText(option)}</span>
+                    <span>{getStatusLabel(option)}</span>
                     {facets?.get(option) && (
                       <span className="flex items-center justify-center w-4 h-4 ml-auto font-mono text-xs">
                         {facets.get(option)}
@@ -145,27 +145,3 @@ export function DataTableFacetedFilter<TData, TValue>({
   )
 }
 
-function getText(option: string) {
-
-  let res= ""
-
-  switch (option) {
-    case "notifications_created":
-      res= "exitoso"
-      break;
-    case "no_coincidences":
-      res= "sin coincidencias"
-      break;
-      case "pending":
-      res= "pendiente"
-      break;
-    case "paused":
-      res= "pausado"
-      break;
-    default:
-      res= option
-      break;
-  }
-  
-  return res
-}

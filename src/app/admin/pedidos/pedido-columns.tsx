@@ -7,6 +7,8 @@ import { ArrowUpDown } from "lucide-react";
 import PedidoBox from "./pedido-box";
 import { DeletePedidoDialog, PedidoDialog, PedidoDialogText } from "./pedido-dialogs";
 import RunButton from "./run-button";
+import { Badge } from "@/components/ui/badge";
+import { cn, getStatusLabel } from "@/lib/utils";
 
 export const columns: ColumnDef<PedidoDAO>[] = [
   {
@@ -27,8 +29,32 @@ export const columns: ColumnDef<PedidoDAO>[] = [
       const data = row.original
       
       return (
-        <div className="whitespace-pre-wrap">{data.text}</div>
+        <div className="flex flex-col gap-2 items-start">
+          <Badge className={cn("w-fit", data.status === "notifications_created" && "bg-green-500", data.status === "paused" && "bg-yellow-500")}>
+            {getStatusLabel(data.status)}
+          </Badge>
+          <div className="whitespace-pre-wrap">{data.text}</div>
+        </div>
         )
+    },
+  },
+
+  {
+    accessorKey: "status",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          className="pl-0 dark:text-white"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Estado
+          <ArrowUpDown className="w-4 h-4 ml-1" />
+        </Button>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
     },
   },
 

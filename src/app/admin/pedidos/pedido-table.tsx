@@ -30,6 +30,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
+import { DataTableFacetedFilter as TunnedDataTableFacetedFilter } from "../tablero/data-table-faceted-filter";
+
+const estados= ["pending", "notifications_created", "no_coincidences", "paused"]
 
 interface DataTableToolbarProps<TData> {
   table: TanstackTable<TData>;
@@ -42,6 +45,14 @@ export function DataTableToolbar<TData>({
 
   return (
     <div className="flex gap-1 dark:text-white">
+      {table.getColumn("status") && (
+        <TunnedDataTableFacetedFilter
+          column={table.getColumn("status")}
+          title="Estado"
+          options={estados}
+        />
+      )}
+
       {table.getColumn("operacion") && (
         <DataTableFacetedFilter
           column={table.getColumn("operacion")}

@@ -33,7 +33,8 @@ export default async function TableroPage({ searchParams }: Props) {
       pedido && <PedidoBox pedido={pedido} cantCoincidencias={coincidencesSent.length} />
     }
     {
-      pedido && <Coincidencias coincidencias={coincidenciasOver60} operacion={pedido.operacion || ""} coincidenceId={coincidenceId} presupuestoLog={pedido.presupuestoLog} />
+      // pedido && <Coincidencias coincidencias={coincidenciasOver60} operacion={pedido.operacion || ""} coincidenceId={coincidenceId} presupuestoLog={pedido.presupuestoLog} />
+      pedido && <Coincidencias coincidencias={coincidencesSent} operacion={pedido.operacion || ""} coincidenceId={coincidenceId} presupuestoLog={pedido.presupuestoLog} />
     }
     
   </main>

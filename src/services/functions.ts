@@ -160,6 +160,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
     }
 
     if (isPedido) {
+      operacion= corregirOperacion(operacion, presupuestoMoneda, presupuestoMinOrig)
       const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
       const name= pedido.name ? "Hola " + pedido.name + "! " : ""
       const pauseCheck= checkPause(name, pedido.group || "-", tipo, operacion, zona, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda)
@@ -315,6 +316,29 @@ function corregirPresupuesto(presupuesto: number, operacion: string, presupuesto
   }
 
   return res  
+}
+
+// Cuando un pedido queda en pausa porque no sabe si es venta o alquiler, que respete la regla de: 
+// - Si hay operacion, no modificarlo.
+// - Si el pedido es en pesos uruguayos (UYU), que ya sepa que es alquiler. 
+// - Si el pedido es de USD 20 mil para arriba, que detecte que es venta.
+function corregirOperacion(operacion: string, presupuestoMoneda: string, presupuesto: number) {
+  if (operacion && operacion.toUpperCase() !== "N/D")
+
+  console.log("corregirOperacion: ", presupuestoMoneda, presupuesto)  
+
+  if (presupuestoMoneda.toUpperCase() === "UYU") {
+    console.log("corrigiendo operación a ALQUILER porque el presupuesto es en UYU")    
+    return "ALQUILER"
+  }
+
+  if (presupuestoMoneda.toUpperCase() === "USD" && presupuesto >= 20000){
+    console.log("corrigiendo operación a VENTA porque el presupuesto es en USD y es mayor a 20000")
+    return "VENTA"    
+  }
+    
+
+  return operacion
 }
 
 
