@@ -186,6 +186,11 @@ export async function getAllPedidosDAO(): Promise<PedidoDAO[]> {
   else console.log("PEDIDOS_RESULTS not found")
 
   const found = await prisma.pedido.findMany({
+    where: {
+      status: {
+        not: "discarded"
+      },      
+    },
     orderBy: {
       createdAt: "desc"
     },
