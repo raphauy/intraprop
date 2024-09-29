@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Props= {
   coincidenceId: string
@@ -99,7 +100,11 @@ ${res.url}
           {
             loading ? <Loader className="animate-spin" /> : text ? (
               <div className="space-y-5">
-                <p className="whitespace-pre-wrap mb-3 text-muted-foreground">{processText(text)}</p>
+                <ScrollArea className="h-[300px] rounded-md border p-4 whitespace-pre-wrap mb-3 text-muted-foreground">
+                  {processText(text)}
+                </ScrollArea>
+
+                
                 <Separator />
                 <div className="flex justify-between">
                   <p>Destinatario: {destination}</p>
