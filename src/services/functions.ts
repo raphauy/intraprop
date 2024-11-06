@@ -160,7 +160,7 @@ export async function registrarPedido(pedidoId: string, intencion: string, tipo:
     }
 
     if (isPedido) {
-      operacion= corregirOperacion(operacion, presupuestoMoneda, presupuestoMinOrig)
+      operacion= corregirOperacion(operacion, presupuestoMoneda, presupuestoMinOrig || presupuestoMaxOrig)
       const formattedCaracteristicas= getCaracteristicas(tipo, operacion, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda, gastosComunes, zona, dormitorios, caracteristicas)
       const name= pedido.name ? "Hola " + pedido.name + "! " : ""
       const pauseCheck= checkPause(name, pedido.group || "-", tipo, operacion, zona, presupuestoMinOrig, presupuestoMaxOrig, presupuestoMoneda)
